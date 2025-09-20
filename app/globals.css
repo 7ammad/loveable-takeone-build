@@ -1,26 +1,101 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: #ffffff;
+  --color-surface: #f8fafc;
+  --color-elev-1: #ffffff;
+  --color-brand: #006c67;
+  --color-brand-600: #00524e;
+  --color-accent: #a67c00;
+  --color-success: #1b9e77;
+  --color-warning: #d97706;
+  --color-danger: #b91c1c;
+  --color-info: #2563eb;
+  --color-text: #0f172a;
+  --color-text-muted: #475569;
+  --color-border: #e2e8f0;
+  --color-overlay: rgba(15, 23, 42, 0.6);
+  --shadow-sm: 0 4px 16px rgba(15, 23, 42, 0.08);
+  --shadow-md: 0 12px 32px rgba(15, 23, 42, 0.12);
+  --shadow-lg: 0 18px 48px rgba(15, 23, 42, 0.18);
+  --font-arabic: "IBM Plex Sans Arabic", "Tajawal", "Segoe UI", system-ui, sans-serif;
+  --font-latin: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", ui-monospace, monospace;
+  color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --color-bg: #0b0d0f;
+    --color-surface: #111418;
+    --color-elev-1: #151922;
+    --color-text: #e2e8f0;
+    --color-text-muted: #9ba3af;
+    --color-border: #222833;
+    color-scheme: dark;
   }
 }
 
+html {
+  font-family: var(--font-latin);
+}
+
+html[dir="rtl"] {
+  font-family: var(--font-arabic);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-feature-settings: "kern" 1, "liga" 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+body[dir="rtl"] {
+  font-family: var(--font-arabic);
+}
+
+::selection {
+  background-color: rgba(0, 108, 103, 0.2);
+}
+
+@layer base {
+  :root {
+    --radius-sm: 0.5rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1rem;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--color-text);
+    letter-spacing: -0.01em;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--color-brand);
+  }
+}
+
+@layer components {
+  .shadow-token-sm {
+    box-shadow: var(--shadow-sm);
+  }
+
+  .shadow-token-md {
+    box-shadow: var(--shadow-md);
+  }
+
+  .shadow-token-lg {
+    box-shadow: var(--shadow-lg);
+  }
+
+  .text-muted {
+    color: var(--color-text-muted);
+  }
 }
