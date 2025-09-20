@@ -1,0 +1,56 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model TalentProfile {
+  id             String  @id @default(cuid())
+  userId         String  @unique
+  isMinor        Boolean @default(false)
+  guardianUserId String?
+  // ... other talent fields
+}
+
+model ApplicationStatusEvent {
+  id            String   @id @default(cuid())
+  applicationId String
+  fromStatus    String?
+  toStatus      String
+  at            DateTime @default(now())
+  actorUserId   String?
+}
+
+model Outbox {
+  id        BigInt   @id @default(autoincrement())
+  eventType String
+  payload   Json
+  createdAt DateTime @default(now())
+  attempts  Int      @default(0)
+  lastError String?
+  nextRunAt DateTime @default(now())
+  status    String   @default("pending") // pending|processing|dead
+}
+
+model AuditEvent {
+  id              String   @id @default(cuid())
+  purpose         String
+  actor_role      String
+  ip              String
+  ua              String
+  before_after_hash String
+  createdAt       DateTime @default(now())
+  // ... other audit fields
+}
+
+// ... other models from your plan (Users, CastingCall, etc.) will go here
