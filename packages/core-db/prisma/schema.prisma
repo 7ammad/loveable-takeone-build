@@ -53,4 +53,9 @@ model AuditEvent {
   // ... other audit fields
 }
 
+model RevokedToken {
+  jti       String   @id
+  createdAt DateTime @default(now())
+}
+
 // ... other models from your plan (Users, CastingCall, etc.) will go here
