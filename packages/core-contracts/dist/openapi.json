@@ -40,6 +40,10 @@
     {
       "name": "Media",
       "description": "Media asset management and uploads."
+    },
+    {
+      "name": "Search",
+      "description": "Search endpoints."
     }
   ],
   "paths": {
@@ -113,6 +117,84 @@
           },
           "422": {
             "description": "Validation error. The request body is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search/talent": {
+      "get": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Search for Talent Profiles",
+        "description": "Performs a search for talent profiles using a query term and optional filters.\n",
+        "operationId": "searchTalent",
+        "parameters": [
+          {
+            "name": "term",
+            "in": "query",
+            "description": "The search term.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page number to retrieve.",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "hitsPerPage",
+            "in": "query",
+            "description": "The number of results per page.",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "description": "JSON string of filters to apply.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of talent profiles.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TalentSearchResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid query parameters.",
             "content": {
               "application/json": {
                 "schema": {
@@ -211,6 +293,50 @@
           "ok",
           "uploadUrl",
           "assetId"
+        ]
+      },
+      "TalentSearchResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "example": true
+          },
+          "hits": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "example": 0
+          },
+          "nbPages": {
+            "type": "integer",
+            "example": 1
+          },
+          "hitsPerPage": {
+            "type": "integer",
+            "example": 20
+          },
+          "nbHits": {
+            "type": "integer",
+            "example": 1
+          },
+          "query": {
+            "type": "string",
+            "example": "actor"
+          }
+        },
+        "required": [
+          "ok",
+          "hits",
+          "page",
+          "nbPages",
+          "hitsPerPage",
+          "nbHits",
+          "query"
         ]
       }
     },

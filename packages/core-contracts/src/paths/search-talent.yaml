@@ -1,0 +1,49 @@
+get:
+  tags:
+    - Search
+  summary: Search for Talent Profiles
+  description: >
+    Performs a search for talent profiles using a query term and optional filters.
+  operationId: searchTalent
+  parameters:
+    - name: term
+      in: query
+      description: The search term.
+      schema:
+        type: string
+    - name: page
+      in: query
+      description: The page number to retrieve.
+      schema:
+        type: integer
+        default: 1
+    - name: hitsPerPage
+      in: query
+      description: The number of results per page.
+      schema:
+        type: integer
+        default: 20
+    - name: filters
+      in: query
+      description: JSON string of filters to apply.
+      schema:
+        type: string
+  responses:
+    '200':
+      description: A list of talent profiles.
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/search.yaml#/TalentSearchResponse'
+    '422':
+      description: Invalid query parameters.
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/error.yaml'
+    '500':
+      description: Internal Server Error.
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/error.yaml'

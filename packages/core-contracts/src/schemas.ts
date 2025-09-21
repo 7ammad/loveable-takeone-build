@@ -25,3 +25,14 @@ export const RequestUploadResponseSchema = z.object({
   uploadUrl: z.string().url(),
   assetId: z.string(), // In a real app, this would be validated as a CUID
 });
+
+// Schema for the talent search response
+export const TalentSearchResponseSchema = z.object({
+  ok: z.boolean(),
+  hits: z.array(z.any()), // In a real app, this would be a full TalentProfile schema
+  page: z.number(),
+  nbPages: z.number(),
+  hitsPerPage: z.number(),
+  nbHits: z.number(),
+  query: z.string(),
+});

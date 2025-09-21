@@ -20,6 +20,8 @@ paths:
     $ref: './src/paths/health.yaml'
   /media/uploads:
     $ref: './src/paths/media-uploads.yaml'
+  /search/talent:
+    $ref: './src/paths/search-talent.yaml'
   # Other paths will be referenced here...
 components:
   schemas:
@@ -40,4 +42,6 @@ tags:
     description: User authentication and session management.
   - name: Media
     description: Media asset management and uploads.
+  - name: Search
+    description: Search endpoints.
   # Other tags will be added here...

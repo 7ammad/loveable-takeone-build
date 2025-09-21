@@ -18,6 +18,7 @@
     "@redocly/cli": "^2.1.5",
     "@upstash/ratelimit": "^2.0.6",
     "@upstash/redis": "^1.35.4",
+    "algoliasearch": "^5.37.0",
     "bcryptjs": "^3.0.2",
     "bullmq": "^5.58.7",
     "dredd": "^14.1.0",

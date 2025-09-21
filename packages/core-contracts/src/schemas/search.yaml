@@ -1,0 +1,33 @@
+TalentSearchResponse:
+  type: object
+  properties:
+    ok:
+      type: boolean
+      example: true
+    hits:
+      type: array
+      items:
+        type: object # In a real app, this would be a full TalentProfile schema
+    page:
+      type: integer
+      example: 0
+    nbPages:
+      type: integer
+      example: 1
+    hitsPerPage:
+      type: integer
+      example: 20
+    nbHits:
+      type: integer
+      example: 1
+    query:
+      type: string
+      example: "actor"
+  required:
+    - ok
+    - hits
+    - page
+    - nbPages
+    - hitsPerPage
+    - nbHits
+    - query
