@@ -18,6 +18,8 @@ servers:
 paths:
   /health:
     $ref: './src/paths/health.yaml'
+  /media/uploads:
+    $ref: './src/paths/media-uploads.yaml'
   # Other paths will be referenced here...
 components:
   schemas:
@@ -36,4 +38,6 @@ tags:
     description: API health and status checks.
   - name: Auth
     description: User authentication and session management.
+  - name: Media
+    description: Media asset management and uploads.
   # Other tags will be added here...

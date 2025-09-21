@@ -1,0 +1,32 @@
+post:
+  tags:
+    - Media
+  summary: Request a Media Upload URL
+  description: >
+    Requests a secure, pre-signed URL to upload a media file directly to the S3-compatible storage.
+  operationId: requestMediaUpload
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/media.yaml#/RequestUpload'
+  responses:
+    '200':
+      description: Pre-signed URL created successfully.
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/media.yaml#/RequestUploadResponse'
+    '422':
+      description: Validation error. The request body is invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/error.yaml'
+    '500':
+      description: Internal Server Error.
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/error.yaml'

@@ -58,4 +58,19 @@ model RevokedToken {
   createdAt DateTime @default(now())
 }
 
+model MediaAsset {
+  id         String   @id @default(cuid())
+  userId     String // The user who uploaded the file
+  filename   String
+  mimetype   String
+  size       Int
+  s3Key      String   @unique
+  visibility String   @default("private") // private | public | unlisted
+  status     String   @default("pending") // pending | uploaded | processing | ready | error
+  pHash      String?
+  ttlPolicy  String?  // e.g., "archive_180d"
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
 // ... other models from your plan (Users, CastingCall, etc.) will go here

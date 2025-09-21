@@ -1,0 +1,43 @@
+RequestUpload:
+  type: object
+  properties:
+    filename:
+      type: string
+      description: The name of the file to be uploaded.
+      example: "self-tape.mp4"
+    contentType:
+      type: string
+      description: The MIME type of the file.
+      example: "video/mp4"
+    size:
+      type: integer
+      description: The size of the file in bytes.
+      example: 10485760
+    userId:
+      type: string
+      description: The CUID of the user uploading the file.
+      example: "clw5j3j0a0000a4gj8k2h9c7b"
+  required:
+    - filename
+    - contentType
+    - size
+    - userId
+
+RequestUploadResponse:
+  type: object
+  properties:
+    ok:
+      type: boolean
+      example: true
+    uploadUrl:
+      type: string
+      format: uri
+      description: The pre-signed URL to use for the PUT request to upload the file.
+    assetId:
+      type: string
+      format: cuid
+      description: The ID of the newly created media asset record in the database.
+  required:
+    - ok
+    - uploadUrl
+    - assetId
