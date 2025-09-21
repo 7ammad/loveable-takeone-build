@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "contracts:build": "redocly bundle ./packages/core-contracts/openapi.yaml -o ./packages/core-contracts/dist/openapi.json",
-    "contracts:test": "dredd ./packages/core-contracts/dist/openapi.json http://localhost:3000/api/v1"
+    "contracts:test": "dredd ./packages/core-contracts/dist/openapi.json http://localhost:3000/api/v1",
+    "worker": "tsx apps/worker/src/index.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.893.0",
@@ -18,6 +19,7 @@
     "@upstash/ratelimit": "^2.0.6",
     "@upstash/redis": "^1.35.4",
     "bcryptjs": "^3.0.2",
+    "bullmq": "^5.58.7",
     "dredd": "^14.1.0",
     "jsonwebtoken": "^9.0.2",
     "next": "15.5.3",
@@ -40,6 +42,7 @@
     "eslint-config-next": "15.5.3",
     "prisma": "^5.17.0",
     "tailwindcss": "^4",
+    "tsx": "^4.20.5",
     "typescript": "5.9.2"
   },
   "prisma": {
