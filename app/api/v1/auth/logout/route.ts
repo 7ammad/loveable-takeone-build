@@ -17,28 +17,23 @@ export async function POST(request: NextRequest) {
     const payload = await verifyRefreshToken(refreshToken);
 
     if (!payload) {
-      // Even if the token is invalid, we can treat it as a successful logout.
-      // The goal is to ensure the token can no longer be used.
       return NextResponse.json({ ok: true });
     }
 
-    // Add the token's jti to the revocation list
     await prisma.revokedToken.create({
-      data: {
-        jti: payload.jti,
-      },
+      data: { jti: payload.jti },
     });
 
     return NextResponse.json({ ok: true });
 
-  } catch (error) {
-    // If the token is already revoked, prisma will throw a unique constraint error.
-    // We can safely ignore this and return a success response, as the token is already invalid.
-    if (error.code === 'P2002') {
+  } catch (error: unknown) {
+    const code = (error as any)?.code;
+    if (code === 'P2002') {
       return NextResponse.json({ ok: true });
     }
-    
+
     console.error(error);
-    return NextResponse.json({ ok: false, error: 'Internal Server Error' }, { status: 500 });
+    const message = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }
 }

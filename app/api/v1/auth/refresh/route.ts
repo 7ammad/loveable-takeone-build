@@ -25,14 +25,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: false, error: 'Invalid or expired refresh token' }, { status: 401 });
     }
 
-    // Invalidate the old refresh token by adding its jti to the revocation list
     await prisma.revokedToken.create({
       data: {
         jti: payload.jti,
       },
     });
 
-    // Issue a new set of tokens with a new jti
     const newJti = randomUUID();
     const newAccessToken = generateAccessToken(payload.userId, newJti);
     const newRefreshToken = generateRefreshToken(payload.userId, newJti);
@@ -43,8 +41,9 @@ export async function POST(request: NextRequest) {
       refreshToken: newRefreshToken,
     });
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error(error);
-    return NextResponse.json({ ok: false, error: 'Internal Server Error' }, { status: 500 });
+    const message = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }
 }

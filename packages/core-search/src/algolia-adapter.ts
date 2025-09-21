@@ -1,4 +1,4 @@
-import algoliasearch from 'algoliasearch';
+import { algoliasearch } from 'algoliasearch';
 import type { SearchProvider, TalentSearchQuery, TalentSearchResult } from './provider';
 
 const client = algoliasearch(
@@ -6,7 +6,7 @@ const client = algoliasearch(
   process.env.ALGOLIA_API_KEY!
 );
 
-const talentIndex = client.initIndex('talent_profiles');
+const talentIndex = (client as any).initIndex('talent_profiles');
 
 export class AlgoliaSearchAdapter implements SearchProvider {
   async searchTalent(query: TalentSearchQuery): Promise<TalentSearchResult> {
@@ -25,8 +25,8 @@ export class AlgoliaSearchAdapter implements SearchProvider {
       hitsPerPage: response.hitsPerPage,
       nbHits: response.nbHits,
       query: response.query,
-      explain: response.explain,
-    };
+      explain: (response as any).explain,
+    } as TalentSearchResult;
   }
 
   async indexTalentProfile(profile: any): Promise<void> {
@@ -50,5 +50,4 @@ export class AlgoliaSearchAdapter implements SearchProvider {
   }
 }
 
-// Export a singleton instance of the adapter
 export const algoliaSearchProvider = new AlgoliaSearchAdapter();

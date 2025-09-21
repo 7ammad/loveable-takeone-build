@@ -41,8 +41,9 @@ export async function POST(request: NextRequest) {
       refreshToken,
     });
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error(error);
-    return NextResponse.json({ ok: false, error: 'Internal Server Error' }, { status: 500 });
+    const message = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }
 }

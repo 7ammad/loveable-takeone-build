@@ -5,7 +5,6 @@ import { prisma } from '@/packages/core-db/src/client';
 import { z } from 'zod';
 
 const s3WebhookSchema = z.object({
-  // This is a simplified schema. A real S3 event is more complex.
   s3Key: z.string(),
 });
 
@@ -20,7 +19,6 @@ export async function POST(request: NextRequest) {
 
     const { s3Key } = validation.data;
 
-    // Find the corresponding media asset in our database
     const asset = await prisma.mediaAsset.findUnique({
       where: { s3Key },
     });
@@ -29,13 +27,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: false, error: 'Asset not found' }, { status: 404 });
     }
 
-    // Add a job to the queue for this asset
     await mediaQueue.add('process-media', {
       assetId: asset.id,
       s3Key: asset.s3Key,
     });
 
-    // Update the asset status to 'processing'
     await prisma.mediaAsset.update({
       where: { id: asset.id },
       data: { status: 'processing' },
@@ -43,8 +39,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ ok: true, message: 'Job added to queue' });
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error(error);
-    return NextResponse.json({ ok: false, error: 'Internal Server Error' }, { status: 500 });
+    const message = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }
 }

@@ -22,7 +22,15 @@ const ratelimit = new Ratelimit({
   prefix: '@upstash/ratelimit/saudi-casting',
 });
 
+function getClientIp(request: NextRequest): string {
+  const xff = request.headers.get('x-forwarded-for');
+  if (xff) return xff.split(',')[0].trim();
+  const xri = request.headers.get('x-real-ip');
+  if (xri) return xri;
+  return '127.0.0.1';
+}
+
 export async function checkRateLimit(request: NextRequest) {
-  const ip = request.ip ?? '127.0.0.1';
+  const ip = getClientIp(request);
   return await ratelimit.limit(ip);
 }

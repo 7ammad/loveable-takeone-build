@@ -7,9 +7,13 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "next lint",
+    "test": "vitest",
     "contracts:build": "redocly bundle ./packages/core-contracts/openapi.yaml -o ./packages/core-contracts/dist/openapi.json",
     "contracts:test": "dredd",
-    "worker": "tsx apps/worker/src/index.ts"
+    "migrate:dev": "prisma migrate dev",
+    "seed": "tsx scripts/seed.ts",
+    "worker": "dotenv -e .env.local -- tsx apps/worker/src/index.ts",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.893.0",

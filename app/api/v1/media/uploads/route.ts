@@ -6,11 +6,10 @@ import { prisma } from '@/packages/core-db/src/client';
 import { z } from 'zod';
 import { randomUUID } from 'crypto';
 
-// Basic configuration for the S3 client.
-// Ensure your S3 environment variables are set.
 const s3Client = new S3Client({
   region: process.env.S3_REGION!,
-  endpoint: process.env.S3_ENDPOINT, // Required for S3-compatible services like R2/MinIO
+  endpoint: process.env.S3_ENDPOINT,
+  forcePathStyle: true,
   credentials: {
     accessKeyId: process.env.S3_ACCESS_KEY!,
     secretAccessKey: process.env.S3_SECRET_KEY!,
@@ -19,9 +18,8 @@ const s3Client = new S3Client({
 
 const createUploadUrlSchema = z.object({
   filename: z.string().min(1),
-  contentType: z.string().regex(/\w+\/[-+.\w]+/),
+  contentType: z.string().regex(/\w+\/[\-+.\w]+/),
   size: z.number().positive(),
-  // In a real app, you would get the userId from the authenticated session
   userId: z.string().cuid(), 
 });
 
@@ -38,7 +36,6 @@ export async function POST(request: NextRequest) {
 
     const s3Key = `${userId}/${randomUUID()}/${filename}`;
 
-    // Create a record in the database before generating the URL
     const mediaAsset = await prisma.mediaAsset.create({
       data: {
         userId,
@@ -57,13 +54,13 @@ export async function POST(request: NextRequest) {
       ContentLength: size,
     });
 
-    // Generate the presigned URL which is valid for 10 minutes
     const uploadUrl = await getSignedUrl(s3Client, command, { expiresIn: 600 });
 
     return NextResponse.json({ ok: true, uploadUrl, assetId: mediaAsset.id });
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error(error);
-    return NextResponse.json({ ok: false, error: 'Internal Server Error' }, { status: 500 });
+    const message = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }
 }
