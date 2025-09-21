@@ -1,0 +1,64 @@
+components:
+  schemas:
+    RegisterRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+      required:
+        - email
+        - password
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    AuthResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+      required:
+        - ok
+        - accessToken
+        - refreshToken
+
+    RefreshTokenRequest:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+      required:
+        - refreshToken
+
+    LogoutRequest:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+      required:
+        - refreshToken
+
+    SuccessResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+      required:
+        - ok

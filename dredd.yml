@@ -1,0 +1,43 @@
+
+# This is a Dredd configuration file. Dredd is an API testing tool.
+# See https://dredd.org/en/latest/how-to-guides.html#configuring-dredd
+
+# The command to start up the server under test
+# This is optional, but it's very useful if you want to run Dredd in CI
+# server: 'npm start'
+
+# The URL of the API endpoint to test
+endpoint: 'http://localhost:3000/api/v1'
+
+# The location of the API description document
+api-descriptions:
+  - 'packages/core-contracts/dist/openapi.json'
+
+# The programming language of the hooks
+language: nodejs
+
+# The locations of the hook files
+hookfiles:
+  - './dredd-hooks.js'
+
+# Set to true to fail Dredd when a hook handler crashes
+hooks-abort-on-error: true
+
+# Set to true to output debugging information for hooks
+hooks-debug: false
+
+# Other options...
+color: true
+sorted: false
+names: false
+only: []
+reporter: []
+output: []
+header: []
+method: []
+user: null
+inline-errors: false
+details: false
+level: info
+path: []
+loglevel: warning

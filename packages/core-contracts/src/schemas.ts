@@ -36,3 +36,37 @@ export const TalentSearchResponseSchema = z.object({
   nbHits: z.number(),
   query: z.string(),
 });
+
+// Schema for the user registration request
+export const RegisterRequestSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+});
+
+// Schema for the user login request
+export const LoginRequestSchema = z.object({
+  email: z.string().email(),
+  password: z.string(),
+});
+
+// Schema for the authentication response (login and refresh)
+export const AuthResponseSchema = z.object({
+  ok: z.boolean(),
+  accessToken: z.string(),
+  refreshToken: z.string(),
+});
+
+// Schema for the token refresh request
+export const RefreshTokenRequestSchema = z.object({
+  refreshToken: z.string(),
+});
+
+// Schema for the logout request
+export const LogoutRequestSchema = z.object({
+  refreshToken: z.string(),
+});
+
+// Schema for a generic success response
+export const SuccessResponseSchema = z.object({
+  ok: z.boolean(),
+});

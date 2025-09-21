@@ -16,13 +16,7 @@ servers:
   - url: https://saudi-casting.com/api/v1
     description: Production server
 paths:
-  /health:
-    $ref: './src/paths/health.yaml'
-  /media/uploads:
-    $ref: './src/paths/media-uploads.yaml'
-  /search/talent:
-    $ref: './src/paths/search-talent.yaml'
-  # Other paths will be referenced here...
+  $ref: './src/paths/index.yaml'
 components:
   schemas:
     Error:

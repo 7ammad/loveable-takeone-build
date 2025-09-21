@@ -1,0 +1,113 @@
+register:
+  post:
+    tags:
+      - Auth
+    summary: Register a new user
+    description: Creates a new user account.
+    operationId: registerUser
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/auth.yaml#/components/schemas/RegisterRequest'
+    responses:
+      '201':
+        description: User created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/auth.yaml#/components/schemas/SuccessResponse'
+      '422':
+        description: Validation error
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/error.yaml'
+      '409':
+        description: User already exists
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/error.yaml'
+
+login:
+  post:
+    tags:
+      - Auth
+    summary: Log in a user
+    description: Authenticates a user and returns JWT tokens.
+    operationId: loginUser
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/auth.yaml#/components/schemas/LoginRequest'
+    responses:
+      '200':
+        description: Authentication successful
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/auth.yaml#/components/schemas/AuthResponse'
+      '401':
+        description: Invalid credentials
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/error.yaml'
+
+refresh:
+  post:
+    tags:
+      - Auth
+    summary: Refresh access token
+    description: Issues a new access and refresh token.
+    operationId: refreshToken
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/auth.yaml#/components/schemas/RefreshTokenRequest'
+    responses:
+      '200':
+        description: Tokens refreshed successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/auth.yaml#/components/schemas/AuthResponse'
+      '401':
+        description: Invalid refresh token
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/error.yaml'
+
+logout:
+  post:
+    tags:
+      - Auth
+    summary: Log out a user
+    description: Revokes the user's refresh token.
+    operationId: logoutUser
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/auth.yaml#/components/schemas/LogoutRequest'
+    responses:
+      '200':
+        description: Logout successful
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/auth.yaml#/components/schemas/SuccessResponse'
+      '401':
+        description: Invalid refresh token
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/error.yaml'

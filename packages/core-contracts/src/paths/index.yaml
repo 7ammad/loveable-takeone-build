@@ -1,0 +1,14 @@
+/health:
+  $ref: './health.yaml'
+/media/uploads:
+  $ref: './media-uploads.yaml'
+/search/talent:
+  $ref: './search-talent.yaml'
+/auth/register:
+  $ref: './auth.yaml#/register'
+/auth/login:
+  $ref: './auth.yaml#/login'
+/auth/refresh:
+  $ref: './auth.yaml#/refresh'
+/auth/logout:
+  $ref: './auth.yaml#/logout'

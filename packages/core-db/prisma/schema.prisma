@@ -73,4 +73,45 @@ model MediaAsset {
   updatedAt  DateTime @updatedAt
 }
 
+model Plan {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  price       Int // in halalas to avoid floating point issues
+  currency    String   @default("SAR")
+  features    Json
+  isActive    Boolean  @default(true)
+  moyasarPlanId String?  @unique // ID from Moyasar's system
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  planId      String
+  plan        Plan     @relation(fields: [planId], references: [id])
+  status      String   // e.g., "active", "past_due", "canceled"
+  startDate   DateTime
+  endDate     DateTime
+  trialEndDate DateTime?
+  events      SubscriptionStatusEvent[]
+  moyasarSubscriptionId String? @unique
+}
+
+model SubscriptionStatusEvent {
+  id             String   @id @default(cuid())
+  subscriptionId String
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id])
+  fromStatus     String?
+  toStatus       String
+  at             DateTime @default(now())
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 // ... other models from your plan (Users, CastingCall, etc.) will go here
