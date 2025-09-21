@@ -6,17 +6,23 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "next lint",
+    "contracts:build": "redocly bundle ./packages/core-contracts/openapi.yaml -o ./packages/core-contracts/dist/openapi.json",
+    "contracts:test": "dredd ./packages/core-contracts/dist/openapi.json http://localhost:3000/api/v1"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
+    "@redocly/cli": "^2.1.5",
     "@upstash/ratelimit": "^2.0.6",
     "@upstash/redis": "^1.35.4",
     "bcryptjs": "^3.0.2",
+    "dredd": "^14.1.0",
     "jsonwebtoken": "^9.0.2",
     "next": "15.5.3",
+    "openapi-zod-client": "^1.18.3",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "zod": "^4.1.11"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

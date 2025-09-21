@@ -1,0 +1,39 @@
+openapi: 3.1.0
+info:
+  title: Saudi Casting Marketplace API
+  version: 1.0.0
+  description: >
+    API for the Saudi Casting Marketplace, connecting professional hirers with verified talent.
+  contact:
+    name: API Support
+    url: https://enter.tech/support
+    email: support@enter.tech
+  license:
+    name: All Rights Reserved
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local development server
+  - url: https://saudi-casting.com/api/v1
+    description: Production server
+paths:
+  /health:
+    $ref: './src/paths/health.yaml'
+  # Other paths will be referenced here...
+components:
+  schemas:
+    Error:
+      $ref: './src/schemas/error.yaml'
+    # Other component schemas will be referenced here...
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
+tags:
+  - name: Health
+    description: API health and status checks.
+  - name: Auth
+    description: User authentication and session management.
+  # Other tags will be added here...

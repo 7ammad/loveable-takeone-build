@@ -1,0 +1,12 @@
+type: object
+properties:
+  ok:
+    type: boolean
+    example: false
+  error:
+    type: string
+    description: A description of the error that occurred.
+    example: "Internal Server Error"
+required:
+  - ok
+  - error

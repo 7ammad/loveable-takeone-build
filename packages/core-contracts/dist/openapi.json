@@ -1,0 +1,114 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Saudi Casting Marketplace API",
+    "version": "1.0.0",
+    "description": "API for the Saudi Casting Marketplace, connecting professional hirers with verified talent.\n",
+    "contact": {
+      "name": "API Support",
+      "url": "https://enter.tech/support",
+      "email": "support@enter.tech"
+    },
+    "license": {
+      "name": "All Rights Reserved"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api/v1",
+      "description": "Local development server"
+    },
+    {
+      "url": "https://saudi-casting.com/api/v1",
+      "description": "Production server"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Health",
+      "description": "API health and status checks."
+    },
+    {
+      "name": "Auth",
+      "description": "User authentication and session management."
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Check API Health",
+        "description": "Performs a health check of the API, including database connectivity. This endpoint is not protected by authentication.\n",
+        "operationId": "getHealth",
+        "responses": {
+          "200": {
+            "description": "API is healthy.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "API is unhealthy.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "security": []
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "$ref": "#/components/schemas/error"
+      },
+      "error": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "example": false
+          },
+          "error": {
+            "type": "string",
+            "description": "A description of the error that occurred.",
+            "example": "Internal Server Error"
+          }
+        },
+        "required": [
+          "ok",
+          "error"
+        ]
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

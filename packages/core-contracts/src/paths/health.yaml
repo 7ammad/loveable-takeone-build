@@ -1,0 +1,26 @@
+get:
+  tags:
+    - Health
+  summary: Check API Health
+  description: >
+    Performs a health check of the API, including database connectivity.
+    This endpoint is not protected by authentication.
+  operationId: getHealth
+  responses:
+    '200':
+      description: API is healthy.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              ok:
+                type: boolean
+                example: true
+    '500':
+      description: API is unhealthy.
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/error.yaml'
+security: [] # This explicitly marks the endpoint as public
