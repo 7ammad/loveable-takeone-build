@@ -2,25 +2,24 @@ import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
 import type { NextRequest } from 'next/server';
 
-// Create a new Redis client instance.
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL!,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-});
+let ratelimit: Ratelimit | null = null;
 
-// Create a new Ratelimit instance
-// that allows 10 requests from an IP address in a 10-second window.
-const ratelimit = new Ratelimit({
-  redis,
-  limiter: Ratelimit.slidingWindow(10, '10 s'),
-  analytics: true,
-  /**
-   * Optional prefix for the keys used in Redis. This is useful if you want to share a Redis
-   * instance with other applications and want to avoid key collisions. The default prefix is
-   * "@upstash/ratelimit"
-   */
-  prefix: '@upstash/ratelimit/saudi-casting',
-});
+function getRatelimit(): Ratelimit | null {
+  if (ratelimit) return ratelimit;
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) {
+    return null;
+  }
+  const redis = new Redis({ url, token });
+  ratelimit = new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(10, '10 s'),
+    analytics: true,
+    prefix: '@upstash/ratelimit/saudi-casting',
+  });
+  return ratelimit;
+}
 
 function getClientIp(request: NextRequest): string {
   const xff = request.headers.get('x-forwarded-for');
@@ -30,7 +29,12 @@ function getClientIp(request: NextRequest): string {
   return '127.0.0.1';
 }
 
-export async function checkRateLimit(request: NextRequest) {
+export async function checkRateLimit(request: NextRequest): Promise<{ success: boolean } | any> {
+  const rl = getRatelimit();
+  if (!rl) {
+    // Bypass rate limiting if not configured (e.g., local dev)
+    return { success: true } as any;
+  }
   const ip = getClientIp(request);
-  return await ratelimit.limit(ip);
+  return await rl.limit(ip);
 }

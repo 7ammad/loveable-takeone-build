@@ -16,16 +16,21 @@ export async function POST(request: NextRequest) {
 
     const { email, password } = validation.data;
 
+    console.log('[auth/register] start', { email });
+    console.log('[auth/register] findUnique');
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
 
     if (existingUser) {
+      console.log('[auth/register] user exists');
       return NextResponse.json({ ok: false, error: 'User with this email already exists' }, { status: 409 });
     }
 
+    console.log('[auth/register] hashing');
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    console.log('[auth/register] creating user');
     const newUser = await prisma.user.create({
       data: {
         email,
@@ -33,19 +38,25 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    console.log('[auth/register] queue email');
     await sendEmail({
       to: newUser.email,
       template: 'welcome',
       language: 'en',
-      context: {
-        name: newUser.email,
-      },
+      context: { name: newUser.email },
     });
 
+    console.log('[auth/register] done');
     return NextResponse.json({ ok: true }, { status: 201 });
 
   } catch (error: unknown) {
-    console.error(error);
+    const errObj = error as any;
+    console.error('[auth/register] error', {
+      name: errObj?.name,
+      code: errObj?.code,
+      message: errObj?.message,
+      stack: errObj?.stack,
+    });
     const message = error instanceof Error ? error.message : String(error);
     return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }

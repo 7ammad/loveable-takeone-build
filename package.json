@@ -11,8 +11,8 @@
     "contracts:build": "redocly bundle ./packages/core-contracts/openapi.yaml -o ./packages/core-contracts/dist/openapi.json",
     "contracts:test": "dredd",
     "migrate:dev": "prisma migrate dev",
-    "seed": "tsx scripts/seed.ts",
-    "worker": "dotenv -e .env.local -- tsx apps/worker/src/index.ts",
+    "seed": "dotenv -e .env -- tsx scripts/seed.ts",
+    "worker": "dotenv -e .env -- tsx worker/src/index.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {
