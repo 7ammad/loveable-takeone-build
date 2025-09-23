@@ -14,6 +14,8 @@ import {
 } from "@/lib/db";
 import type { CastingCallStatus, SubscriptionPlan, UserRole } from "@/lib/definitions";
 import { sleep } from "@/lib/utils";
+import { hasActiveSubscription } from "@/packages/core-security/src/subscription-gate";
+import { addToOutbox } from "@/packages/core-queue/src/outbox";
 
 export interface ActionResponse<T = Record<string, unknown>> {
   success: boolean;
@@ -76,6 +78,15 @@ export async function updateTalentProfile({
   }
 
   revalidatePath("/talent/profile/edit");
+
+  // Add to outbox for search indexing
+  await addToOutbox('TalentProfileUpdated', {
+    id: profile.id,
+    userId,
+    ...payload,
+    updatedAt: new Date().toISOString(),
+  });
+
   return {
     success: true,
     message: "Profile updated. Casting directors now see the latest information.",
@@ -120,6 +131,16 @@ export async function createCastingCall({
   };
 }): Promise<ActionResponse> {
   await sleep(1000);
+
+  // Check subscription for posting casting calls
+  const hasSubscription = await hasActiveSubscription(hirerUserId);
+  if (!hasSubscription) {
+    return {
+      success: false,
+      message: "Active subscription required to post casting calls.",
+    };
+  }
+
   const castingCalls = listCastingCallsByHirer(hirerUserId);
   const mockId = `casting-call-${castingCalls.length + 10}`;
   revalidatePath("/hirer/dashboard");

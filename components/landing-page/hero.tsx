@@ -1,5 +1,6 @@
 ﻿"use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -38,7 +39,18 @@ export function Hero() {
   const role = roles[activeRole];
 
   return (
-    <section className="relative isolate overflow-hidden bg-[radial-gradient(circle_at_top,var(--color-brand)_0%,transparent_55%)] py-20">
+    <section className="relative isolate overflow-hidden bg-[radial-gradient(60%_60%_at_20%_0%,rgba(0,108,103,0.08)_0%,transparent_45%)] py-20">
+      <div className="pointer-events-none absolute inset-0 -z-10 select-none opacity-80">
+        <Image
+          src="/images/hero-art.jpg"
+          alt="Artistic collage of casting and film production"
+          fill
+          priority
+          className="object-cover object-center mix-blend-lighten"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-transparent" />
+      </div>
+
       <div className="mx-auto flex max-w-6xl flex-col gap-12 px-6 lg:flex-row lg:items-center lg:justify-between">
         <div className="max-w-2xl space-y-8">
           <div className="inline-flex rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-elev-1)] p-1 text-sm">
@@ -92,10 +104,8 @@ export function Hero() {
           </ul>
         </div>
 
-        <div className="flex w-full max-w-md flex-col gap-4 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-elev-1)] p-6 shadow-token-md">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
-            Pilot Signals
-          </h2>
+        <div className="flex w-full max-w-md flex-col gap-4 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-elev-1)]/80 p-6 shadow-token-md backdrop-blur">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">Pilot Signals</h2>
           <div className="grid gap-4 sm:grid-cols-3">
             {kpis.map((kpi) => (
               <div key={kpi.label} className="rounded-[var(--radius-md)] bg-[var(--color-surface)] p-4">

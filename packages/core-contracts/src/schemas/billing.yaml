@@ -1,0 +1,80 @@
+components:
+  schemas:
+    CreatePaymentIntent:
+      type: object
+      required:
+        - amount
+        - currency
+        - description
+      properties:
+        amount:
+          type: integer
+          description: Amount in the smallest currency unit (halalas for SAR)
+          example: 10000
+        currency:
+          type: string
+          description: Currency code
+          example: "SAR"
+        description:
+          type: string
+          description: Payment description
+          example: "Casting call subscription"
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+          description: Additional metadata
+          example:
+            userId: "user-123"
+            planId: "plan-basic"
+
+    CreatePaymentIntentResponse:
+      type: object
+      required:
+        - ok
+        - paymentId
+        - status
+      properties:
+        ok:
+          type: boolean
+          example: true
+        paymentId:
+          type: string
+          description: Moyasar payment ID
+          example: "pay_123456789"
+        status:
+          type: string
+          description: Payment status
+          example: "initiated"
+        clientSecret:
+          type: string
+          description: Client secret for frontend integration
+          example: "sk_test_..."
+
+    MoyasarWebhook:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Payment ID
+        status:
+          type: string
+          description: Payment status
+          enum: ["initiated", "paid", "failed", "canceled", "refunded"]
+        amount:
+          type: integer
+          description: Amount in smallest currency unit
+        currency:
+          type: string
+          description: Currency code
+        created_at:
+          type: number
+          description: Unix timestamp
+        source:
+          type: object
+          description: Payment source details
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+          description: Custom metadata

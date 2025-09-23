@@ -27,6 +27,8 @@ export interface TalentMedia {
 export interface TalentProfile {
   id: string;
   userId: string;
+  isMinor: boolean;
+  guardianUserId?: string | null;
   managedByUserId?: string | null;
   firstName: string;
   lastName: string;

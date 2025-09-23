@@ -19,15 +19,27 @@ model TalentProfile {
   userId         String  @unique
   isMinor        Boolean @default(false)
   guardianUserId String?
+  verified       Boolean @default(false)
   // ... other talent fields
 }
 
+model Application {
+  id             String   @id @default(cuid())
+  castingCallId  String
+  talentUserId   String
+  status         String   @default("pending")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  events         ApplicationStatusEvent[]
+}
+
 model ApplicationStatusEvent {
-  id            String   @id @default(cuid())
+  id            String      @id @default(cuid())
   applicationId String
+  application   Application @relation(fields: [applicationId], references: [id])
   fromStatus    String?
   toStatus      String
-  at            DateTime @default(now())
+  at            DateTime    @default(now())
   actorUserId   String?
 }
 
@@ -68,6 +80,7 @@ model MediaAsset {
   visibility String   @default("private") // private | public | unlisted
   status     String   @default("pending") // pending | uploaded | processing | ready | error
   pHash      String?
+  watermark  String? // Tamper-evident watermark for self-tapes
   ttlPolicy  String?  // e.g., "archive_180d"
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -115,3 +128,16 @@ model User {
 }
 
 // ... other models from your plan (Users, CastingCall, etc.) will go here
+
+model Receipt {
+  id                String   @id @default(cuid())
+  userId            String
+  subscriptionId    String?
+  amount            Int
+  currency          String
+  provider          String   @default("moyasar")
+  providerPaymentId String   @unique
+  status            String
+  raw               Json
+  createdAt         DateTime @default(now())
+}

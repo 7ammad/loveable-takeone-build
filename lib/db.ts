@@ -165,6 +165,8 @@ const talentProfiles: TalentProfile[] = [
   {
     id: "talent-profile-1",
     userId: "user-talent-1",
+    isMinor: false,
+    guardianUserId: null,
     firstName: "Amira",
     lastName: "Alharbi",
     managedByUserId: null,
@@ -199,6 +201,8 @@ const talentProfiles: TalentProfile[] = [
   {
     id: "talent-profile-2",
     userId: "user-talent-2",
+    isMinor: false,
+    guardianUserId: null,
     firstName: "Faisal",
     lastName: "Al Khaled",
     managedByUserId: null,
@@ -226,6 +230,8 @@ const talentProfiles: TalentProfile[] = [
   {
     id: "talent-profile-3",
     userId: "talent-minor-1",
+    isMinor: true,
+    guardianUserId: "user-guardian-1",
     managedByUserId: "user-guardian-1",
     firstName: "Lina",
     lastName: "Al Rashid",

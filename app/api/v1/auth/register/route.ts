@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: true }, { status: 201 });
 
   } catch (error: unknown) {
-    const errObj = error as any;
+    const errObj = error as { name?: string; code?: string; message?: string; stack?: string };
     console.error('[auth/register] error', {
       name: errObj?.name,
       code: errObj?.code,

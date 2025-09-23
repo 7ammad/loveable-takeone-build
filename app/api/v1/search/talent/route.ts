@@ -1,46 +1,104 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { algoliaSearchProvider } from '@/packages/core-search/src/algolia-adapter';
 import { z } from 'zod';
+import crypto from 'crypto';
+
+// Force Node.js runtime for external dependencies
+export const runtime = 'nodejs';
 
 const searchQuerySchema = z.object({
   term: z.string().default(''),
   page: z.preprocess(Number, z.number().int().positive().default(1)),
   hitsPerPage: z.preprocess(Number, z.number().int().positive().default(20)),
-  // In a real app, you would have more specific filter schemas
-  // For now, we'll just accept a string that can be parsed
   filters: z.string().optional(),
 });
 
 export async function GET(request: NextRequest) {
   try {
+    const userId = request.headers.get('x-user-id');
+    console.log('[SEARCH ROUTE] Request received:', { 
+      userId, 
+      path: request.nextUrl.pathname,
+      headers: Object.fromEntries(request.headers.entries())
+    });
+    
+    if (!userId) {
+      return NextResponse.json({ 
+        ok: false, 
+        error: 'Authentication required' 
+      }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const query = Object.fromEntries(searchParams.entries());
-    
     const validation = searchQuerySchema.safeParse(query);
-
+    
     if (!validation.success) {
-      return NextResponse.json({ ok: false, error: validation.error.format() }, { status: 422 });
+      return NextResponse.json({ 
+        ok: false, 
+        error: validation.error.format() 
+      }, { status: 422 });
     }
 
     const { term, page, hitsPerPage, filters } = validation.data;
-
     const parsedFilters = filters ? JSON.parse(filters) : undefined;
-    
-    const searchResults = await algoliaSearchProvider.searchTalent({
-      term,
-      page: page - 1, // Algolia is 0-indexed, so we adjust
+
+    // Mock search results for now - replace with actual Algolia integration
+    const mockResults = {
+      hits: [
+        {
+          id: '1',
+          name: 'Test Actor 1',
+          skills: ['acting', 'dancing'],
+          location: 'Riyadh',
+          experience: '5 years'
+        },
+        {
+          id: '2', 
+          name: 'Test Actor 2',
+          skills: ['acting', 'singing'],
+          location: 'Jeddah',
+          experience: '3 years'
+        }
+      ],
+      page: page - 1,
+      nbPages: 1,
       hitsPerPage,
-      filters: parsedFilters,
+      nbHits: 2,
+      query: term,
+    };
+
+    // Add explainability payload for fairness audits
+    const explainabilityPayload = {
+      searchTimestamp: new Date().toISOString(),
+      userId,
+      query: {
+        term,
+        filters: parsedFilters,
+        page,
+        hitsPerPage,
+      },
+      totalResults: mockResults.nbHits,
+      searchId: crypto.randomUUID(),
+    };
+
+    return NextResponse.json({
+      ok: true,
+      ...mockResults,
+      _explain: explainabilityPayload
     });
 
-    return NextResponse.json({ ok: true, ...searchResults });
-
   } catch (error) {
-    console.error(error);
-    if (error instanceof SyntaxError) { // Catches JSON.parse errors
-      return NextResponse.json({ ok: false, error: 'Invalid filters JSON format' }, { status: 400 });
+    console.error('Search error:', error);
+    if (error instanceof SyntaxError) {
+      return NextResponse.json({ 
+        ok: false, 
+        error: 'Invalid filters JSON format' 
+      }, { status: 400 });
     }
-    return NextResponse.json({ ok: false, error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ 
+      ok: false, 
+      error: 'Internal Server Error' 
+    }, { status: 500 });
   }
 }

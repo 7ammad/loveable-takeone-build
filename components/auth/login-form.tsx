@@ -1,18 +1,16 @@
 ﻿"use client";
 
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { signIn } from "@/lib/actions";
 
-const socialProviders = [
-  "Continue with Apple",
-  "Continue with Google",
-  "Continue with LinkedIn",
-];
+const socialProviders = ["Continue with Apple", "Continue with Google", "Continue with LinkedIn"];
 
 export function LoginForm() {
+  const router = useRouter();
   const [email, setEmail] = useState("casting@riyadhmedia.sa");
   const [password, setPassword] = useState("password123");
   const [message, setMessage] = useState<string | null>(null);
@@ -24,6 +22,8 @@ export function LoginForm() {
     startTransition(async () => {
       const result = await signIn({ email, password });
       setMessage(result.message);
+      const to = result.data?.redirectTo;
+      if (result.success && to) router.push(to);
     });
   }
 
@@ -45,14 +45,7 @@ export function LoginForm() {
           <label className="text-sm font-medium" htmlFor="email">
             Work email
           </label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="you@studio.sa"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            required
-          />
+          <Input id="email" type="email" placeholder="you@studio.sa" value={email} onChange={(e) => setEmail(e.target.value)} required />
         </div>
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
@@ -63,14 +56,7 @@ export function LoginForm() {
               Forgot password?
             </Link>
           </div>
-          <Input
-            id="password"
-            type="password"
-            placeholder="Enter password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            required
-          />
+          <Input id="password" type="password" placeholder="Enter password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         </div>
       </div>
 
@@ -93,14 +79,10 @@ export function LoginForm() {
         </div>
       </div>
 
-      <p className="text-xs text-muted">
-        By signing in you agree to PDPL-aligned processing and our trust & safety guidelines.
-      </p>
+      <p className="text-xs text-muted">By signing in you agree to PDPL-aligned processing and our trust & safety guidelines.</p>
 
       {message && (
-        <p className="rounded-[var(--radius-md)] bg-[var(--color-brand)]/10 px-4 py-3 text-sm text-[var(--color-brand-600)]">
-          {message}
-        </p>
+        <p className="rounded-[var(--radius-md)] bg-[var(--color-brand)]/10 px-4 py-3 text-sm text-[var(--color-brand-600)]">{message}</p>
       )}
     </form>
   );

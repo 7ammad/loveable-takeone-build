@@ -1,41 +1,33 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import jwt from 'jsonwebtoken';
-import { checkRateLimit } from '@/packages/core-security/src/rate-limit';
-import { checkIdempotency } from '@/packages/core-security/src/idempotency';
+import * as jwt from 'jsonwebtoken';
 
 const ACCESS_TOKEN_SECRET = process.env.JWT_ACCESS_SECRET;
+const JWT_AUDIENCE = process.env.JWT_AUDIENCE || 'saudi-casting-marketplace';
+const JWT_ISSUER = process.env.JWT_ISSUER || 'saudi-casting-marketplace';
 
 export async function middleware(request: NextRequest) {
-  // Check for duplicate requests first for relevant methods
-  if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method)) {
-    const isIdempotent = await checkIdempotency(request);
-    if (!isIdempotent) {
-      return new NextResponse(
-        JSON.stringify({ success: false, message: 'Duplicate request' }),
-        { status: 409, headers: { 'content-type': 'application/json' } }
-      );
-    }
-  }
+  const path = request.nextUrl.pathname;
+  console.log('[MIDDLEWARE] Processing request:', { path, method: request.method });
 
-  // Apply rate limiting first
-  const { success } = await checkRateLimit(request);
-  if (!success) {
-    return new NextResponse(
-      JSON.stringify({ success: false, message: 'Too many requests' }),
-      { status: 429, headers: { 'content-type': 'application/json' } }
-    );
-  }
-
-  // Exclude auth and health check routes from protection
-  if (request.nextUrl.pathname.startsWith('/api/v1/auth') || request.nextUrl.pathname === '/api/v1/health') {
+  // Skip auth routes
+  if (path.startsWith('/api/v1/auth') || path === '/api/v1/health' || path.startsWith('/api/v1/billing/moyasar/webhooks') || path.startsWith('/api/v1/debug')) {
     return NextResponse.next();
   }
 
-  const authHeader = request.headers.get('authorization');
-  const token = authHeader?.split(' ')[1];
+  // Get access token from HttpOnly cookie
+  const token = request.cookies.get('access_token')?.value;
+  console.log('[MIDDLEWARE] Token check:', { 
+    hasToken: !!token, 
+    hasSecret: !!ACCESS_TOKEN_SECRET,
+    secretLength: ACCESS_TOKEN_SECRET?.length,
+    audience: JWT_AUDIENCE,
+    issuer: JWT_ISSUER,
+    path: request.nextUrl.pathname 
+  });
 
   if (!token || !ACCESS_TOKEN_SECRET) {
+    console.log('[MIDDLEWARE] Missing token or secret, returning 401');
     return new NextResponse(
       JSON.stringify({ success: false, message: 'Authentication required' }),
       { status: 401, headers: { 'content-type': 'application/json' } }
@@ -43,12 +35,34 @@ export async function middleware(request: NextRequest) {
   }
 
   try {
-    jwt.verify(token, ACCESS_TOKEN_SECRET);
-    // The token is valid, so we can proceed.
-    // We can also attach the decoded user info to the request headers
-    // if we want to access it in the API route handlers.
-    return NextResponse.next();
+    console.log('[MIDDLEWARE] Attempting JWT verification:', { 
+      tokenLength: token.length,
+      hasSecret: !!ACCESS_TOKEN_SECRET,
+      audience: JWT_AUDIENCE,
+      issuer: JWT_ISSUER
+    });
+    
+    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET, {
+      audience: JWT_AUDIENCE,
+      issuer: JWT_ISSUER
+    }) as any;
+
+    const userId = decoded?.userId;
+    console.log('[MIDDLEWARE] JWT decoded successfully:', { userId, path: request.nextUrl.pathname });
+    
+    const response = NextResponse.next();
+    if (userId) {
+      response.headers.set('x-user-id', userId);
+      console.log('[MIDDLEWARE] Set x-user-id header:', userId);
+    }
+    return response;
   } catch (error) {
+    console.log('[MIDDLEWARE] JWT verification failed:', { 
+      error: error instanceof Error ? error.message : 'Unknown error',
+      path: request.nextUrl.pathname,
+      method: request.method
+    });
+    
     return new NextResponse(
       JSON.stringify({ success: false, message: 'Invalid or expired token' }),
       { status: 401, headers: { 'content-type': 'application/json' } }
@@ -56,7 +70,7 @@ export async function middleware(request: NextRequest) {
   }
 }
 
-// Configure the middleware to run on all API routes under /api/v1/
 export const config = {
   matcher: '/api/v1/:path*',
+  runtime: 'nodejs',
 };

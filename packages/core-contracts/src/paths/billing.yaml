@@ -1,0 +1,36 @@
+paymentIntents:
+  post:
+    tags: [Billing]
+    summary: Create payment intent (Moyasar)
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/billing.yaml#/components/schemas/CreatePaymentIntent'
+    responses:
+      '201':
+        description: Created
+      '422':
+        description: Validation error
+      '500':
+        description: Server error
+moyasarWebhooks:
+  post:
+    tags: [Billing]
+    summary: Moyasar webhook receiver
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+    responses:
+      '200':
+        description: OK
+      '401':
+        description: Invalid signature
+      '422':
+        description: Validation error
+      '500':
+        description: Server error

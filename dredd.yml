@@ -1,11 +1,10 @@
 # dredd.yml
-endpoint: "http://localhost:3000"
+endpoint: "http://localhost:3000/api/v1"
 
-# Main API spec (OpenAPI 3 is fine)
-api_description: "./packages/core-contracts/dist/openapi.json"
-# Optional extras:
-# path:
-#   - "./packages/core-contracts/dist/extra/*.json"
+blueprint: "./packages/core-contracts/dist/openapi.json"
+
+# Ensure no extra API description globs cause null entries
+path: []
 
 language: nodejs
 hookfiles:
@@ -13,6 +12,5 @@ hookfiles:
 
 reporter:
   - dot
-  - markdown
 
 loglevel: debug

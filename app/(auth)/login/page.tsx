@@ -1,4 +1,5 @@
-﻿import Link from "next/link";
+﻿import Image from "next/image";
+import Link from "next/link";
 import { LoginForm } from "@/components/auth/login-form";
 
 export default function LoginPage() {
@@ -25,35 +26,44 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <div className="relative hidden min-h-screen flex-col justify-between overflow-hidden bg-[radial-gradient(circle_at_top,var(--color-brand)_0%,#051414_70%)] px-12 py-16 text-white lg:flex">
-        <div className="space-y-6">
-          <span className="text-xs font-semibold uppercase tracking-wide text-white/60">Secure workspace</span>
+      <div className="relative hidden min-h-screen flex-col justify-between overflow-hidden px-12 py-16 lg:flex">
+        <Image
+          src="/images/login-art.jpg"
+          alt="Casting studio and stage lights"
+          fill
+          priority
+          className="object-cover object-center"
+        />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-white via-white/85 to-transparent" />
+
+        <div className="relative space-y-6">
+          <span className="text-xs font-semibold uppercase tracking-wide text-muted">Secure workspace</span>
           <h2 className="text-3xl font-semibold leading-tight">Your professional casting control center</h2>
-          <ul className="space-y-3 text-sm text-white/80">
+          <ul className="space-y-3 text-sm text-muted">
             <li className="flex items-start gap-2">
-              <span className="mt-1 inline-flex h-2 w-2 rounded-full bg-white" />
+              <span className="mt-1 inline-flex h-2 w-2 rounded-full bg-[var(--color-brand)]" />
               99.9% uptime with PDPL-aligned access controls.
             </li>
             <li className="flex items-start gap-2">
-              <span className="mt-1 inline-flex h-2 w-2 rounded-full bg-white" />
+              <span className="mt-1 inline-flex h-2 w-2 rounded-full bg-[var(--color-brand)]" />
               Guardian protections and verification gates enforced platform-wide.
             </li>
             <li className="flex items-start gap-2">
-              <span className="mt-1 inline-flex h-2 w-2 rounded-full bg-white" />
+              <span className="mt-1 inline-flex h-2 w-2 rounded-full bg-[var(--color-brand)]" />
               Concise audit trails for compliance and moderation teams.
             </li>
           </ul>
         </div>
 
-        <div className="rounded-[var(--radius-lg)] bg-white/10 p-6 backdrop-blur">
-          <p className="text-sm italic text-white/90">“We consolidated casting, compliance, and messaging in a single view. The concierge team keeps us production-ready.”</p>
-          <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-white">
+        <div className="relative rounded-[var(--radius-lg)] bg-white/70 p-6 shadow-token-md backdrop-blur">
+          <p className="text-sm italic text-[var(--color-text)]">“We consolidated casting, compliance, and messaging in a single view. The concierge team keeps us production-ready.”</p>
+          <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-muted">
             Pilot Casting Lead
-            <span className="block text-[11px] font-normal text-white/70">Saudi Media Group</span>
+            <span className="block text-[11px] font-normal">Saudi Media Group</span>
           </p>
         </div>
 
-        <div className="text-[11px] text-white/60">
+        <div className="relative text-[11px] text-muted">
           Professional Access • Concierge onboarding • Trust & Safety monitoring
         </div>
       </div>

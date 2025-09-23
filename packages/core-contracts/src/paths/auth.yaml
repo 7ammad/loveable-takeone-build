@@ -46,11 +46,11 @@ login:
             $ref: '../schemas/auth.yaml#/components/schemas/LoginRequest'
     responses:
       '200':
-        description: Authentication successful
+        description: Authentication successful (tokens set as HttpOnly cookies)
         content:
           application/json:
             schema:
-              $ref: '../schemas/auth.yaml#/components/schemas/AuthResponse'
+              $ref: '../schemas/auth.yaml#/components/schemas/SuccessResponse'
       '401':
         description: Invalid credentials
         content:
@@ -73,11 +73,11 @@ refresh:
             $ref: '../schemas/auth.yaml#/components/schemas/RefreshTokenRequest'
     responses:
       '200':
-        description: Tokens refreshed successfully
+        description: Tokens refreshed successfully (tokens set as HttpOnly cookies)
         content:
           application/json:
             schema:
-              $ref: '../schemas/auth.yaml#/components/schemas/AuthResponse'
+              $ref: '../schemas/auth.yaml#/components/schemas/SuccessResponse'
       '401':
         description: Invalid refresh token
         content:
@@ -100,7 +100,7 @@ logout:
             $ref: '../schemas/auth.yaml#/components/schemas/LogoutRequest'
     responses:
       '200':
-        description: Logout successful
+        description: Logout successful (cookies cleared)
         content:
           application/json:
             schema:

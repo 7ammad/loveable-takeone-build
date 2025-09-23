@@ -2,6 +2,16 @@
 import { IBM_Plex_Sans_Arabic, Inter } from "next/font/google";
 import "./globals.css";
 
+// Initialize observability
+import { initSentry } from '@/packages/core-observability/src/sentry';
+import { initTracing } from '@/packages/core-observability/src/tracing';
+
+// Initialize in development and production
+if (typeof window === 'undefined') {
+  initSentry();
+  initTracing();
+}
+
 const inter = Inter({ subsets: ["latin"], variable: "--font-latin" });
 const plexArabic = IBM_Plex_Sans_Arabic({
   subsets: ["arabic"],

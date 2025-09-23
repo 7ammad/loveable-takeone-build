@@ -14,7 +14,7 @@ export const HealthResponseSchema = z.object({
 // Schema for the media upload request
 export const RequestUploadSchema = z.object({
   filename: z.string().min(1),
-  contentType: z.string().regex(/\w+\/[-+.\w]+/),
+  contentType: z.string().regex(/\w+\/[\-+.\w]+/),
   size: z.number().positive(),
   userId: z.string(), // In a real app, this would be validated as a CUID
 });
@@ -69,4 +69,40 @@ export const LogoutRequestSchema = z.object({
 // Schema for a generic success response
 export const SuccessResponseSchema = z.object({
   ok: z.boolean(),
+});
+
+// Billing schemas
+export const CreatePaymentIntentSchema = z.object({
+  amount: z.number().int().positive(),
+  currency: z.string().min(1),
+  description: z.string().min(1),
+  metadata: z.record(z.string(), z.any()).optional(),
+});
+
+export const CreatePaymentIntentResponseSchema = z.object({
+  ok: z.boolean(),
+  paymentId: z.string(),
+  status: z.string(),
+  clientSecret: z.string().optional(),
+});
+
+export const MoyasarWebhookSchema = z.object({
+  id: z.string(),
+  status: z.string(),
+  amount: z.number().int(),
+  currency: z.string(),
+  created_at: z.number().optional(),
+  source: z.any().optional(),
+});
+
+export const ReceiptSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  subscriptionId: z.string().nullable(),
+  amount: z.number().int(),
+  currency: z.string(),
+  provider: z.string(),
+  providerPaymentId: z.string(),
+  status: z.string(),
+  createdAt: z.string(),
 });

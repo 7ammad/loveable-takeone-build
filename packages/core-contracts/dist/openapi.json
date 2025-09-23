@@ -288,11 +288,11 @@
         },
         "responses": {
           "200": {
-            "description": "Authentication successful",
+            "description": "Authentication successful (tokens set as HttpOnly cookies)",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AuthResponse"
+                  "$ref": "#/components/schemas/SuccessResponse"
                 }
               }
             }
@@ -330,11 +330,11 @@
         },
         "responses": {
           "200": {
-            "description": "Tokens refreshed successfully",
+            "description": "Tokens refreshed successfully (tokens set as HttpOnly cookies)",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AuthResponse"
+                  "$ref": "#/components/schemas/SuccessResponse"
                 }
               }
             }
@@ -372,7 +372,7 @@
         },
         "responses": {
           "200": {
-            "description": "Logout successful",
+            "description": "Logout successful (cookies cleared)",
             "content": {
               "application/json": {
                 "schema": {
@@ -559,25 +559,6 @@
         "required": [
           "email",
           "password"
-        ]
-      },
-      "AuthResponse": {
-        "type": "object",
-        "properties": {
-          "ok": {
-            "type": "boolean"
-          },
-          "accessToken": {
-            "type": "string"
-          },
-          "refreshToken": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "ok",
-          "accessToken",
-          "refreshToken"
         ]
       },
       "RefreshTokenRequest": {

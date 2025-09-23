@@ -24,10 +24,37 @@ export async function POST(request: NextRequest) {
       data: { jti: payload.jti },
     });
 
-    return NextResponse.json({ ok: true });
+    const response = NextResponse.json({ ok: true });
+
+    // Clear cookies
+    response.cookies.set('access_token', '', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 0,
+      path: '/',
+    });
+
+    response.cookies.set('refresh_token', '', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 0,
+      path: '/',
+    });
+
+    response.cookies.set('csrf_token', '', {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 0,
+      path: '/',
+    });
+
+    return response;
 
   } catch (error: unknown) {
-    const code = (error as any)?.code;
+    const code = (error as { code?: string })?.code;
     if (code === 'P2002') {
       return NextResponse.json({ ok: true });
     }

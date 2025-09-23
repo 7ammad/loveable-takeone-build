@@ -1,0 +1,97 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm postinstall
+
+      - name: Run database migrations
+        run: pnpm migrate:dev
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+
+      - name: Seed database
+        run: pnpm seed
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+
+      - name: Run linter
+        run: pnpm lint
+
+      - name: Run type check
+        run: pnpm typecheck
+
+      - name: Run tests
+        run: pnpm test
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+          REDIS_URL: redis://localhost:6379
+
+      - name: Build contracts
+        run: pnpm contracts:build
+
+      - name: Run contract tests
+        run: pnpm contracts:test
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+          REDIS_URL: redis://localhost:6379
+
+      - name: Check OpenAPI contract diff
+        run: |
+          # Check if OpenAPI spec has changed
+          if git diff --name-only HEAD~1 | grep -q "packages/core-contracts/openapi.yaml"; then
+            echo "OpenAPI spec changed"
+            # Check if version was bumped in the OpenAPI file
+            if ! git diff HEAD~1 -- packages/core-contracts/openapi.yaml | grep -q "version:"; then
+              echo "Version not bumped in OpenAPI spec"
+              exit 1
+            fi
+          fi
+
+      - name: Build application
+        run: pnpm build

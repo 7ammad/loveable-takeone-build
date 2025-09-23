@@ -18,3 +18,7 @@ const connection = {
 export const mediaQueue = new Queue('media', { connection });
 export const emailQueue = new Queue('email', { connection });
 export const smsQueue = new Queue('sms', { connection });
+export const indexerQueue = new Queue('indexer', { connection });
+export const billingQueue = new Queue('billing', { connection });
+export const alertsQueue = new Queue('alerts', { connection });
+export const dlq = new Queue('dlq', { connection });
