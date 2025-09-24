@@ -6,6 +6,39 @@ const nextConfig: NextConfig = {
     // Only lint the app directory during builds
     dirs: ['app'],
   },
+  experimental: {
+    // Optimize for faster builds
+    turbo: {
+      rules: {
+        '*.svg': {
+          loaders: ['@svgr/webpack'],
+          as: '*.js',
+        },
+      },
+    },
+  },
+  webpack: (config, { isServer }) => {
+    // Optimize for faster compilation
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+      };
+    }
+    
+    // Externalize heavy packages for server builds
+    if (isServer) {
+      config.externals = config.externals || [];
+      config.externals.push({
+        'ioredis': 'commonjs ioredis',
+        'bullmq': 'commonjs bullmq',
+      });
+    }
+    
+    return config;
+  },
   async headers() {
     return [
       {
