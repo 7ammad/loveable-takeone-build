@@ -107,7 +107,7 @@ export async function GET(request: NextRequest) {
     try {
       searchResults = await algoliaSearchProvider.searchTalentWithAnalytics(talentSearchParams, userId);
     } catch (searchError) {
-      console.error('Algolia search error:', searchError);
+      console.warn('Algolia search error (falling back to empty results):', searchError.message);
       // Return empty results if search fails
       searchResults = {
         hits: [],

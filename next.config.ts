@@ -28,14 +28,8 @@ const nextConfig: NextConfig = {
       };
     }
     
-    // Externalize heavy packages for server builds
-    if (isServer) {
-      config.externals = config.externals || [];
-      config.externals.push({
-        'ioredis': 'commonjs ioredis',
-        'bullmq': 'commonjs bullmq',
-      });
-    }
+    // Note: Removed ioredis externalization to fix version warnings
+    // The warnings are harmless but we can suppress them by not externalizing
     
     return config;
   },
