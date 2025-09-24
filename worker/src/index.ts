@@ -4,37 +4,87 @@ import { prisma } from '@/packages/core-db/src/client';
 import { processOutboxEvent, getPendingOutboxEvents } from '@/packages/core-queue/src/outbox';
 import { algoliaSearchProvider } from '@/packages/core-search/src/algolia-adapter';
 import { processBillingEvent } from '@/packages/core-payments/src/billing-service';
-import { PerceptualHash, cleanupExpiredAssets } from '@/packages/core-media/src';
+import { PerceptualHash, cleanupExpiredAssets, shouldArchiveSelfTape } from '@/packages/core-media/src';
 import { alertManager, metrics } from '@/packages/core-observability/src/metrics';
 import { captureMessage } from '@/packages/core-observability/src/sentry';
 
 console.log('Worker starting...');
 
+/**
+ * Check for potential content leaks
+ */
+async function checkForLeaks(assetId: string, pHash: string) {
+  try {
+    // Get all other pHash values from the database
+    const otherAssets = await prisma.mediaAsset.findMany({
+      where: {
+        id: { not: assetId },
+        pHash: { not: null }
+      },
+      select: { id: true, pHash: true, userId: true, filename: true }
+    });
+
+    const existingHashes = otherAssets.map(asset => asset.pHash!).filter(Boolean);
+    
+    if (existingHashes.length === 0) {
+      return;
+    }
+
+    // Check for similar content
+    const similarContent = PerceptualHash.findSimilarContent(pHash, existingHashes, 0.8);
+    
+    if (similarContent.length > 0) {
+      console.warn(`Potential leak detected for asset ${assetId}:`, similarContent);
+      
+      // Queue leak detection notification
+      await alertsQueue.add('leak-detected', {
+        assetId,
+        similarAssets: similarContent.map(item => ({
+          hash: item.hash,
+          similarity: item.similarity
+        }))
+      });
+    }
+
+  } catch (error) {
+    console.error(`Leak detection failed for ${assetId}:`, error);
+  }
+}
+
 const mediaWorker = new Worker(
   'media',
   async (job) => {
+    if (job.name !== 'process_upload') {
+      console.log(`Skipping media job ${job.id} of type ${job.name}`);
+      return;
+    }
+
     console.log(`Processing media job ${job.id} of type ${job.name}`);
     console.log('Job data:', job.data);
 
-    const { assetId, s3Key, watermark, contentType } = job.data;
+    const { assetId, s3Key, watermark, contentType } = job.data.data;
 
     try {
-      // Simulate media processing time
+      // 1. Set status to 'processing'
+      await prisma.mediaAsset.update({
+        where: { id: assetId },
+        data: { status: 'processing' },
+      });
+
+      // 2. Simulate media processing (e.g., transcoding, thumbnail generation)
       await new Promise(resolve => setTimeout(resolve, 5000));
 
       let pHash: string | undefined;
 
-      // Compute perceptual hash based on content type
+      // 3. Compute perceptual hash based on content type
+      // In a real scenario, you would download the file from S3 to a temp location to process it
       if (contentType?.startsWith('image/')) {
-        // For images, we'd need to download and process the image
-        // For now, simulate pHash computation
         pHash = await PerceptualHash.computeImageHash(Buffer.from('dummy-image-data'), 800, 600);
       } else if (contentType?.startsWith('video/')) {
-        // For videos, we'd need to extract frames and compute pHash
-        // For now, simulate video pHash computation
         pHash = await PerceptualHash.computeVideoHash(Buffer.from('dummy-video-data'));
       }
 
+      // 4. Set status to 'ready' and store metadata
       await prisma.mediaAsset.update({
         where: { id: assetId },
         data: {
@@ -43,6 +93,11 @@ const mediaWorker = new Worker(
           watermark, // Store watermark for verification
         },
       });
+
+      // 5. Check for potential leaks if pHash was computed
+      if (pHash) {
+        await checkForLeaks(assetId, pHash);
+      }
 
       console.log(`Media job ${job.id} completed successfully. pHash: ${pHash}`);
     } catch (error) {
@@ -99,22 +154,39 @@ const indexerWorker = new Worker(
   async (job) => {
     console.log(`Processing indexer job ${job.id} of type ${job.name}`);
 
-    if (job.name === 'index-talent') {
-      const { payload } = job.data;
+    if (job.name === 'TalentProfileCreated' || job.name === 'TalentProfileUpdated') {
+      const { id: profileId } = job.data.payload as { id: string };
 
-      // Log cohort exposure for fairness audits
-      console.log(`Indexing talent profile ${payload.id} for user ${payload.userId}`, {
-        cohort: payload.isMinor ? 'minor' : 'adult',
-        hasGuardian: payload.isMinor && payload.guardianUserId,
-        timestamp: new Date().toISOString(),
+      if (!profileId) {
+        console.error(`Indexer job ${job.id} is missing a profile ID.`);
+        return;
+      }
+
+      console.log(`Fetching profile ${profileId} for indexing...`);
+      const profile = await prisma.talentProfile.findUnique({
+        where: { id: profileId },
+        // Include any relations needed for the search index
       });
 
+      if (!profile) {
+        console.error(`Talent profile with ID ${profileId} not found for indexing.`);
+        return;
+      }
+
+      await algoliaSearchProvider.indexTalentProfile(profile);
+      console.log(`Successfully indexed talent profile ${profile.id}`);
+
+    } else if (job.name === 'index-talent') {
+      // This is now legacy, but kept for compatibility.
+      // New events should use the outbox pattern.
+      const { payload } = job.data;
+      console.log(`Indexing talent profile ${payload.id} for user ${payload.userId} (legacy)...`);
       await algoliaSearchProvider.indexTalentProfile(payload);
     }
 
     console.log(`Indexer job ${job.id} completed successfully.`);
   },
-  { connection: mediaQueue.opts.connection }
+  { connection: indexerQueue.opts.connection }
 );
 
 // Billing worker

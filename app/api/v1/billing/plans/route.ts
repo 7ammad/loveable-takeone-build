@@ -11,14 +11,14 @@ const createPlanSchema = z.object({
   moyasarPlanId: z.string().optional(),
 });
 
-const updatePlanSchema = z.object({
-  name: z.string().min(1).optional(),
-  price: z.number().int().positive().optional(),
-  currency: z.string().optional(),
-  features: z.array(z.string()).optional(),
-  moyasarPlanId: z.string().optional(),
-  isActive: z.boolean().optional(),
-});
+// const updatePlanSchema = z.object({
+//   name: z.string().min(1).optional(),
+//   price: z.number().int().positive().optional(),
+//   currency: z.string().optional(),
+//   features: z.array(z.string()).optional(),
+//   moyasarPlanId: z.string().optional(),
+//   isActive: z.boolean().optional(),
+// });
 
 export async function GET() {
   try {

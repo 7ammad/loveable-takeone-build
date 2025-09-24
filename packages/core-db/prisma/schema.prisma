@@ -56,13 +56,13 @@ model Outbox {
 
 model AuditEvent {
   id              String   @id @default(cuid())
-  purpose         String
-  actor_role      String
-  ip              String
-  ua              String
-  before_after_hash String
+  eventType       String   // e.g., "SearchPerformed", "LoginSuccess", "ProfileUpdated"
+  actorUserId     String?  // The user who performed the action
+  targetId        String?  // The ID of the entity that was affected (e.g., a profile ID)
+  ipAddress       String?
+  userAgent       String?
+  metadata        Json?    // For storing search filters, cohort info, etc.
   createdAt       DateTime @default(now())
-  // ... other audit fields
 }
 
 model RevokedToken {
@@ -82,6 +82,7 @@ model MediaAsset {
   pHash      String?
   watermark  String? // Tamper-evident watermark for self-tapes
   ttlPolicy  String?  // e.g., "archive_180d"
+  virusScanResult Json? // Virus scan results
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
@@ -125,6 +126,11 @@ model User {
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  
+  // Search relations
+  savedSearches   SavedSearch[]
+  searchExecutions SearchExecution[]
+  searchHistory    SearchHistory[]
 }
 
 // ... other models from your plan (Users, CastingCall, etc.) will go here
@@ -140,4 +146,51 @@ model Receipt {
   status            String
   raw               Json
   createdAt         DateTime @default(now())
+}
+
+model SavedSearch {
+  id           String   @id @default(cuid())
+  userId       String
+  name         String
+  description  String?
+  searchTerm   String   @default("")
+  filters      Json     @default("{}")
+  sortBy       String   @default("relevance")
+  sortOrder    String   @default("desc")
+  isPublic     Boolean  @default(false)
+  tags         String[] @default([])
+  notifications Json    @default("{}")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  executions   SearchExecution[]
+  
+  @@unique([userId, name])
+}
+
+model SearchExecution {
+  id            String      @id @default(cuid())
+  savedSearchId String?
+  userId        String
+  searchTerm    String
+  filters       Json        @default("{}")
+  resultsCount  Int
+  executionTime Int         // milliseconds
+  createdAt     DateTime    @default(now())
+  
+  savedSearch   SavedSearch? @relation(fields: [savedSearchId], references: [id], onDelete: SetNull)
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SearchHistory {
+  id            String   @id @default(cuid())
+  userId        String
+  searchTerm    String
+  filters       Json     @default("{}")
+  resultsCount  Int
+  executionTime Int      // milliseconds
+  createdAt     DateTime @default(now())
+  
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

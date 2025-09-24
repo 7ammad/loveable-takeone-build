@@ -11,7 +11,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const decoded = jwt.decode(token) as any;
+    const decoded = jwt.decode(token) as { userId: string; aud: string; iss: string; exp: number; iat: number } | null;
     return NextResponse.json({
       decoded,
       hasUserId: !!decoded?.userId,

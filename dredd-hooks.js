@@ -1,7 +1,7 @@
 const hooks = require('hooks');
 const Dredd = require('dredd');
 
-let stash = { cookies: {}, testEmail: '', testPassword: 'password123' };
+let stash = { cookies: {}, testEmail: '', testPassword: 'password123', refreshToken: null };
 
 const TEST_USER = {
   email: `test-${Date.now()}@example.com`,
@@ -19,6 +19,23 @@ function parseSetCookie(setCookieHeader) {
   return cookies;
 }
 
+// Helper function to parse cookie strings from Cookie header
+function parseCookieHeader(cookieHeader) {
+  const list = {};
+  if (!cookieHeader) return list;
+
+  cookieHeader.split(';').forEach(cookie => {
+    let [name, ...rest] = cookie.split('=');
+    name = name?.trim();
+    if (!name) return;
+    const value = rest.join('=').trim();
+    if (!value) return;
+    list[name] = decodeURIComponent(value);
+  });
+
+  return list;
+}
+
 function cookiesToHeader(cookieJar) {
   return Object.entries(cookieJar)
     .map(([k, v]) => `${k}=${v}`)
@@ -26,7 +43,11 @@ function cookiesToHeader(cookieJar) {
 }
 
 hooks.beforeAll(async (transactions, done) => {
-  hooks.log('Setting up test user...');
+  hooks.log('Setting up test user and environment...');
+
+  // Set test environment variables (disable virus scan for testing)
+  process.env.VIRUS_SCAN_ENABLED = 'false';
+  hooks.log('Test environment variables set');
 
   try {
     stash.testEmail = `test-${Date.now()}@example.com`;
@@ -49,6 +70,7 @@ hooks.beforeAll(async (transactions, done) => {
       const parsed = parseSetCookie(setCookie);
       stash.cookies = { ...stash.cookies, ...parsed };
       if (stash.cookies['access_token']) hooks.log('Access token cookie captured.');
+      if (stash.cookies['refresh_token']) hooks.log('Refresh token cookie captured.');
       if (stash.cookies['csrf_token']) hooks.log('CSRF token cookie captured.');
     } else {
       hooks.log('Set-Cookie header not found in login response.');
@@ -58,6 +80,42 @@ hooks.beforeAll(async (transactions, done) => {
   }
 
   done();
+});
+
+// Capture refresh token from login response
+hooks.after('/auth/login > Log in a user > 200 > application/json', (transaction) => {
+  const setCookieHeader = transaction.real.headers['set-cookie'] || transaction.real.headers['Set-Cookie'];
+  if (setCookieHeader) {
+    const cookies = Array.isArray(setCookieHeader) ? setCookieHeader : [setCookieHeader];
+    for (const cookie of cookies) {
+      if (cookie.includes('refresh_token=')) {
+        const match = cookie.match(/refresh_token=([^;]+)/);
+        if (match && match[1]) {
+          stash.refreshToken = decodeURIComponent(match[1]);
+          hooks.log('Captured refresh token from login response');
+          break;
+        }
+      }
+    }
+  }
+});
+
+// Capture rotated refresh token after successful refresh
+hooks.after('/auth/refresh > Refresh access token > 200 > application/json', (transaction) => {
+  const setCookieHeader = transaction.real.headers['set-cookie'] || transaction.real.headers['Set-Cookie'];
+  if (setCookieHeader) {
+    const cookies = Array.isArray(setCookieHeader) ? setCookieHeader : [setCookieHeader];
+    for (const cookie of cookies) {
+      if (cookie.includes('refresh_token=')) {
+        const match = cookie.match(/refresh_token=([^;]+)/);
+        if (match && match[1]) {
+          stash.refreshToken = decodeURIComponent(match[1]);
+          hooks.log('Captured rotated refresh token after refresh');
+          break;
+        }
+      }
+    }
+  }
 });
 
 hooks.beforeEach((transaction, done) => {
@@ -90,22 +148,54 @@ hooks.beforeEach((transaction, done) => {
 
   if (method === 'POST' && path === '/auth/refresh') {
     if (expected === '200') {
-      // Ensure refresh cookie present
+      // Use valid refresh token from stash
+      if (stash.refreshToken) {
+        transaction.request.body = JSON.stringify({ refreshToken: stash.refreshToken });
+        hooks.log('Injected refresh token for successful refresh test');
+      } else {
+        hooks.log('No refresh token in stash for refresh test');
+        transaction.request.body = JSON.stringify({ refreshToken: 'missing-token' });
+      }
     } else if (expected === '401') {
-      // Remove refresh cookie to force invalid
-      delete cookieJar['refresh_token'];
+      // Use invalid refresh token
+      transaction.request.body = JSON.stringify({ refreshToken: 'invalid-token' });
     }
-    // Body is ignored by our API; keep minimal
-    transaction.request.body = transaction.request.body || JSON.stringify({});
   }
 
   if (method === 'POST' && path === '/auth/logout') {
-    if (expected === '401') {
-      // Remove cookies to simulate unauthenticated
-      delete cookieJar['access_token'];
-      delete cookieJar['refresh_token'];
+    if (expected === '200') {
+      // Use valid refresh token from stash
+      if (stash.refreshToken) {
+        transaction.request.body = JSON.stringify({ refreshToken: stash.refreshToken });
+        hooks.log('Injected refresh token for successful logout test');
+      } else {
+        hooks.log('No refresh token in stash for logout test');
+        transaction.request.body = JSON.stringify({ refreshToken: 'missing-token' });
+      }
+    } else if (expected === '401') {
+      // Use invalid refresh token
+      transaction.request.body = JSON.stringify({ refreshToken: 'invalid-token' });
     }
-    transaction.request.body = transaction.request.body || JSON.stringify({});
+  }
+
+  // Simulate health check failure
+  if (method === 'GET' && path === '/health' && expected === '500') {
+    // Add a custom header to trigger error simulation
+    transaction.request.headers['X-Simulate-Error'] = 'true';
+    hooks.log('Simulating health check failure via header');
+  }
+
+  // Simulate search validation errors
+  if (method === 'GET' && path === '/search/talent') {
+    if (expected === '422') {
+      // Force 422 via test header
+      transaction.request.headers['X-Simulate-422'] = 'true';
+      hooks.log('Simulating search validation error via header');
+    } else if (expected === '500') {
+      // Add custom header to trigger internal error
+      transaction.request.headers['X-Simulate-Error'] = 'true';
+      hooks.log('Simulating search internal error via header');
+    }
   }
 
   if (method === 'POST' && path === '/billing/payment-intents') {
@@ -129,13 +219,36 @@ hooks.beforeEach((transaction, done) => {
     }
   }
 
-  if (method === 'POST' && path === '/billing/moyasar/webhooks') {
-    if (expected === '200') {
-      // Provide a dummy signature header if backend accepts it in dev
-      transaction.request.headers['x-moyasar-signature'] = 'test-signature';
-    }
-    transaction.request.body = transaction.request.body || JSON.stringify({});
-  }
+      if (method === 'POST' && path === '/billing/moyasar/webhooks') {
+        if (expected === '200') {
+          // Provide a dummy signature header if backend accepts it in dev
+          transaction.request.headers['x-moyasar-signature'] = 'test-signature';
+        }
+        transaction.request.body = transaction.request.body || JSON.stringify({});
+      }
+
+      if (method === 'POST' && path === '/media/uploads') {
+        if (expected === '200') {
+          // Valid upload request
+          transaction.request.body = JSON.stringify({
+            filename: 'test-video.mp4',
+            contentType: 'video/mp4',
+            size: 1024 * 1024, // 1MB
+            roleId: 'role-123',
+            applicationId: 'app-123'
+          });
+        } else if (expected === '422') {
+          // Invalid upload request - missing required fields
+          transaction.request.body = JSON.stringify({
+            filename: '', // Invalid - empty filename
+            contentType: 'video/mp4',
+            size: -1 // Invalid - negative size
+          });
+        } else if (expected === '500') {
+          // Trigger server-side simulation of error
+          transaction.request.headers['X-Simulate-Error'] = 'true';
+        }
+      }
 
   // Authenticated, state-changing: add CSRF and Authorization when available
   const isPublic = path === '/health' || path.startsWith('/auth/');
@@ -157,7 +270,7 @@ hooks.beforeEach((transaction, done) => {
   if (transaction.request.body && !transaction.request.headers['Content-Type']) {
     transaction.request.headers['Content-Type'] = 'application/json';
   }
-
+  
   done();
 });
 

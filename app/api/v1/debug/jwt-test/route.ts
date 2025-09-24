@@ -26,10 +26,10 @@ export async function GET(request: NextRequest) {
     }
     
     try {
-      const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET, {
-        audience: JWT_AUDIENCE,
-        issuer: JWT_ISSUER
-      }) as any;
+        const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET, {
+          audience: JWT_AUDIENCE,
+          issuer: JWT_ISSUER
+        }) as { userId: string; jti: string; aud: string; iss: string; iat: number; exp: number };
       
       return NextResponse.json({
         ok: true,

@@ -15,6 +15,8 @@ export {
   applyTTLPolicy,
   cleanupExpiredAssets,
   setAssetTTLPolicy,
+  shouldArchiveSelfTape,
+  getTTLPolicyForContent,
   MediaVisibility,
   MediaTTLPolicy
 } from './access-control';

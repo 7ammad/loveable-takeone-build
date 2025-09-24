@@ -13,6 +13,19 @@ export interface TalentSearchResult {
   nbHits: number;
   query: string;
   explain?: any; // For fairness audits and explainability
+  facets?: Record<string, any>;
+  facetHits?: any[];
+  processingTimeMs?: number;
+  params?: string;
+  index?: string;
+  nbSortedHits?: number;
+  exhaustiveFacetsCount?: boolean;
+  exhaustiveNbHits?: boolean;
+  exhaustiveTypo?: boolean;
+  aroundLatLng?: string;
+  aroundRadius?: number;
+  ranking?: any;
+  _rankingInfo?: any;
 }
 
 /**

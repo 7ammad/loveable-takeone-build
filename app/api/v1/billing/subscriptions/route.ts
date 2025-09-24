@@ -9,10 +9,10 @@ const createSubscriptionSchema = z.object({
   moyasarSubscriptionId: z.string().optional(),
 });
 
-const updateSubscriptionSchema = z.object({
-  status: z.enum(['active', 'past_due', 'canceled']).optional(),
-  moyasarSubscriptionId: z.string().optional(),
-});
+// const updateSubscriptionSchema = z.object({
+//   status: z.enum(['active', 'past_due', 'canceled']).optional(),
+//   moyasarSubscriptionId: z.string().optional(),
+// });
 
 export async function GET(request: NextRequest) {
   try {

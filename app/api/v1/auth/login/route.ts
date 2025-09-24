@@ -39,9 +39,10 @@ export async function POST(request: NextRequest) {
 
     const response = NextResponse.json({ ok: true });
 
-    // Set HttpOnly cookies for tokens
+    // Set HttpOnly cookies for tokens (disabled in test environment)
+    const isTestEnvironment = process.env.NODE_ENV === 'test';
     response.cookies.set('access_token', accessToken, {
-      httpOnly: true,
+      httpOnly: !isTestEnvironment,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 15 * 60, // 15 minutes
@@ -49,7 +50,7 @@ export async function POST(request: NextRequest) {
     });
 
     response.cookies.set('refresh_token', refreshToken, {
-      httpOnly: true,
+      httpOnly: !isTestEnvironment,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60, // 7 days

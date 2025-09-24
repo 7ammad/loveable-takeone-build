@@ -164,3 +164,67 @@ export async function setAssetTTLPolicy(assetId: string, ttlPolicy: MediaTTLPoli
     data: { ttlPolicy },
   });
 }
+
+/**
+ * Check if a self-tape should be archived based on application status
+ * @param assetId Media asset ID
+ * @returns True if should be archived
+ */
+export async function shouldArchiveSelfTape(assetId: string): Promise<boolean> {
+  const asset = await prisma.mediaAsset.findUnique({
+    where: { id: assetId }
+  });
+
+  if (!asset || !asset.watermark) {
+    return false;
+  }
+
+  // Check if it's a self-tape (has watermark)
+  if (!asset.mimetype.startsWith('video/')) {
+    return false;
+  }
+
+  // Check if it's been 180 days since creation
+  const createdAt = new Date(asset.createdAt);
+  const now = new Date();
+  const daysSinceCreation = (now.getTime() - createdAt.getTime()) / (24 * 60 * 60 * 1000);
+
+  if (daysSinceCreation < 180) {
+    return false;
+  }
+
+  // In a real implementation, we'd check if the application is still active
+  // For now, we'll assume it should be archived after 180 days
+  return true;
+}
+
+/**
+ * Get TTL policy for media asset based on content type and context
+ * @param contentType MIME type
+ * @param isSelfTape Whether this is a self-tape submission
+ * @param roleId Optional role ID for context
+ * @returns Appropriate TTL policy
+ */
+export function getTTLPolicyForContent(
+  contentType: string, 
+  isSelfTape: boolean = false, 
+  roleId?: string
+): MediaTTLPolicy {
+  // Self-tapes get 180-day TTL by default
+  if (isSelfTape && contentType.startsWith('video/')) {
+    return MediaTTLPolicy.ARCHIVE_180_DAYS;
+  }
+
+  // Regular videos get 1-year TTL
+  if (contentType.startsWith('video/')) {
+    return MediaTTLPolicy.ARCHIVE_1_YEAR;
+  }
+
+  // Images get 1-year TTL
+  if (contentType.startsWith('image/')) {
+    return MediaTTLPolicy.ARCHIVE_1_YEAR;
+  }
+
+  // Documents and other files are permanent
+  return MediaTTLPolicy.PERMANENT;
+}

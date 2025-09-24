@@ -84,4 +84,29 @@ export class PerceptualHash {
     const similarity = this.compareHashes(hash1, hash2);
     return similarity >= threshold;
   }
+
+  /**
+   * Check for potential leaks by comparing against existing hashes
+   * @param newHash New content hash to check
+   * @param existingHashes Array of existing pHash values
+   * @param threshold Similarity threshold (0-1)
+   * @returns Array of similar hashes with similarity scores
+   */
+  static findSimilarContent(
+    newHash: string, 
+    existingHashes: string[], 
+    threshold: number = 0.8
+  ): Array<{ hash: string; similarity: number }> {
+    const similar: Array<{ hash: string; similarity: number }> = [];
+    
+    for (const existingHash of existingHashes) {
+      const similarity = this.compareHashes(newHash, existingHash);
+      if (similarity >= threshold) {
+        similar.push({ hash: existingHash, similarity });
+      }
+    }
+    
+    // Sort by similarity (highest first)
+    return similar.sort((a, b) => b.similarity - a.similarity);
+  }
 }

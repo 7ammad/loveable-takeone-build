@@ -1,6 +1,6 @@
 import { prisma } from '@/packages/core-db/src/client';
 
-export interface ProcessingActivity {
+export interface RopaProcessingActivity {
   name: string;
   purposes: string[];
   legalBasis: string;
@@ -14,7 +14,7 @@ export interface ProcessingActivity {
 export interface RopaDocument {
   id: string;
   version: string;
-  processingActivities: ProcessingActivity[];
+  processingActivities: RopaProcessingActivity[];
   createdAt: Date;
   updatedAt: Date;
   reviewedBy: string;
@@ -90,7 +90,7 @@ export async function getCurrentRopa(): Promise<RopaDocument | null> {
 /**
  * Update the RoPA document
  */
-export async function updateRopa(activities: ProcessingActivity[]): Promise<RopaDocument> {
+export async function updateRopa(activities: RopaProcessingActivity[]): Promise<RopaDocument> {
   // In a real implementation, this would update the database
   const currentRopa = await getCurrentRopa();
   if (!currentRopa) {
