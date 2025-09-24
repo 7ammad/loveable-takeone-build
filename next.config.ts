@@ -6,17 +6,17 @@ const nextConfig: NextConfig = {
     // Only lint the app directory during builds
     dirs: ['app'],
   },
-  experimental: {
-    // Optimize for faster builds
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
+  // Turbopack configuration (moved from deprecated experimental.turbo)
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
       },
     },
   },
+  // Configure server external packages to prevent ioredis externalization warnings
+  serverExternalPackages: ['bullmq'],
   webpack: (config, { isServer }) => {
     // Optimize for faster compilation
     if (!isServer) {
@@ -28,8 +28,8 @@ const nextConfig: NextConfig = {
       };
     }
     
-    // Note: Removed ioredis externalization to fix version warnings
-    // The warnings are harmless but we can suppress them by not externalizing
+    // No additional server-side externalization needed
+    // serverExternalPackages handles this at the Next.js level
     
     return config;
   },
