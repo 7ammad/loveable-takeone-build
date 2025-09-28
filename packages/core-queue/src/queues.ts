@@ -28,6 +28,8 @@ try {
     indexerQueue: new Queue('indexer', { connection }),
     billingQueue: new Queue('billing', { connection }),
     alertsQueue: new Queue('alerts', { connection }),
+    processScrapedRoleQueue: new Queue('process-scraped-role', { connection }),
+    processWhatsappMessageQueue: new Queue('process-whatsapp-message', { connection }),
     dlq: new Queue('dlq', { connection })
   };
 
@@ -42,8 +44,10 @@ try {
     indexerQueue: { add: () => Promise.resolve(), opts: { connection: null } },
     billingQueue: { add: () => Promise.resolve(), opts: { connection: null } },
     alertsQueue: { add: () => Promise.resolve(), opts: { connection: null } },
+    processScrapedRoleQueue: { add: () => Promise.resolve(), opts: { connection: null } },
+    processWhatsappMessageQueue: { add: () => Promise.resolve(), opts: { connection: null } },
     dlq: { add: () => Promise.resolve(), opts: { connection: null } }
   };
 }
 
-export const { mediaQueue, emailQueue, smsQueue, indexerQueue, billingQueue, alertsQueue, dlq } = queues;
+export const { mediaQueue, emailQueue, smsQueue, indexerQueue, billingQueue, alertsQueue, processScrapedRoleQueue, processWhatsappMessageQueue, dlq } = queues;

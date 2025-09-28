@@ -1,0 +1,146 @@
+Path,Owner,Components,APIs
+/,marketing,"Hero|FeatureGrid|CTA",
+/about,marketing,MarkdownPage,
+/about/story,marketing,StoryPage,
+/about/team,marketing,TeamPage,
+/how-it-works,marketing,"Steps|Cards",
+/how-it-works/for-talent,marketing,TalentFlow,
+/how-it-works/for-hirers,marketing,HirerFlow,
+/pricing,growth,PricingTable,"GET /api/v1/billing/plans"
+/pricing/talent,growth,TalentPricing,"GET /api/v1/billing/plans"
+/pricing/hirers,growth,HirerPricing,"GET /api/v1/billing/plans"
+/contact,marketing,ContactForm,
+/demo,growth,DemoScheduler,
+/help,support,HelpIndex,
+/help/faq,support,FAQPage,
+/blog,marketing,BlogIndex,
+/blog/industry-news,marketing,BlogCategory,
+/resources,marketing,ResourceIndex,
+/privacy-policy,legal,MarkdownPage,
+/terms-of-service,legal,MarkdownPage,
+/status,ops,StatusEmbed,
+/auth/login,auth,LoginForm,"POST /api/v1/auth/login"
+/auth/signup,auth,SignupForm,"POST /api/v1/auth/register"
+/auth/signup/talent,auth,TalentSignupForm,"POST /api/v1/auth/register"
+/auth/signup/hirer,auth,HirerSignupForm,"POST /api/v1/auth/register"
+/auth/forgot-password,auth,ForgotPasswordForm,"POST /api/v1/auth/forgot-password"
+/auth/reset-password,auth,ResetPasswordForm,"POST /api/v1/auth/reset-password"
+/auth/verify-email,auth,VerifyEmail,"POST /api/v1/auth/verify-email"
+/auth/verify-phone,auth,VerifyPhone,
+/auth/two-factor-setup,auth,TwoFactorSetup,
+/onboarding/welcome,onboarding,WelcomeScreen,
+/onboarding/role-selection,onboarding,RolePicker,
+/onboarding/talent,onboarding,TalentOnboardingWizard,
+/onboarding/talent/basic-info,onboarding,BasicInfoForm,
+/onboarding/talent/profile-details,onboarding,ProfileDetailsForm,
+/onboarding/talent/verification,onboarding,VerificationWizard,
+/onboarding/talent/verification/nafath,onboarding,NafathVerification,
+/onboarding/talent/complete,onboarding,OnboardingComplete,
+/onboarding/hirer,onboarding,HirerOnboardingWizard,
+/onboarding/hirer/company-info,onboarding,CompanyInfoForm,
+/onboarding/hirer/subscription-selection,onboarding,SubscriptionSelector,"GET /api/v1/billing/plans"
+/onboarding/hirer/complete,onboarding,OnboardingComplete,
+/talent/dashboard,talent,"DashboardHeader|MetricGrid|RecentApplications|QuickActions","GET /api/v1/search/analytics"
+/talent/dashboard/overview,talent,DashboardOverview,"GET /api/v1/search/analytics"
+/talent/dashboard/quick-actions,talent,QuickActions,
+/talent/profile/view,talent,ProfileView,
+/talent/profile/edit,talent,"TalentProfileForm|ProfileHealth","PUT /api/v1/talent/profile"
+/talent/profile/edit/basic-info,talent,BasicInfoForm,
+/talent/profile/edit/physical-attributes,talent,PhysicalAttributesForm,
+/talent/profile/portfolio,talent,PortfolioGallery,
+/talent/profile/portfolio/upload,talent,MediaUploader,"POST /api/v1/media/upload"
+/talent/profile/verification,talent,VerificationStatus,
+/talent/profile/verification/nafath,talent,NafathVerification,
+/talent/applications,talent,"ApplicationsTable|ApplicationFilters","GET /api/v1/talent/applications"
+/talent/applications/active,talent,ApplicationsList,"GET /api/v1/talent/applications"
+/talent/applications/[applicationId],talent,ApplicationDetails,"GET /api/v1/talent/applications/[id]"
+/talent/casting-calls/browse,talent,"SearchFilters|CastingCallsGrid","GET /api/v1/search/talent"
+/talent/casting-calls/browse/recommended,talent,RecommendedCastingCalls,"GET /api/v1/search/talent"
+/talent/casting-calls/[castingCallId],talent,CastingCallDetails,"GET /api/v1/casting-calls/[id]"
+/talent/casting-calls/[castingCallId]/apply,talent,ApplicationForm,"POST /api/v1/applications"
+/talent/messages,talent,"MessagesInbox|MessageThreads","GET /api/v1/messages"
+/talent/messages/[conversationId],talent,ChatInterface,"GET /api/v1/messages/[id]|POST /api/v1/messages/[id]"
+/talent/calendar,talent,"CalendarView|AvailabilityManager",
+/talent/earnings,talent,EarningsDashboard,"GET /api/v1/billing/earnings"
+/talent/earnings/overview,talent,EarningsOverview,"GET /api/v1/billing/earnings"
+/talent/reviews,talent,ReviewsList,"GET /api/v1/reviews"
+/talent/settings,talent,SettingsPanel,
+/talent/settings/profile,talent,ProfileSettings,
+/talent/settings/privacy,talent,PrivacySettings,
+/talent/settings/notifications,talent,NotificationSettings,
+/talent/settings/billing,talent,BillingSettings,"GET /api/v1/billing/subscriptions"
+/talent/settings/security,talent,SecuritySettings,
+/hirer/dashboard,hirer,"DashboardHeader|MetricGrid|ActiveCampaigns","GET /api/v1/search/analytics"
+/hirer/dashboard/overview,hirer,DashboardOverview,"GET /api/v1/search/analytics"
+/hirer/dashboard/analytics-summary,hirer,AnalyticsSummary,"GET /api/v1/search/analytics"
+/hirer/casting-calls/dashboard,hirer,CastingCallsDashboard,"GET /api/v1/hirer/casting-calls"
+/hirer/casting-calls/create,hirer,CastingCallWizard,
+/hirer/casting-calls/create/basic-info,hirer,BasicInfoStep,
+/hirer/casting-calls/create/requirements,hirer,RequirementsStep,
+/hirer/casting-calls/create/compensation,hirer,CompensationStep,
+/hirer/casting-calls/create/media,hirer,MediaUploadStep,"POST /api/v1/media/upload"
+/hirer/casting-calls/create/publish,hirer,PublishStep,"POST /api/v1/casting-calls"
+/hirer/casting-calls/active,hirer,ActiveCastingCalls,"GET /api/v1/hirer/casting-calls"
+/hirer/casting-calls/[castingCallId],hirer,"CastingCallDetails|ApplicationsList","GET /api/v1/casting-calls/[id]"
+/hirer/casting-calls/[castingCallId]/edit,hirer,CastingCallEditForm,"PUT /api/v1/casting-calls/[id]"
+/hirer/casting-calls/[castingCallId]/analytics,hirer,CastingCallAnalytics,"GET /api/v1/casting-calls/[id]/analytics"
+/hirer/talent-search/browse,hirer,"TalentSearchFilters|TalentGrid","GET /api/v1/search/talent"
+/hirer/talent-search/advanced,hirer,AdvancedSearchForm,"GET /api/v1/search/talent"
+/hirer/talent-search/saved-searches,hirer,SavedSearches,
+/hirer/applications,hirer,"ApplicationsBoard|KanbanView","GET /api/v1/hirer/applications"
+/hirer/applications/[applicationId],hirer,"ApplicationReview|TalentProfile|ApplicationNotes","GET /api/v1/applications/[id]"
+/hirer/messages,hirer,"MessagesInbox|BulkMessaging","GET /api/v1/messages"
+/hirer/messages/templates,hirer,MessageTemplates,
+/hirer/projects,hirer,ProjectsOverview,
+/hirer/projects/create,hirer,ProjectCreationWizard,"POST /api/v1/projects"
+/hirer/team,hirer,"TeamOverview|TeamManagement",
+/hirer/team/invite,hirer,TeamInviteForm,"POST /api/v1/team/invite"
+/hirer/analytics,hirer,"AnalyticsDashboard|Charts|Reports","GET /api/v1/search/analytics"
+/hirer/analytics/casting-calls,hirer,CastingCallsAnalytics,"GET /api/v1/search/analytics"
+/hirer/analytics/applications,hirer,ApplicationsAnalytics,"GET /api/v1/search/analytics"
+/hirer/billing,hirer,BillingDashboard,"GET /api/v1/billing/subscriptions"
+/hirer/billing/subscription,hirer,"SubscriptionPlans|CurrentPlan","GET /api/v1/billing/plans|GET /api/v1/billing/subscriptions"
+/hirer/billing/subscription/upgrade,hirer,PlanUpgradeForm,"POST /api/v1/billing/payment-intents"
+/hirer/billing/invoices,hirer,InvoicesList,"GET /api/v1/billing/invoices"
+/hirer/settings,hirer,SettingsPanel,
+/hirer/settings/company,hirer,CompanyProfileForm,
+/hirer/settings/preferences,hirer,HirerPreferences,
+/hirer/settings/notifications,hirer,NotificationSettings,
+/admin/dashboard,admin,"AdminDashboard|KeyMetrics|RecentActivity","GET /api/v1/admin/dashboard"
+/admin/users,admin,"UsersManagement|UsersTable|UserFilters","GET /api/v1/admin/users"
+/admin/users/talent,admin,TalentUsersTable,"GET /api/v1/admin/users"
+/admin/users/hirers,admin,HirerUsersTable,"GET /api/v1/admin/users"
+/admin/users/verification,admin,"VerificationQueue|VerificationActions","GET /api/v1/admin/verification"
+/admin/users/[userId],admin,"UserDetails|UserActions|UserActivity","GET /api/v1/admin/users/[id]"
+/admin/content,admin,ContentDashboard,
+/admin/content/casting-calls,admin,CastingCallsModeration,"GET /api/v1/admin/content/casting-calls"
+/admin/content/profiles,admin,ProfilesModeration,"GET /api/v1/admin/content/profiles"
+/admin/content/media,admin,"MediaModeration|StorageUsage","GET /api/v1/admin/content/media"
+/admin/compliance,admin,ComplianceDashboard,
+/admin/compliance/data-protection,admin,DataProtectionPanel,"GET /api/v1/admin/compliance/dpia"
+/admin/compliance/export,admin,DataExportPanel,"POST /api/v1/admin/compliance/export"
+/admin/analytics,admin,"PlatformAnalytics|Charts|Reports","GET /api/v1/admin/analytics"
+/admin/analytics/platform-metrics,admin,PlatformMetrics,"GET /api/v1/admin/analytics"
+/admin/analytics/business-metrics,admin,BusinessMetrics,"GET /api/v1/admin/analytics"
+/admin/support,admin,SupportDashboard,
+/admin/support/tickets,admin,"SupportTickets|TicketFilters","GET /api/v1/admin/support/tickets"
+/admin/support/live-chat,admin,LiveChatPanel,
+/admin/system,admin,SystemDashboard,
+/admin/system/settings,admin,SystemSettings,
+/admin/system/monitoring,admin,"SystemMonitoring|PerformanceMetrics",
+/admin/billing,admin,BillingDashboard,
+/admin/billing/revenue,admin,RevenueAnalytics,"GET /api/v1/admin/billing/revenue"
+/admin/billing/subscriptions,admin,SubscriptionsManagement,"GET /api/v1/admin/billing/subscriptions"
+/admin/digital-twin/sources,admin,"SourceManagement|SourceTable|AddSourceForm","GET /api/v1/admin/digital-twin/sources|POST /api/v1/admin/digital-twin/sources"
+/admin/digital-twin/validation,admin,"ValidationQueue|CastingCallReview|ApproveRejectActions","GET /api/v1/admin/digital-twin/validation"
+/search/talent,search,TalentSearchInterface,"GET /api/v1/search/talent"
+/search/casting-calls,search,CastingCallsSearchInterface,"GET /api/v1/search/casting-calls"
+/search/global,search,GlobalSearchInterface,"GET /api/v1/search/global"
+/talent/[profileId],talent,PublicTalentProfile,"GET /api/v1/talent/[id]"
+/talent/[profileId]/portfolio,talent,PublicPortfolio,"GET /api/v1/talent/[id]/portfolio"
+/company/[companyId],hirer,PublicCompanyProfile,"GET /api/v1/company/[id]"
+/company/[companyId]/active-casting-calls,hirer,PublicCastingCalls,"GET /api/v1/company/[id]/casting-calls"
+/casting-call/[id],public,PublicCastingCall,"GET /api/v1/casting-calls/[id]"
+/casting-call/[id]/apply,public,PublicApplicationForm,"POST /api/v1/applications"
+/developers/docs,dev,APIDocumentation,
+/developers/api-reference,dev,APIReference,

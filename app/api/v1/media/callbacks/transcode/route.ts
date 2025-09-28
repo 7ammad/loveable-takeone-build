@@ -7,7 +7,13 @@ export const runtime = 'nodejs';
 
 const TRANSCODE_WEBHOOK_SECRET = process.env.TRANSCODE_WEBHOOK_SECRET;
 
-async function verifyHmacSignature(request: NextRequest): Promise<{ isValid: boolean; body: any }> {
+interface TranscodeCallbackBody {
+  assetId: string;
+  status: string;
+  outputs?: unknown;
+}
+
+async function verifyHmacSignature(request: NextRequest): Promise<{ isValid: boolean; body: TranscodeCallbackBody | null }> {
   const signature = request.headers.get('x-transcode-signature');
   const bodyBuffer = await request.text();
 
@@ -20,8 +26,12 @@ async function verifyHmacSignature(request: NextRequest): Promise<{ isValid: boo
   const digest = hmac.digest('hex');
 
   const isValid = crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest));
-  
-  return { isValid, body: JSON.parse(bodyBuffer) };
+
+  try {
+    return { isValid, body: JSON.parse(bodyBuffer) as TranscodeCallbackBody };
+  } catch {
+    return { isValid, body: null };
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -37,6 +47,10 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    if (!body) {
+      return NextResponse.json({ ok: false, error: 'Invalid request body' }, { status: 400 });
+    }
+
     const { assetId, status, outputs } = body;
 
     if (!assetId || !status) {

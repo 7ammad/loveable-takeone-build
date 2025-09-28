@@ -45,7 +45,7 @@ export async function middleware(request: NextRequest) {
     const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET, {
       audience: JWT_AUDIENCE,
       issuer: JWT_ISSUER
-    }) as any;
+    }) as jwt.JwtPayload & { userId: string; jti: string };
 
     const userId = decoded?.userId;
     console.log('[MIDDLEWARE] JWT decoded successfully:', { userId, path: request.nextUrl.pathname });

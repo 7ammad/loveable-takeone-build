@@ -26,6 +26,7 @@ model TalentProfile {
 model Application {
   id             String   @id @default(cuid())
   castingCallId  String
+  castingCall    CastingCall @relation(fields: [castingCallId], references: [id])
   talentUserId   String
   status         String   @default("pending")
   createdAt      DateTime @default(now())
@@ -83,6 +84,7 @@ model MediaAsset {
   watermark  String? // Tamper-evident watermark for self-tapes
   ttlPolicy  String?  // e.g., "archive_180d"
   virusScanResult Json? // Virus scan results
+  transcodeData Json? // Store details about transcoded outputs (e.g., HLS manifest URL)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
@@ -134,6 +136,38 @@ model User {
 }
 
 // ... other models from your plan (Users, CastingCall, etc.) will go here
+
+model CastingCall {
+  id             String   @id @default(cuid())
+  title          String
+  description    String?
+  company        String?
+  location       String?
+  compensation   String?
+  requirements   String?
+  deadline       DateTime?
+  contactInfo    String?
+  status         String   @default("pending_review")
+  sourceUrl      String?
+  contentHash    String?  @unique
+  isAggregated   Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  applications   Application[]
+}
+
+model IngestionSource {
+  id                String   @id @default(cuid())
+  sourceType        String   // 'WEB' or 'WHATSAPP'
+  sourceIdentifier  String   // URL for WEB, Group Chat ID for WHATSAPP
+  sourceName        String   // e.g., "MBC Careers", "Riyadh Actors Group"
+  lastProcessedAt   DateTime?
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
 
 model Receipt {
   id                String   @id @default(cuid())

@@ -33,9 +33,9 @@ export async function POST(request: NextRequest) {
           jti: payload.jti,
         },
       });
-    } catch (dbError: any) {
+    } catch (dbError: unknown) {
       // If table doesn't exist, log but continue (for testing)
-      if (dbError.message?.includes('does not exist')) {
+      if (dbError instanceof Error && dbError.message?.includes('does not exist')) {
         console.log('[REFRESH] RevokedToken table missing, skipping revocation for testing');
       } else {
         throw dbError;

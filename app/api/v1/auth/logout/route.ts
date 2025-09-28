@@ -25,9 +25,9 @@ export async function POST(request: NextRequest) {
       await prisma.revokedToken.create({
         data: { jti: payload.jti },
       });
-    } catch (dbError: any) {
+    } catch (dbError: unknown) {
       // If table doesn't exist, log but continue (for testing)
-      if (dbError.message?.includes('does not exist')) {
+      if (dbError instanceof Error && dbError.message?.includes('does not exist')) {
         console.log('[LOGOUT] RevokedToken table missing, skipping revocation for testing');
       } else {
         throw dbError;
