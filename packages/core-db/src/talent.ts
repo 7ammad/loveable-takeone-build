@@ -50,3 +50,14 @@ export async function updateTalentProfile(profileId: string, profileData: Talent
   });
 }
 
+/**
+ * Gets a talent profile by user ID
+ * @param userId The user ID to look up
+ * @returns The talent profile or null if not found
+ */
+export async function getTalentProfileById(userId: string): Promise<TalentProfile | null> {
+  return prisma.talentProfile.findFirst({
+    where: { userId },
+  });
+}
+

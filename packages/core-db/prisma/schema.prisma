@@ -128,7 +128,15 @@ model User {
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
+  // Nafath Verification Fields
+  nafathVerified      Boolean   @default(false)
+  nafathVerifiedAt    DateTime?
+  nafathNationalId    String?   @unique
+  nafathTransactionId String?
+  nafathData          Json?     // Store verification metadata
+  nafathExpiresAt     DateTime? // Annual renewal tracking
+
   // Search relations
   savedSearches   SavedSearch[]
   searchExecutions SearchExecution[]
@@ -149,6 +157,7 @@ model CastingCall {
   contactInfo    String?
   status         String   @default("pending_review")
   sourceUrl      String?
+  sourceName     String?
   contentHash    String?  @unique
   isAggregated   Boolean  @default(true)
   createdAt      DateTime @default(now())

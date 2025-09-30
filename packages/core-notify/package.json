@@ -1,0 +1,8 @@
+{
+  "name": "@packages/core-notify",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/email-service.ts",
+  "types": "./src/email-service.ts"
+}

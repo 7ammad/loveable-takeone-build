@@ -24,8 +24,32 @@ describe('Compliance Export', () => {
     it('should export data with minors included when specified', async () => {
       // Mock data
       vi.mocked(prisma.user.findMany).mockResolvedValue([
-        { id: 'user-1', email: 'adult@example.com', createdAt: new Date(), updatedAt: new Date() },
-        { id: 'user-2', email: 'minor@example.com', createdAt: new Date(), updatedAt: new Date() },
+        { 
+          id: 'user-1', 
+          email: 'adult@example.com', 
+          password: 'hashed-password',
+          createdAt: new Date(), 
+          updatedAt: new Date(),
+          nafathVerified: false,
+          nafathVerifiedAt: null,
+          nafathNationalId: null,
+          nafathTransactionId: null,
+          nafathData: null,
+          nafathExpiresAt: null
+        },
+        { 
+          id: 'user-2', 
+          email: 'minor@example.com', 
+          password: 'hashed-password',
+          createdAt: new Date(), 
+          updatedAt: new Date(),
+          nafathVerified: false,
+          nafathVerifiedAt: null,
+          nafathNationalId: null,
+          nafathTransactionId: null,
+          nafathData: null,
+          nafathExpiresAt: null
+        },
       ])
 
       vi.mocked(prisma.talentProfile.findMany).mockResolvedValue([
@@ -46,8 +70,32 @@ describe('Compliance Export', () => {
     it('should redact minors data when includeMinors is false', async () => {
       // Mock data
       vi.mocked(prisma.user.findMany).mockResolvedValue([
-        { id: 'user-1', email: 'adult@example.com', createdAt: new Date(), updatedAt: new Date() },
-        { id: 'user-2', email: 'minor@example.com', createdAt: new Date(), updatedAt: new Date() },
+        { 
+          id: 'user-1', 
+          email: 'adult@example.com', 
+          password: 'hashed-password',
+          createdAt: new Date(), 
+          updatedAt: new Date(),
+          nafathVerified: false,
+          nafathVerifiedAt: null,
+          nafathNationalId: null,
+          nafathTransactionId: null,
+          nafathData: null,
+          nafathExpiresAt: null
+        },
+        { 
+          id: 'user-2', 
+          email: 'minor@example.com', 
+          password: 'hashed-password',
+          createdAt: new Date(), 
+          updatedAt: new Date(),
+          nafathVerified: false,
+          nafathVerifiedAt: null,
+          nafathNationalId: null,
+          nafathTransactionId: null,
+          nafathData: null,
+          nafathExpiresAt: null
+        },
       ])
 
       vi.mocked(prisma.talentProfile.findMany).mockResolvedValue([

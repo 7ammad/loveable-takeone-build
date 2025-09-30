@@ -1,94 +1,55 @@
 import { Worker } from 'bullmq';
 import { PrismaClient } from '@prisma/client';
-import { dlq } from '../queues.js';
-import crypto from 'crypto';
+import { dlq, validationQueue } from '../queues.js';
+import { LlmCastingCallExtractionService } from '@packages/core-lib';
 
 const prisma = new PrismaClient();
+const llmService = new LlmCastingCallExtractionService();
 
 interface ScrapedRoleJob {
-  title: string;
-  description?: string;
-  company?: string;
-  location?: string;
-  compensation?: string;
-  requirements?: string;
-  deadline?: string;
-  contactInfo?: string;
+  sourceId: string;
   sourceUrl: string;
-  sourceName: string;
-  ingestedAt: string;
+  rawMarkdown: string;
+  scrapedAt: string;
 }
 
 // Create the worker
 const scrapedRoleWorker = new Worker(
-  'process-scraped-role',
+  'scraped-roles', // Corrected queue name
   async (job) => {
     const data: ScrapedRoleJob = job.data;
 
     try {
-      console.log(`Processing scraped role: ${data.title} from ${data.sourceName}`);
+      console.log(`Processing raw content from source: ${data.sourceUrl}`);
 
-      // Create content hash for deduplication
-      const contentString = `${data.title}|${data.description || ''}|${data.company || ''}|${data.location || ''}`;
-      const contentHash = crypto.createHash('md5').update(contentString).digest('hex');
+      // Step 1: Use LLM to extract structured data from raw markdown
+      const extractionResult = await llmService.extractCastingCallFromText(data.rawMarkdown);
 
-      // Check for duplicates
-      const existingCall = await prisma.castingCall.findUnique({
-        where: { contentHash },
-      });
-
-      if (existingCall) {
-        console.log(`Duplicate casting call detected: ${data.title} (hash: ${contentHash})`);
-        return { status: 'duplicate', existingId: existingCall.id };
+      if (!extractionResult.success || !extractionResult.data) {
+        throw new Error(`LLM extraction failed: ${extractionResult.error}`);
       }
 
-      // Parse deadline if provided
-      let deadline: Date | undefined;
-      if (data.deadline) {
-        try {
-          deadline = new Date(data.deadline);
-          // Validate the date
-          if (isNaN(deadline.getTime())) {
-            deadline = undefined;
-          }
-        } catch {
-          deadline = undefined;
-        }
-      }
-
-      // Create the casting call
-      const newCastingCall = await prisma.castingCall.create({
-        data: {
-          title: data.title,
-          description: data.description,
-          company: data.company,
-          location: data.location,
-          compensation: data.compensation,
-          requirements: data.requirements,
-          deadline,
-          contactInfo: data.contactInfo,
-          sourceUrl: data.sourceUrl,
-          contentHash,
-          status: 'pending_review', // All scraped calls need admin review
-        },
+      console.log(`🤖 Successfully extracted structured data from ${data.sourceUrl}`);
+      
+      // Step 2: Push the structured JSON to the validation queue
+      await validationQueue.add('validate-casting-call', {
+        sourceId: data.sourceId,
+        sourceUrl: data.sourceUrl,
+        castingCallData: extractionResult.data,
       });
-
-      console.log(`✅ Created casting call: ${newCastingCall.title} (ID: ${newCastingCall.id})`);
-
-      // TODO: Trigger indexing in search system (Algolia)
-      // This would be implemented once we have the search indexing system
+      
+      console.log(`✅ Pushed extracted data from ${data.sourceUrl} to the validation queue.`);
 
       return {
-        status: 'created',
-        castingCallId: newCastingCall.id,
-        title: newCastingCall.title
+        status: 'pushed_to_validation',
+        sourceId: data.sourceId,
       };
 
     } catch (error) {
-      console.error(`❌ Failed to process scraped role "${data.title}":`, error);
+      console.error(`❌ Failed to process scraped role from "${data.sourceUrl}":`, error);
 
       // Send to dead letter queue for manual review
-      await dlq.add('failed-scraped-role', {
+      await dlq.add('failed-scraped-role-extraction', {
         originalJob: data,
         error: error instanceof Error ? error.message : 'Unknown error',
         failedAt: new Date().toISOString(),
@@ -100,7 +61,10 @@ const scrapedRoleWorker = new Worker(
   {
     connection: process.env.REDIS_URL ? {
       url: process.env.REDIS_URL,
-    } : undefined,
+    } : {
+      host: 'localhost',
+      port: 6379,
+    },
     concurrency: 2, // Process 2 jobs concurrently
     limiter: {
       max: 10, // Maximum 10 jobs
@@ -115,11 +79,13 @@ scrapedRoleWorker.on('completed', (job) => {
 });
 
 scrapedRoleWorker.on('failed', (job, err) => {
-  console.error(`❌ Scraped role job ${job?.id} failed:`, err.message);
+  const jobId = typeof job === 'string' ? job : (job as any)?.id;
+  console.error(`❌ Scraped role job ${jobId} failed:`, err.message);
 });
 
 scrapedRoleWorker.on('stalled', (job) => {
-  console.warn(`⚠️ Scraped role job ${job?.id} stalled`);
+  const jobId = typeof job === 'string' ? job : (job as any)?.id;
+  console.warn(`⚠️ Scraped role job ${jobId} stalled`);
 });
 
 // Graceful shutdown

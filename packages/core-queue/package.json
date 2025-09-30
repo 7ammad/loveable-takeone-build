@@ -1,0 +1,8 @@
+{
+  "name": "@packages/core-queue",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/queues.ts",
+  "types": "./src/queues.ts"
+}

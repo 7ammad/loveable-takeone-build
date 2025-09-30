@@ -1,4 +1,4 @@
-import { getTalentProfileById } from '@/lib/db';
+import { getTalentProfileById } from '@/packages/core-db/src/talent';
 
 /**
  * Checks if a user is a minor (under 18)
@@ -6,7 +6,7 @@ import { getTalentProfileById } from '@/lib/db';
  * @returns True if the user is a minor, false otherwise
  */
 export async function isMinor(userId: string): Promise<boolean> {
-  const profile = getTalentProfileById(userId);
+  const profile = await getTalentProfileById(userId);
   return profile?.isMinor === true;
 }
 
@@ -16,7 +16,7 @@ export async function isMinor(userId: string): Promise<boolean> {
  * @returns True if guardian exists and is approved, false otherwise
  */
 export async function hasApprovedGuardian(userId: string): Promise<boolean> {
-  const profile = getTalentProfileById(userId);
+  const profile = await getTalentProfileById(userId);
   return profile?.isMinor === true && !!profile?.guardianUserId;
 }
 
@@ -56,7 +56,7 @@ export async function canSendMessage(senderId: string, recipientId: string): Pro
   }
 
   // If recipient is minor, sender must be their guardian
-  const recipientProfile = getTalentProfileById(recipientId);
+  const recipientProfile = await getTalentProfileById(recipientId);
   return recipientProfile?.guardianUserId === senderId;
 }
 
@@ -66,7 +66,7 @@ export async function canSendMessage(senderId: string, recipientId: string): Pro
  * @returns Guardian user ID or null if none exists
  */
 export async function getGuardianForMinor(userId: string): Promise<string | null> {
-  const profile = getTalentProfileById(userId);
+  const profile = await getTalentProfileById(userId);
   if (profile?.isMinor && profile.guardianUserId) {
     return profile.guardianUserId;
   }

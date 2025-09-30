@@ -234,7 +234,7 @@ describe('Digital Twin Business Logic', () => {
       malformedResponses.forEach(response => {
         // These should be handled gracefully without throwing
         expect(() => {
-          if (!response || !response.choices || !response.choices[0]?.message?.content) {
+          if (!response || !response.choices || !response.choices[0]?.message || !('content' in response.choices[0].message)) {
             // This is expected to be handled
             return null;
           }

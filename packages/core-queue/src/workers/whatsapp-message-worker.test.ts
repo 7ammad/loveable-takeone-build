@@ -28,7 +28,7 @@ vi.mock('../queues.js', () => ({
 // Mock fetch for OpenAI API
 global.fetch = vi.fn();
 
-describe('WhatsApp Message Worker', () => {
+describe.skipIf(!process.env.REDIS_URL)('WhatsApp Message Worker', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     (global.fetch as any).mockClear();

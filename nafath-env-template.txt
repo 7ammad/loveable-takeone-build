@@ -1,0 +1,75 @@
+# ===========================================
+# NAFATH VERIFICATION ENVIRONMENT TEMPLATE
+# ===========================================
+# Add these variables to your .env file
+# ===========================================
+
+# ------------------------------------------------------------------------------
+# NAFATH VERIFICATION (Authentica)
+# ------------------------------------------------------------------------------
+
+# Authentica API Configuration
+# Get your SINGLE API key from: https://authentica.sa/dashboard
+# This same key is used for both API calls and webhook verification
+# Sign up at: https://authentica.sa
+AUTHENTICA_API_KEY=your_authentica_api_key_here
+
+# Authentica API Base URL (usually doesn't need to change)
+AUTHENTICA_BASE_URL=https://api.authentica.sa
+
+# Webhook Signature Verification
+# For most providers, this is the SAME as your API key
+# Only set this if Authentica provides a separate webhook secret
+# NAFATH_WEBHOOK_SECRET=your_separate_webhook_secret_here
+
+# Allowed redirect hosts for additional security (comma-separated)
+# Include your production domain and localhost for development
+# Example: https://takeone.sa,https://localhost:3000
+NAFATH_ALLOWED_REDIRECTS=https://yourdomain.com,https://localhost:3000
+
+# App Configuration (for webhook URLs)
+# Must match your actual app URL
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# ===========================================
+# SETUP INSTRUCTIONS
+# ===========================================
+
+# 1. Get Authentica API Key:
+#    - Visit: https://authentica.sa
+#    - Sign up for an account
+#    - Navigate to API Keys section
+#    - Create a new API key for Nafath integration
+
+# 2. Webhook Configuration:
+#    - Most providers use the same API key for webhook verification
+#    - Only generate a separate secret if Authentica requires it
+#    - If needed: openssl rand -hex 32
+
+# 3. Configure Webhook URL in Authentica:
+#    - Webhook URL: https://yourdomain.com/api/v1/auth/nafath/webhook
+#    - Method: POST
+#    - Use the NAFATH_WEBHOOK_SECRET for signature verification
+
+# 4. Update Allowed Redirects:
+#    - Replace 'yourdomain.com' with your actual domain
+#    - Keep localhost:3000 for development
+
+# ===========================================
+# REQUIRED ENVIRONMENT VARIABLES SUMMARY
+# ===========================================
+
+# REQUIRED - Your single API key from Authentica
+AUTHENTICA_API_KEY=your_authentica_api_key_here
+
+# OPTIONAL - Usually doesn't change
+AUTHENTICA_BASE_URL=https://api.authentica.sa
+
+# OPTIONAL - Only if different from API key
+# NAFATH_WEBHOOK_SECRET=your_api_key_here
+
+# REQUIRED - Security measure
+NAFATH_ALLOWED_REDIRECTS=https://localhost:3000
+
+# REQUIRED - For webhook URLs
+NEXT_PUBLIC_APP_URL=http://localhost:3000

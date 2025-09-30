@@ -4,7 +4,7 @@ import crypto from 'crypto';
 
 const prisma = new PrismaClient();
 
-describe('Digital Twin Integration Tests', () => {
+describe.skipIf(!process.env.DATABASE_URL)('Digital Twin Integration Tests', () => {
   beforeAll(async () => {
     // Ensure clean state
     await prisma.castingCall.deleteMany();

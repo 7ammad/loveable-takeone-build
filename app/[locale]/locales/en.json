@@ -1,0 +1,19 @@
+{
+  "Header": {
+    "forTalent": "For Talent",
+    "forHirers": "For Hirers",
+    "blog": "Blog",
+    "login": "Log In",
+    "signup": "Sign Up"
+  },
+  "Hero": {
+    "title1": "All the Casting Calls.",
+    "title2": "One Place.",
+    "subtitle": "Stop digging through DMs and story posts. TakeOne pulls every active Casting Call across Saudi into a clean, live feed.",
+    "cta1": "View Casting Calls",
+    "cta2": "For Hirers"
+  },
+  "Showcase": {
+    "title": "Live Showcase"
+  }
+}

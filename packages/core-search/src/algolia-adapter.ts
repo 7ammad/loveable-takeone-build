@@ -107,7 +107,7 @@ export async function configureAlgoliaIndex() {
     });
     console.log(`Algolia index '${INDEX_NAME}' settings configured successfully.`);
   } catch (error) {
-    console.warn('Failed to configure Algolia index settings (this is expected in development):', error.message);
+    console.warn('Failed to configure Algolia index settings (this is expected in development):', (error as Error).message);
     // Don't throw error - allow graceful fallback
   }
 }

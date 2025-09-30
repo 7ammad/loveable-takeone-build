@@ -1,38 +1,9 @@
-﻿import type { Metadata } from "next";
-import { IBM_Plex_Sans_Arabic, Inter } from "next/font/google";
-import "./globals.css";
-
-// Initialize observability
-import { initSentry } from '@/packages/core-observability/src/sentry';
-import { initTracing } from '@/packages/core-observability/src/tracing';
-
-// Initialize in development and production
-if (typeof window === 'undefined') {
-  initSentry();
-  initTracing();
-}
-
-const inter = Inter({ subsets: ["latin"], variable: "--font-latin" });
-const plexArabic = IBM_Plex_Sans_Arabic({
-  subsets: ["arabic"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-arabic",
-});
+import type { Metadata } from "next";
+import { ThemeProvider } from '@/components/ThemeProvider';
 
 export const metadata: Metadata = {
-  title: "Saudi Casting Marketplace",
-  description:
-    "High-trust casting marketplace connecting verified talent, guardians, and professional hirers.",
-  metadataBase: new URL("https://saudi-casting-marketplace.example"),
-  openGraph: {
-    title: "Saudi Casting Marketplace",
-    description:
-      "End-to-end casting workflows tailored for the Saudi entertainment ecosystem.",
-    url: "https://saudi-casting-marketplace.example",
-    siteName: "Saudi Casting Marketplace",
-    locale: "en_US",
-    type: "website",
-  },
+  title: "TakeOne",
+  description: "Saudi Casting Marketplace",
 };
 
 export default function RootLayout({
@@ -41,11 +12,27 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${inter.variable} ${plexArabic.variable} min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] antialiased`}
-      >
-        {children}
+    <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+          rel="stylesheet"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Satoshi:wght@100;200;300;400;500;600;700;800;900&display=swap"
+          rel="stylesheet"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body>
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

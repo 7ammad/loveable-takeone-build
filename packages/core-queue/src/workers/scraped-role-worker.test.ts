@@ -33,7 +33,7 @@ vi.mock('../queues.js', () => ({
 // Import crypto for testing
 import crypto from 'crypto';
 
-describe('Scraped Role Worker Logic', () => {
+describe.skipIf(!process.env.REDIS_URL)('Scraped Role Worker Logic', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -140,7 +140,7 @@ describe('Scraped Role Worker Logic', () => {
 
       // Manually call the worker's process function
       // Note: In a real scenario, we'd use BullMQ's testing utilities
-      const result = await (worker as any).opts.processFn(mockJob);
+      const result = await processScrapedRoleJob(mockJob.data);
 
       expect(mockPrisma.castingCall.findUnique).toHaveBeenCalled();
       expect(mockPrisma.castingCall.create).toHaveBeenCalledWith({

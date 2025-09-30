@@ -12,3 +12,5 @@
   $ref: './auth.yaml#/refresh'
 /auth/logout:
   $ref: './auth.yaml#/logout'
+/media/upload-url:
+  $ref: './media.yaml#/media/upload-url'

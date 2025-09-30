@@ -13,13 +13,41 @@ interface TokenPayload {
   iss: string;
   iat: number;
   exp: number;
+  // Nafath verification claims
+  nafathVerified?: boolean;
+  nafathVerifiedAt?: number;
+  nafathExpiresAt?: number;
+  verificationLevel?: 'nafath' | 'email' | 'phone' | 'none';
 }
 
-export function generateAccessToken(userId: string, jti: string): string {
-  const payload = {
+export function generateAccessToken(
+  userId: string,
+  jti: string,
+  verificationData?: {
+    nafathVerified?: boolean;
+    nafathVerifiedAt?: Date;
+    nafathExpiresAt?: Date;
+  }
+): string {
+  const payload: Partial<TokenPayload> = {
     userId,
     jti,
-  } as const;
+  };
+
+  // Add Nafath verification claims if provided
+  if (verificationData) {
+    payload.nafathVerified = verificationData.nafathVerified || false;
+    payload.nafathVerifiedAt = verificationData.nafathVerifiedAt?.getTime();
+    payload.nafathExpiresAt = verificationData.nafathExpiresAt?.getTime();
+
+    // Determine verification level
+    if (verificationData.nafathVerified) {
+      payload.verificationLevel = 'nafath';
+    } else {
+      payload.verificationLevel = 'none';
+    }
+  }
+
   return jwt.sign(payload, ACCESS_TOKEN_SECRET, {
     expiresIn: '15m',
     audience: JWT_AUDIENCE,
@@ -27,11 +55,34 @@ export function generateAccessToken(userId: string, jti: string): string {
   });
 }
 
-export function generateRefreshToken(userId: string, jti: string): string {
-  const payload = {
+export function generateRefreshToken(
+  userId: string,
+  jti: string,
+  verificationData?: {
+    nafathVerified?: boolean;
+    nafathVerifiedAt?: Date;
+    nafathExpiresAt?: Date;
+  }
+): string {
+  const payload: Partial<TokenPayload> = {
     userId,
     jti,
-  } as const;
+  };
+
+  // Add Nafath verification claims if provided (for refresh tokens too)
+  if (verificationData) {
+    payload.nafathVerified = verificationData.nafathVerified || false;
+    payload.nafathVerifiedAt = verificationData.nafathVerifiedAt?.getTime();
+    payload.nafathExpiresAt = verificationData.nafathExpiresAt?.getTime();
+
+    // Determine verification level
+    if (verificationData.nafathVerified) {
+      payload.verificationLevel = 'nafath';
+    } else {
+      payload.verificationLevel = 'none';
+    }
+  }
+
   return jwt.sign(payload, REFRESH_TOKEN_SECRET, {
     expiresIn: '7d',
     audience: JWT_AUDIENCE,
