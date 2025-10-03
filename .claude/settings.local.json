@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "Bash(npx eslint:*)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm build:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(tree:*)",
+      "Bash(npm run dev)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm run:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

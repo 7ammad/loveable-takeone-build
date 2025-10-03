@@ -1,7 +1,7 @@
 import { prisma } from './client';
-import type { TalentProfile } from '@prisma/client';
+import type { TalentProfile, Prisma } from '@prisma/client';
 
-type TalentProfileCreationData = Omit<TalentProfile, 'id' | 'createdAt' | 'updatedAt'>;
+type TalentProfileCreationData = Prisma.TalentProfileCreateInput;
 type TalentProfileUpdateData = Partial<TalentProfileCreationData>;
 
 /**

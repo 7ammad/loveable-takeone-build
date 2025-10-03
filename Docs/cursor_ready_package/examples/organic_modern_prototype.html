@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TakeOne - Organic Modern Design System</title>
+    <style>
+        /* Amiri Font Loading */
+        @font-face {
+            font-family: 'Amiri';
+            src: url('./Amiri-Regular.ttf') format('truetype');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+        
+        @font-face {
+            font-family: 'Amiri';
+            src: url('./Amiri-Bold.ttf') format('truetype');
+            font-weight: 700;
+            font-style: normal;
+            font-display: swap;
+        }
+        
+        @font-face {
+            font-family: 'Amiri';
+            src: url('./Amiri-Italic.ttf') format('truetype');
+            font-weight: 400;
+            font-style: italic;
+            font-display: swap;
+        }
+        
+        @font-face {
+            font-family: 'Amiri';
+            src: url('./Amiri-BoldItalic.ttf') format('truetype');
+            font-weight: 700;
+            font-style: italic;
+            font-display: swap;
+        }
+        
+        /* TakeOne Organic Modern Design System */
+        :root {
+            /* Organic Modern Colors */
+            --om-forest-green: #4CAF50;
+            --om-earth-stone: #A8A29E;
+            --om-earth-light: #E0E0E0;
+            --om-natural-coral: #FF7F50;
+            --om-pure-white: #FFFFFF;
+            --om-soft-cream: #FEFEFE;
+            --om-deep-forest: #2E7D32;
+            --om-warm-gray: #8D8680;
+            --om-light-sage: #E8F5E8;
+            --om-coral-light: #FFF4F0;
+            
+            /* Typography */
+            --om-font-family: 'Amiri', 'Times New Roman', serif;
+            --om-font-size-caption: 0.75rem;
+            --om-font-size-small: 0.875rem;
+            --om-font-size-body: 1rem;
+            --om-font-size-h3: 1.25rem;
+            --om-font-size-h2: 1.5rem;
+            --om-font-size-h1: 2rem;
+            --om-font-size-display: 2.5rem;
+            
+            /* Spacing - Organic rhythm */
+            --om-spacing-xs: 6px;
+            --om-spacing-sm: 12px;
+            --om-spacing-md: 18px;
+            --om-spacing-lg: 24px;
+            --om-spacing-xl: 36px;
+            --om-spacing-2xl: 48px;
+            --om-spacing-3xl: 72px;
+            
+            /* Border radius - Organic curves */
+            --om-radius-sm: 8px;
+            --om-radius-md: 16px;
+            --om-radius-lg: 24px;
+            --om-radius-xl: 32px;
+            --om-radius-organic: 50% 20% 80% 30%;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--om-font-family);
+            background: linear-gradient(135deg, var(--om-soft-cream) 0%, var(--om-earth-light) 100%);
+            line-height: 1.7;
+            color: var(--om-deep-forest);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--om-spacing-xl);
+        }
+        
+        /* Organic Header */
+        .header {
+            text-align: center;
+            margin-bottom: var(--om-spacing-3xl);
+            position: relative;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, var(--om-forest-green) 0%, transparent 70%);
+            border-radius: var(--om-radius-organic);
+            opacity: 0.1;
+            z-index: -1;
+        }
+        
+        .header h1 {
+            font-size: var(--om-font-size-display);
+            font-weight: 700;
+            color: var(--om-deep-forest);
+            margin-bottom: var(--om-spacing-sm);
+            position: relative;
+        }
+        
+        .header .subtitle {
+            font-size: var(--om-font-size-body);
+            color: var(--om-warm-gray);
+            font-style: italic;
+            margin-bottom: var(--om-spacing-lg);
+        }
+        
+        .design-principles {
+            display: flex;
+            justify-content: center;
+            gap: var(--om-spacing-md);
+            flex-wrap: wrap;
+            margin-bottom: var(--om-spacing-xl);
+        }
+        
+        .principle-tag {
+            background: var(--om-light-sage);
+            color: var(--om-deep-forest);
+            padding: var(--om-spacing-xs) var(--om-spacing-md);
+            border-radius: var(--om-radius-lg);
+            font-size: var(--om-font-size-small);
+            font-weight: 500;
+            border: 1px solid var(--om-forest-green);
+        }
+        
+        /* Section Headers with Organic Elements */
+        .section-title {
+            font-size: var(--om-font-size-h2);
+            font-weight: 700;
+            color: var(--om-deep-forest);
+            margin-bottom: var(--om-spacing-xl);
+            display: flex;
+            align-items: center;
+            gap: var(--om-spacing-md);
+            position: relative;
+        }
+        
+        .section-title::before {
+            content: '';
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--om-forest-green), var(--om-natural-coral));
+            border-radius: var(--om-radius-organic);
+            flex-shrink: 0;
+        }
+        
+        .section-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--om-pure-white);
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        /* Organic Talent Grid */
+        .talent-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: var(--om-spacing-xl);
+            margin-bottom: var(--om-spacing-3xl);
+        }
+        
+        .talent-card {
+            background: var(--om-pure-white);
+            border-radius: var(--om-radius-xl);
+            overflow: hidden;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 8px 32px rgba(76, 175, 80, 0.1);
+            aspect-ratio: 3/4;
+            cursor: pointer;
+        }
+        
+        .talent-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60%;
+            background: linear-gradient(135deg, var(--om-forest-green) 0%, var(--om-natural-coral) 100%);
+            border-radius: var(--om-radius-xl) var(--om-radius-xl) var(--om-radius-organic) var(--om-radius-organic);
+            z-index: 1;
+        }
+        
+        .talent-card:hover {
+            transform: translateY(-12px) rotate(1deg);
+            box-shadow: 0 20px 48px rgba(76, 175, 80, 0.2);
+        }
+        
+        .talent-card:nth-child(even):hover {
+            transform: translateY(-12px) rotate(-1deg);
+        }
+        
+        .talent-headshot {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: 60%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--om-font-size-display);
+            font-weight: 700;
+            color: var(--om-pure-white);
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .talent-info {
+            position: relative;
+            z-index: 2;
+            padding: var(--om-spacing-lg);
+            background: var(--om-pure-white);
+            height: 40%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .talent-name {
+            font-size: var(--om-font-size-h3);
+            font-weight: 700;
+            color: var(--om-deep-forest);
+            margin-bottom: var(--om-spacing-xs);
+        }
+        
+        .talent-specialty {
+            font-size: var(--om-font-size-small);
+            color: var(--om-warm-gray);
+            margin-bottom: var(--om-spacing-sm);
+            font-style: italic;
+        }
+        
+        .talent-rating {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: var(--om-font-size-small);
+        }
+        
+        .rating-stars {
+            color: var(--om-natural-coral);
+        }
+        
+        .availability-indicator {
+            display: flex;
+            align-items: center;
+            gap: var(--om-spacing-xs);
+            color: var(--om-forest-green);
+        }
+        
+        .availability-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--om-forest-green);
+        }
+        
+        .availability-dot.busy {
+            background: var(--om-natural-coral);
+        }
+        
+        /* Organic Casting Cards */
+        .casting-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+            gap: var(--om-spacing-xl);
+            margin-bottom: var(--om-spacing-3xl);
+        }
+        
+        .casting-card {
+            background: var(--om-pure-white);
+            border-radius: var(--om-radius-xl);
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 8px 32px rgba(76, 175, 80, 0.08);
+            position: relative;
+        }
+        
+        .casting-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--om-forest-green), var(--om-natural-coral));
+            border-radius: 0 var(--om-radius-sm) var(--om-radius-sm) 0;
+        }
+        
+        .casting-card.native::before {
+            background: var(--om-forest-green);
+        }
+        
+        .casting-card.external::before {
+            background: var(--om-natural-coral);
+        }
+        
+        .casting-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 48px rgba(76, 175, 80, 0.15);
+        }
+        
+        .casting-header {
+            padding: var(--om-spacing-xl);
+            border-bottom: 1px solid var(--om-earth-light);
+            position: relative;
+        }
+        
+        .casting-title {
+            font-size: var(--om-font-size-h3);
+            font-weight: 700;
+            color: var(--om-deep-forest);
+            margin-bottom: var(--om-spacing-sm);
+            line-height: 1.4;
+        }
+        
+        .casting-company {
+            display: flex;
+            align-items: center;
+            gap: var(--om-spacing-md);
+            color: var(--om-warm-gray);
+            margin-bottom: var(--om-spacing-md);
+        }
+        
+        .source-badge {
+            padding: var(--om-spacing-xs) var(--om-spacing-md);
+            border-radius: var(--om-radius-lg);
+            font-size: var(--om-font-size-caption);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .source-badge.native {
+            background: var(--om-light-sage);
+            color: var(--om-deep-forest);
+        }
+        
+        .source-badge.external {
+            background: var(--om-coral-light);
+            color: var(--om-natural-coral);
+        }
+        
+        .verification-badge {
+            background: var(--om-forest-green);
+            color: var(--om-pure-white);
+            padding: 2px 8px;
+            border-radius: var(--om-radius-sm);
+            font-size: var(--om-font-size-caption);
+            font-weight: 500;
+        }
+        
+        .casting-body {
+            padding: var(--om-spacing-xl);
+        }
+        
+        .casting-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--om-spacing-lg);
+            margin-bottom: var(--om-spacing-xl);
+        }
+        
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: var(--om-spacing-xs);
+        }
+        
+        .detail-label {
+            font-size: var(--om-font-size-small);
+            color: var(--om-warm-gray);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .detail-value {
+            font-size: var(--om-font-size-body);
+            color: var(--om-deep-forest);
+            font-weight: 600;
+        }
+        
+        .detail-value.missing {
+            color: var(--om-warm-gray);
+            font-style: italic;
+            font-weight: 400;
+        }
+        
+        .confidence-indicator {
+            display: flex;
+            align-items: center;
+            gap: var(--om-spacing-sm);
+            margin-top: var(--om-spacing-xs);
+        }
+        
+        .confidence-bar {
+            width: 60px;
+            height: 4px;
+            background: var(--om-earth-light);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--om-forest-green), var(--om-natural-coral));
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+        
+        .confidence-text {
+            font-size: var(--om-font-size-caption);
+            color: var(--om-warm-gray);
+        }
+        
+        .casting-footer {
+            padding: var(--om-spacing-xl);
+            border-top: 1px solid var(--om-earth-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: var(--om-spacing-sm);
+            font-size: var(--om-font-size-small);
+            color: var(--om-forest-green);
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--om-forest-green);
+            animation: pulse 2s infinite;
+        }
+        
+        .status-dot.external {
+            background: var(--om-natural-coral);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: var(--om-spacing-md);
+        }
+        
+        /* Organic Buttons */
+        .btn {
+            padding: var(--om-spacing-md) var(--om-spacing-xl);
+            border-radius: var(--om-radius-lg);
+            font-size: var(--om-font-size-small);
+            font-weight: 600;
+            font-family: inherit;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--om-spacing-sm);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--om-forest-green), var(--om-deep-forest));
+            color: var(--om-pure-white);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(76, 175, 80, 0.3);
+        }
+        
+        .btn-secondary {
+            background: var(--om-light-sage);
+            color: var(--om-deep-forest);
+            border: 1px solid var(--om-forest-green);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--om-forest-green);
+            color: var(--om-pure-white);
+            transform: translateY(-2px);
+        }
+        
+        .btn-coral {
+            background: linear-gradient(135deg, var(--om-natural-coral), #FF6B35);
+            color: var(--om-pure-white);
+        }
+        
+        .btn-coral:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 127, 80, 0.3);
+        }
+        
+        .icon {
+            width: 18px;
+            height: 18px;
+        }
+        
+        /* Organic Decorative Elements */
+        .organic-decoration {
+            position: fixed;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.05;
+        }
+        
+        .organic-decoration.leaf-1 {
+            top: 10%;
+            right: 5%;
+            width: 120px;
+            height: 120px;
+            background: var(--om-forest-green);
+            border-radius: var(--om-radius-organic);
+            transform: rotate(15deg);
+        }
+        
+        .organic-decoration.leaf-2 {
+            bottom: 20%;
+            left: 8%;
+            width: 80px;
+            height: 80px;
+            background: var(--om-natural-coral);
+            border-radius: 60% 40% 30% 70%;
+            transform: rotate(-25deg);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: var(--om-spacing-lg);
+            }
+            
+            .talent-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: var(--om-spacing-lg);
+            }
+            
+            .casting-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .casting-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .casting-footer {
+                flex-direction: column;
+                gap: var(--om-spacing-md);
+                align-items: stretch;
+            }
+            
+            .action-buttons {
+                justify-content: center;
+            }
+            
+            .design-principles {
+                justify-content: center;
+            }
+        }
+        
+        /* Arabic RTL Support */
+        [dir="rtl"] {
+            text-align: right;
+        }
+        
+        [dir="rtl"] .casting-card::before {
+            left: auto;
+            right: 0;
+            border-radius: var(--om-radius-sm) 0 0 var(--om-radius-sm);
+        }
+        
+        [dir="rtl"] .section-title {
+            flex-direction: row-reverse;
+        }
+    </style>
+</head>
+<body>
+    <!-- Organic Decorative Elements -->
+    <div class="organic-decoration leaf-1"></div>
+    <div class="organic-decoration leaf-2"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>TakeOne</h1>
+            <p class="subtitle">Organic Modern Design System</p>
+            <div class="design-principles">
+                <span class="principle-tag">Calm</span>
+                <span class="principle-tag">Trustworthy</span>
+                <span class="principle-tag">Innovative</span>
+                <span class="principle-tag">Approachable</span>
+                <span class="principle-tag">Sustainable</span>
+            </div>
+        </div>
+        
+        <!-- Talent Discovery Section -->
+        <section>
+            <h2 class="section-title">
+                <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+                Discover Creative Talent
+            </h2>
+            
+            <div class="talent-grid">
+                <div class="talent-card">
+                    <div class="talent-headshot">سارة</div>
+                    <div class="talent-info">
+                        <div class="talent-name">Sarah Al-Rashid</div>
+                        <div class="talent-specialty">Actress & Voice Artist</div>
+                        <div class="talent-rating">
+                            <span class="rating-stars">★★★★★ 4.9</span>
+                            <div class="availability-indicator">
+                                <div class="availability-dot"></div>
+                                <span>Available</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="talent-card">
+                    <div class="talent-headshot">أحمد</div>
+                    <div class="talent-info">
+                        <div class="talent-name">Ahmed Al-Mansouri</div>
+                        <div class="talent-specialty">Model & Commercial Actor</div>
+                        <div class="talent-rating">
+                            <span class="rating-stars">★★★★☆ 4.7</span>
+                            <div class="availability-indicator">
+                                <div class="availability-dot busy"></div>
+                                <span>Busy</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="talent-card">
+                    <div class="talent-headshot">ليلى</div>
+                    <div class="talent-info">
+                        <div class="talent-name">Layla Al-Khatib</div>
+                        <div class="talent-specialty">Dancer & Choreographer</div>
+                        <div class="talent-rating">
+                            <span class="rating-stars">★★★★★ 5.0</span>
+                            <div class="availability-indicator">
+                                <div class="availability-dot"></div>
+                                <span>Available</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="talent-card">
+                    <div class="talent-headshot">عمر</div>
+                    <div class="talent-info">
+                        <div class="talent-name">Omar Al-Khalil</div>
+                        <div class="talent-specialty">Director & Producer</div>
+                        <div class="talent-rating">
+                            <span class="rating-stars">★★★★★ 4.8</span>
+                            <div class="availability-indicator">
+                                <div class="availability-dot"></div>
+                                <span>Available</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Casting Opportunities Section -->
+        <section>
+            <h2 class="section-title">
+                <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                    <line x1="8" y1="21" x2="16" y2="21"/>
+                    <line x1="12" y1="17" x2="12" y2="21"/>
+                </svg>
+                Live Casting Opportunities
+            </h2>
+            
+            <div class="casting-grid">
+                <!-- Native Casting Call -->
+                <div class="casting-card native">
+                    <div class="casting-header">
+                        <h3 class="casting-title">Lead Actor - Historical Drama Series</h3>
+                        <div class="casting-company">
+                            MBC Studios
+                            <span class="verification-badge">Verified</span>
+                            <span class="source-badge native">Native</span>
+                        </div>
+                    </div>
+                    
+                    <div class="casting-body">
+                        <div class="casting-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Location</span>
+                                <span class="detail-value">Riyadh, Saudi Arabia</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Shoot Dates</span>
+                                <span class="detail-value">Dec 15 - Feb 28, 2025</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Application Deadline</span>
+                                <span class="detail-value">Oct 15, 2025</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Applications</span>
+                                <span class="detail-value">47 submitted</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="casting-footer">
+                        <div class="status-indicator">
+                            <div class="status-dot"></div>
+                            <span>Applications Open</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn btn-secondary">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l11 11Z"/>
+                                </svg>
+                                Save
+                            </button>
+                            <button class="btn btn-primary">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14,2 14,8 20,8"/>
+                                </svg>
+                                Apply Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- External/Scraped Casting Call -->
+                <div class="casting-card external">
+                    <div class="casting-header">
+                        <h3 class="casting-title">Brand Ambassador - Sustainable Fashion</h3>
+                        <div class="casting-company">
+                            Al Tayer Group
+                            <span class="source-badge external">External</span>
+                        </div>
+                    </div>
+                    
+                    <div class="casting-body">
+                        <div class="casting-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Location</span>
+                                <span class="detail-value">Jeddah, Saudi Arabia</span>
+                                <div class="confidence-indicator">
+                                    <div class="confidence-bar">
+                                        <div class="confidence-fill" style="width: 85%;"></div>
+                                    </div>
+                                    <span class="confidence-text">85% confidence</span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Deadline</span>
+                                <span class="detail-value missing">Not specified</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Compensation</span>
+                                <span class="detail-value missing">Contact for details</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Source</span>
+                                <span class="detail-value">Company Website</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="casting-footer">
+                        <div class="status-indicator">
+                            <div class="status-dot external"></div>
+                            <span>External Opportunity</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn btn-secondary">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                                </svg>
+                                Claim This
+                            </button>
+                            <button class="btn btn-coral">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                    <polyline points="15,3 21,3 21,9"/>
+                                    <line x1="10" y1="14" x2="21" y2="3"/>
+                                </svg>
+                                Learn More
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

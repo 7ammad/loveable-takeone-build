@@ -2,10 +2,20 @@ import { Redis } from '@upstash/redis';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL!,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-});
+let redis: Redis | null = null;
+
+function getRedisClient(): Redis {
+  if (redis) return redis;
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  if (!url || !token) {
+    throw new Error('Redis configuration is missing.');
+  }
+
+  redis = new Redis({ url, token });
+  return redis;
+}
 
 const IDEMPOTENCY_KEY_EXPIRY_SECONDS = 60 * 60 * 24; // 24 hours
 
@@ -33,7 +43,7 @@ export async function checkIdempotency(request: NextRequest): Promise<NextRespon
   }
 
   const key = `idempotency:${idempotencyKey}`;
-  const existing = await redis.get(key);
+  const existing = await getRedisClient().get(key);
 
   if (existing) {
     // This is a duplicate request, return the stored response
@@ -80,7 +90,7 @@ export async function storeIdempotencyResponse(
     };
 
     const key = `idempotency:${idempotencyKey}`;
-    await redis.set(key, JSON.stringify(storedResponse), {
+    await getRedisClient().set(key, JSON.stringify(storedResponse), {
       ex: IDEMPOTENCY_KEY_EXPIRY_SECONDS,
     });
   } catch (error) {

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import {
   Box,
   Typography,
@@ -356,14 +357,11 @@ export function SmartCarousel({ castingCalls }: SmartCarouselProps) {
               },
             }}
           >
-            <img
+            <Image
               src={call.image}
               alt={call.projectTitle}
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-              }}
+              layout="fill"
+              objectFit="cover"
             />
           </Box>
         ))}

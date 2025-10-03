@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TakeOne - KAFD Noir with Amiri Typography</title>
+    <style>
+        /* Amiri Font Loading */
+        @font-face {
+            font-family: 'Amiri';
+            src: url('./Amiri-Regular.ttf') format('truetype');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+        
+        @font-face {
+            font-family: 'Amiri';
+            src: url('./Amiri-Bold.ttf') format('truetype');
+            font-weight: 700;
+            font-style: normal;
+            font-display: swap;
+        }
+        
+        @font-face {
+            font-family: 'Amiri';
+            src: url('./Amiri-Italic.ttf') format('truetype');
+            font-weight: 400;
+            font-style: italic;
+            font-display: swap;
+        }
+        
+        @font-face {
+            font-family: 'Amiri';
+            src: url('./Amiri-BoldItalic.ttf') format('truetype');
+            font-weight: 700;
+            font-style: italic;
+            font-display: swap;
+        }
+        
+        /* TakeOne KAFD Noir Design System with Amiri Typography */
+        :root {
+            /* KAFD Noir Colors */
+            --takeone-color-noir: #121212;
+            --takeone-color-gold: #FFD700;
+            --takeone-color-azure: #007FFF;
+            --takeone-color-white: #FFFFFF;
+            --takeone-color-silver: #C0C0C0;
+            --takeone-color-success: #28A745;
+            --takeone-color-warning: #FFC107;
+            --takeone-color-error: #DC3545;
+            
+            /* Grayscale */
+            --takeone-gray-100: #F8F9FA;
+            --takeone-gray-200: #E9ECEF;
+            --takeone-gray-300: #DEE2E6;
+            --takeone-gray-400: #CED4DA;
+            --takeone-gray-500: #ADB5BD;
+            --takeone-gray-600: #6C757D;
+            --takeone-gray-700: #495057;
+            --takeone-gray-800: #343A40;
+            --takeone-gray-900: #212529;
+            
+            /* Typography - Amiri Font */
+            --takeone-font-family: 'Amiri', 'Times New Roman', serif;
+            --takeone-font-size-caption: 0.75rem;
+            --takeone-font-size-small: 0.875rem;
+            --takeone-font-size-body: 1rem;
+            --takeone-font-size-h3: 1.25rem;
+            --takeone-font-size-h2: 1.5rem;
+            --takeone-font-size-h1: 2rem;
+            --takeone-font-size-display: 2.5rem;
+            
+            /* Spacing */
+            --takeone-spacing-xs: 4px;
+            --takeone-spacing-sm: 8px;
+            --takeone-spacing-md: 16px;
+            --takeone-spacing-lg: 24px;
+            --takeone-spacing-xl: 32px;
+            --takeone-spacing-2xl: 48px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--takeone-font-family);
+            background: var(--takeone-gray-100);
+            padding: var(--takeone-spacing-xl);
+            line-height: 1.7;
+            color: var(--takeone-color-noir);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: var(--takeone-spacing-2xl);
+            padding: var(--takeone-spacing-2xl);
+            background: linear-gradient(135deg, var(--takeone-color-noir) 0%, var(--takeone-gray-800) 100%);
+            border-radius: 12px;
+            color: var(--takeone-color-white);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%23FFD700" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="%23007FFF" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>') repeat;
+            opacity: 0.3;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header h1 {
+            font-size: var(--takeone-font-size-display);
+            font-weight: 700;
+            margin-bottom: var(--takeone-spacing-sm);
+            background: linear-gradient(135deg, var(--takeone-color-gold), var(--takeone-color-azure));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header .subtitle {
+            font-size: var(--takeone-font-size-body);
+            opacity: 0.9;
+            font-style: italic;
+            margin-bottom: var(--takeone-spacing-lg);
+        }
+        
+        .design-principles {
+            display: flex;
+            justify-content: center;
+            gap: var(--takeone-spacing-md);
+            flex-wrap: wrap;
+        }
+        
+        .principle-tag {
+            background: rgba(255, 215, 0, 0.1);
+            color: var(--takeone-color-gold);
+            padding: var(--takeone-spacing-xs) var(--takeone-spacing-md);
+            border-radius: 20px;
+            font-size: var(--takeone-font-size-small);
+            font-weight: 500;
+            border: 1px solid var(--takeone-color-gold);
+        }
+        
+        /* Section Headers */
+        .section-title {
+            font-size: var(--takeone-font-size-h2);
+            font-weight: 700;
+            color: var(--takeone-color-noir);
+            margin-bottom: var(--takeone-spacing-xl);
+            display: flex;
+            align-items: center;
+            gap: var(--takeone-spacing-md);
+        }
+        
+        .section-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--takeone-color-azure);
+        }
+        
+        /* Headshot-First Talent Grid */
+        .talent-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: var(--takeone-spacing-lg);
+            margin-bottom: var(--takeone-spacing-2xl);
+        }
+        
+        .talent-card {
+            position: relative;
+            aspect-ratio: 3/4;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(18, 18, 18, 0.08);
+        }
+        
+        .talent-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(18, 18, 18, 0.15);
+        }
+        
+        .talent-headshot {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--takeone-color-azure), var(--takeone-color-gold));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--takeone-font-size-display);
+            font-weight: 700;
+            color: var(--takeone-color-white);
+            position: relative;
+        }
+        
+        .talent-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(18, 18, 18, 0.95));
+            color: var(--takeone-color-white);
+            padding: var(--takeone-spacing-lg);
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .talent-card:hover .talent-overlay {
+            transform: translateY(0);
+        }
+        
+        .talent-name {
+            font-size: var(--takeone-font-size-h3);
+            font-weight: 700;
+            margin-bottom: var(--takeone-spacing-xs);
+        }
+        
+        .talent-specialty {
+            font-size: var(--takeone-font-size-small);
+            opacity: 0.9;
+            margin-bottom: var(--takeone-spacing-sm);
+            font-style: italic;
+        }
+        
+        .talent-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: var(--takeone-font-size-small);
+        }
+        
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: var(--takeone-spacing-xs);
+            color: var(--takeone-color-gold);
+        }
+        
+        .availability {
+            display: flex;
+            align-items: center;
+            gap: var(--takeone-spacing-xs);
+        }
+        
+        .availability-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--takeone-color-success);
+        }
+        
+        .availability-dot.busy {
+            background: var(--takeone-color-warning);
+        }
+        
+        /* Casting Call Cards */
+        .casting-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: var(--takeone-spacing-lg);
+            margin-bottom: var(--takeone-spacing-2xl);
+        }
+        
+        .casting-card {
+            background: var(--takeone-color-white);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(18, 18, 18, 0.08);
+            overflow: hidden;
+            transition: all 0.2s ease-out;
+            border: 1px solid var(--takeone-gray-200);
+        }
+        
+        .casting-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(18, 18, 18, 0.12);
+        }
+        
+        .casting-card.native {
+            border-left: 4px solid var(--takeone-color-success);
+        }
+        
+        .casting-card.external {
+            border-left: 4px solid var(--takeone-color-warning);
+        }
+        
+        .casting-header {
+            padding: var(--takeone-spacing-lg);
+            border-bottom: 1px solid var(--takeone-gray-200);
+        }
+        
+        .casting-title {
+            font-size: var(--takeone-font-size-h3);
+            font-weight: 700;
+            color: var(--takeone-color-noir);
+            margin-bottom: var(--takeone-spacing-xs);
+            line-height: 1.4;
+        }
+        
+        .casting-company {
+            display: flex;
+            align-items: center;
+            gap: var(--takeone-spacing-sm);
+            color: var(--takeone-gray-600);
+            margin-bottom: var(--takeone-spacing-sm);
+        }
+        
+        .source-badge {
+            padding: var(--takeone-spacing-xs) var(--takeone-spacing-sm);
+            border-radius: 4px;
+            font-size: var(--takeone-font-size-caption);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .source-badge.native {
+            background: var(--takeone-color-success);
+            color: var(--takeone-color-white);
+        }
+        
+        .source-badge.external {
+            background: var(--takeone-color-warning);
+            color: var(--takeone-color-noir);
+        }
+        
+        .verification-badge {
+            background: var(--takeone-color-success);
+            color: var(--takeone-color-white);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: var(--takeone-font-size-caption);
+            font-weight: 500;
+        }
+        
+        .casting-body {
+            padding: var(--takeone-spacing-lg);
+        }
+        
+        .casting-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--takeone-spacing-md);
+            margin-bottom: var(--takeone-spacing-lg);
+        }
+        
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: var(--takeone-spacing-xs);
+        }
+        
+        .detail-label {
+            font-size: var(--takeone-font-size-small);
+            color: var(--takeone-gray-600);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .detail-value {
+            font-size: var(--takeone-font-size-body);
+            color: var(--takeone-color-noir);
+            font-weight: 600;
+        }
+        
+        .detail-value.missing {
+            color: var(--takeone-gray-600);
+            font-style: italic;
+            font-weight: 400;
+        }
+        
+        .confidence-indicator {
+            display: flex;
+            align-items: center;
+            gap: var(--takeone-spacing-xs);
+            font-size: var(--takeone-font-size-caption);
+            color: var(--takeone-gray-600);
+            margin-top: var(--takeone-spacing-xs);
+        }
+        
+        .confidence-bar {
+            width: 40px;
+            height: 4px;
+            background: var(--takeone-gray-200);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background: var(--takeone-color-success);
+            transition: width 0.3s ease;
+        }
+        
+        .casting-footer {
+            padding: var(--takeone-spacing-lg);
+            border-top: 1px solid var(--takeone-gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: var(--takeone-spacing-sm);
+            font-size: var(--takeone-font-size-small);
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--takeone-color-success);
+        }
+        
+        .status-dot.external {
+            background: var(--takeone-color-warning);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: var(--takeone-spacing-sm);
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: var(--takeone-spacing-sm) var(--takeone-spacing-md);
+            border-radius: 8px;
+            font-size: var(--takeone-font-size-small);
+            font-weight: 600;
+            font-family: inherit;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease-out;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--takeone-spacing-xs);
+        }
+        
+        .btn-primary {
+            background: var(--takeone-color-gold);
+            color: var(--takeone-color-noir);
+        }
+        
+        .btn-primary:hover {
+            background: #E6C200;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--takeone-color-azure);
+            border: 1px solid var(--takeone-color-azure);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--takeone-color-azure);
+            color: var(--takeone-color-white);
+        }
+        
+        .btn-warning {
+            background: var(--takeone-color-warning);
+            color: var(--takeone-color-noir);
+        }
+        
+        .btn-warning:hover {
+            background: #E0A800;
+            transform: translateY(-1px);
+        }
+        
+        .icon {
+            width: 16px;
+            height: 16px;
+        }
+        
+        /* Typography Showcase */
+        .typography-showcase {
+            background: var(--takeone-color-white);
+            padding: var(--takeone-spacing-2xl);
+            border-radius: 12px;
+            margin-bottom: var(--takeone-spacing-2xl);
+            box-shadow: 0 4px 12px rgba(18, 18, 18, 0.08);
+        }
+        
+        .typography-showcase h2 {
+            color: var(--takeone-color-noir);
+            margin-bottom: var(--takeone-spacing-lg);
+        }
+        
+        .font-samples {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--takeone-spacing-xl);
+        }
+        
+        .arabic-sample {
+            text-align: right;
+            direction: rtl;
+        }
+        
+        .arabic-sample h3 {
+            font-size: var(--takeone-font-size-h1);
+            color: var(--takeone-color-noir);
+            margin-bottom: var(--takeone-spacing-md);
+        }
+        
+        .arabic-sample p {
+            font-size: var(--takeone-font-size-body);
+            color: var(--takeone-gray-700);
+            line-height: 1.8;
+        }
+        
+        .latin-sample h3 {
+            font-size: var(--takeone-font-size-h1);
+            color: var(--takeone-color-noir);
+            margin-bottom: var(--takeone-spacing-md);
+        }
+        
+        .latin-sample p {
+            font-size: var(--takeone-font-size-body);
+            color: var(--takeone-gray-700);
+            line-height: 1.8;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .talent-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: var(--takeone-spacing-md);
+            }
+            
+            .casting-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .casting-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .casting-footer {
+                flex-direction: column;
+                gap: var(--takeone-spacing-md);
+                align-items: stretch;
+            }
+            
+            .action-buttons {
+                justify-content: center;
+            }
+            
+            .font-samples {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1>TakeOne</h1>
+                <p class="subtitle">KAFD Noir Design System with Amiri Typography</p>
+                <div class="design-principles">
+                    <span class="principle-tag">Professional</span>
+                    <span class="principle-tag">Seamless</span>
+                    <span class="principle-tag">Trustworthy</span>
+                    <span class="principle-tag">Artistic</span>
+                    <span class="principle-tag">Edgy</span>
+                    <span class="principle-tag">Dynamic</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Typography Showcase -->
+        <div class="typography-showcase">
+            <h2 class="section-title">
+                <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14,2 14,8 20,8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                Amiri Typography Showcase
+            </h2>
+            <div class="font-samples">
+                <div class="arabic-sample">
+                    <h3>منصة تيك ون</h3>
+                    <p>منصة تيك ون هي الوجهة الأولى للمواهب السعودية في صناعة الترفيه. نحن نربط بين المواهب الإبداعية وصناع المحتوى لخلق فرص استثنائية في عالم الإنتاج والتمثيل.</p>
+                </div>
+                <div class="latin-sample">
+                    <h3>TakeOne Platform</h3>
+                    <p>TakeOne is the premier destination for Saudi talent in the entertainment industry. We connect creative professionals with content creators to build exceptional opportunities in production and performance.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Talent Discovery Section -->
+        <section>
+            <h2 class="section-title">
+                <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+                Discover Saudi Talent
+            </h2>
+            
+            <div class="talent-grid">
+                <div class="talent-card">
+                    <div class="talent-headshot">سارة</div>
+                    <div class="talent-overlay">
+                        <div class="talent-name">Sarah Al-Rashid</div>
+                        <div class="talent-specialty">Actress & Voice Artist</div>
+                        <div class="talent-stats">
+                            <div class="rating">★★★★★ 4.9</div>
+                            <div class="availability">
+                                <div class="availability-dot"></div>
+                                <span>Available</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="talent-card">
+                    <div class="talent-headshot">أحمد</div>
+                    <div class="talent-overlay">
+                        <div class="talent-name">Ahmed Al-Mansouri</div>
+                        <div class="talent-specialty">Model & Commercial Actor</div>
+                        <div class="talent-stats">
+                            <div class="rating">★★★★☆ 4.7</div>
+                            <div class="availability">
+                                <div class="availability-dot busy"></div>
+                                <span>Busy</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="talent-card">
+                    <div class="talent-headshot">ليلى</div>
+                    <div class="talent-overlay">
+                        <div class="talent-name">Layla Al-Khatib</div>
+                        <div class="talent-specialty">Dancer & Choreographer</div>
+                        <div class="talent-stats">
+                            <div class="rating">★★★★★ 5.0</div>
+                            <div class="availability">
+                                <div class="availability-dot"></div>
+                                <span>Available</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="talent-card">
+                    <div class="talent-headshot">عمر</div>
+                    <div class="talent-overlay">
+                        <div class="talent-name">Omar Al-Khalil</div>
+                        <div class="talent-specialty">Director & Producer</div>
+                        <div class="talent-stats">
+                            <div class="rating">★★★★★ 4.8</div>
+                            <div class="availability">
+                                <div class="availability-dot"></div>
+                                <span>Available</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Casting Opportunities Section -->
+        <section>
+            <h2 class="section-title">
+                <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                    <line x1="8" y1="21" x2="16" y2="21"/>
+                    <line x1="12" y1="17" x2="12" y2="21"/>
+                </svg>
+                Live Casting Opportunities
+            </h2>
+            
+            <div class="casting-grid">
+                <!-- Native Casting Call -->
+                <div class="casting-card native">
+                    <div class="casting-header">
+                        <h3 class="casting-title">Lead Actor - Historical Drama Series</h3>
+                        <div class="casting-company">
+                            MBC Studios
+                            <span class="verification-badge">Verified</span>
+                            <span class="source-badge native">Native</span>
+                        </div>
+                    </div>
+                    
+                    <div class="casting-body">
+                        <div class="casting-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Location</span>
+                                <span class="detail-value">Riyadh, Saudi Arabia</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Shoot Dates</span>
+                                <span class="detail-value">Dec 15 - Feb 28, 2025</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Application Deadline</span>
+                                <span class="detail-value">Oct 15, 2025</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Applications</span>
+                                <span class="detail-value">47 submitted</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="casting-footer">
+                        <div class="status-indicator">
+                            <div class="status-dot"></div>
+                            <span>Applications Open</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn btn-secondary">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l11 11Z"/>
+                                </svg>
+                                Save
+                            </button>
+                            <button class="btn btn-primary">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14,2 14,8 20,8"/>
+                                </svg>
+                                Apply Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- External/Scraped Casting Call -->
+                <div class="casting-card external">
+                    <div class="casting-header">
+                        <h3 class="casting-title">Brand Ambassador - Luxury Fashion</h3>
+                        <div class="casting-company">
+                            Al Tayer Group
+                            <span class="source-badge external">External</span>
+                        </div>
+                    </div>
+                    
+                    <div class="casting-body">
+                        <div class="casting-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Location</span>
+                                <span class="detail-value">Jeddah, Saudi Arabia</span>
+                                <div class="confidence-indicator">
+                                    <div class="confidence-bar">
+                                        <div class="confidence-fill" style="width: 85%;"></div>
+                                    </div>
+                                    85% confidence
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Deadline</span>
+                                <span class="detail-value missing">Not specified</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Compensation</span>
+                                <span class="detail-value missing">Contact for details</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Source</span>
+                                <span class="detail-value">Company Website</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="casting-footer">
+                        <div class="status-indicator">
+                            <div class="status-dot external"></div>
+                            <span>External Opportunity</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn btn-secondary">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                                </svg>
+                                Claim This
+                            </button>
+                            <button class="btn btn-warning">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                    <polyline points="15,3 21,3 21,9"/>
+                                    <line x1="10" y1="14" x2="21" y2="3"/>
+                                </svg>
+                                Learn More
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

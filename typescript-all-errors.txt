@@ -1,0 +1,320 @@
+﻿[96mDocs/cursor_ready_package/components/CastingCallCard/index.ts[0m:[93m2[0m:[93m15[0m - [91merror[0m[90m TS2614: [0mModule '"./CastingCallCard"' has no exported member 'CastingCall'. Did you mean to use 'import CastingCall from "./CastingCallCard"' instead?
+
+[7m2[0m export type { CastingCall, DateRange } from './CastingCallCard';
+[7m [0m [91m              ~~~~~~~~~~~[0m
+
+[96mDocs/cursor_ready_package/components/CastingCallCard/index.ts[0m:[93m2[0m:[93m28[0m - [91merror[0m[90m TS2614: [0mModule '"./CastingCallCard"' has no exported member 'DateRange'. Did you mean to use 'import DateRange from "./CastingCallCard"' instead?
+
+[7m2[0m export type { CastingCall, DateRange } from './CastingCallCard';
+[7m [0m [91m                           ~~~~~~~~~[0m
+
+[96mDocs/cursor_ready_package/components/DashboardLayout/index.ts[0m:[93m2[0m:[93m15[0m - [91merror[0m[90m TS2614: [0mModule '"./DashboardLayout"' has no exported member 'User'. Did you mean to use 'import User from "./DashboardLayout"' instead?
+
+[7m2[0m export type { User, NavigationItem } from './DashboardLayout';
+[7m [0m [91m              ~~~~[0m
+
+[96mDocs/cursor_ready_package/components/DashboardLayout/index.ts[0m:[93m2[0m:[93m21[0m - [91merror[0m[90m TS2614: [0mModule '"./DashboardLayout"' has no exported member 'NavigationItem'. Did you mean to use 'import NavigationItem from "./DashboardLayout"' instead?
+
+[7m2[0m export type { User, NavigationItem } from './DashboardLayout';
+[7m [0m [91m                    ~~~~~~~~~~~~~~[0m
+
+[96mDocs/cursor_ready_package/components/SearchInterface/index.ts[0m:[93m2[0m:[93m15[0m - [91merror[0m[90m TS2614: [0mModule '"./SearchInterface"' has no exported member 'SearchFilters'. Did you mean to use 'import SearchFilters from "./SearchInterface"' instead?
+
+[7m2[0m export type { SearchFilters, SearchResult, SavedSearch } from './SearchInterface';
+[7m [0m [91m              ~~~~~~~~~~~~~[0m
+
+[96mDocs/cursor_ready_package/components/SearchInterface/index.ts[0m:[93m2[0m:[93m30[0m - [91merror[0m[90m TS2614: [0mModule '"./SearchInterface"' has no exported member 'SearchResult'. Did you mean to use 'import SearchResult from "./SearchInterface"' instead?
+
+[7m2[0m export type { SearchFilters, SearchResult, SavedSearch } from './SearchInterface';
+[7m [0m [91m                             ~~~~~~~~~~~~[0m
+
+[96mDocs/cursor_ready_package/components/SearchInterface/index.ts[0m:[93m2[0m:[93m44[0m - [91merror[0m[90m TS2614: [0mModule '"./SearchInterface"' has no exported member 'SavedSearch'. Did you mean to use 'import SavedSearch from "./SearchInterface"' instead?
+
+[7m2[0m export type { SearchFilters, SearchResult, SavedSearch } from './SearchInterface';
+[7m [0m [91m                                           ~~~~~~~~~~~[0m
+
+[96mDocs/cursor_ready_package/components/SearchInterface/SearchInterface.tsx[0m:[93m41[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"lucide-react"' has no exported member 'ExpandMore'.
+
+[7m41[0m   ExpandMore,
+[7m  [0m [91m  ~~~~~~~~~~[0m
+
+[96mDocs/cursor_ready_package/components/SearchInterface/SearchInterface.tsx[0m:[93m632[0m:[93m16[0m - [91merror[0m[90m TS2769: [0mNo overload matches this call.
+  Overload 1 of 2, '(props: { component: ElementType<any, keyof IntrinsicElements>; } & GridBaseProps & { sx?: SxProps<Theme> | undefined; } & SystemProps<...> & Omit<...>): Element | null', gave the following error.
+    Property 'component' is missing in type '{ children: Element; item: true; xs: number; sm: number; md: number; key: string; }' but required in type '{ component: ElementType<any, keyof IntrinsicElements>; }'.
+  Overload 2 of 2, '(props: DefaultComponentProps<GridTypeMap<{}, "div">>): Element | null', gave the following error.
+    Type '{ children: Element; item: true; xs: number; sm: number; md: number; key: string; }' is not assignable to type 'IntrinsicAttributes & GridBaseProps & { sx?: SxProps<Theme> | undefined; } & SystemProps<Theme> & Omit<...>'.
+      Property 'item' does not exist on type 'IntrinsicAttributes & GridBaseProps & { sx?: SxProps<Theme> | undefined; } & SystemProps<Theme> & Omit<...>'.
+
+[7m632[0m               <Grid item xs={12} sm={6} md={4} key={savedSearch.id}>
+[7m   [0m [91m               ~~~~[0m
+
+  [96mnode_modules/.pnpm/@mui+types@7.4.6_@types+react@19.1.13/node_modules/@mui/types/esm/index.d.ts[0m:[93m64[0m:[93m5[0m
+    [7m64[0m     component: C;
+    [7m  [0m [96m    ~~~~~~~~~[0m
+    'component' is declared here.
+
+[96mDocs/cursor_ready_package/components/TalentCard/index.ts[0m:[93m2[0m:[93m15[0m - [91merror[0m[90m TS2614: [0mModule '"./TalentCard"' has no exported member 'TalentUser'. Did you mean to use 'import TalentUser from "./TalentCard"' instead?
+
+[7m2[0m export type { TalentUser } from './TalentCard';
+[7m [0m [91m              ~~~~~~~~~~[0m
+
+[96mDocs/cursor_ready_package/components/TalentCard/TalentCard.tsx[0m:[93m209[0m:[93m7[0m - [91merror[0m[90m TS2322: [0mType '{ hover: { y: number; transition: { duration: number; ease: number[]; }; }; tap: { scale: number; transition: { duration: number; }; }; }' is not assignable to type 'Variants'.
+  Property 'hover' is incompatible with index signature.
+    Type '{ y: number; transition: { duration: number; ease: number[]; }; }' is not assignable to type 'Variant'.
+      Type '{ y: number; transition: { duration: number; ease: number[]; }; }' is not assignable to type 'TargetAndTransition'.
+        Type '{ y: number; transition: { duration: number; ease: number[]; }; }' is not assignable to type '{ transition?: Transition<any> | undefined; transitionEnd?: ResolvedValues | undefined; }'.
+          Types of property 'transition' are incompatible.
+            Type '{ duration: number; ease: number[]; }' is not assignable to type 'Transition<any> | undefined'.
+              Type '{ duration: number; ease: number[]; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+                Type '{ duration: number; ease: number[]; }' is not assignable to type 'ValueAnimationTransition<any>'.
+                  Types of property 'ease' are incompatible.
+                    Type 'number[]' is not assignable to type 'Easing | Easing[] | undefined'.
+                      Type 'number[]' is not assignable to type 'EasingFunction | Easing[]'.
+                        Type 'number[]' is not assignable to type 'Easing[]'.
+                          Type 'number' is not assignable to type 'Easing'.
+
+[7m209[0m       variants={cardVariants}
+[7m   [0m [91m      ~~~~~~~~[0m
+
+  [96mnode_modules/.pnpm/motion-dom@12.23.21/node_modules/motion-dom/dist/index.d.ts[0m:[93m1800[0m:[93m5[0m
+    [7m1800[0m     variants?: Variants;
+    [7m    [0m [96m    ~~~~~~~~[0m
+    The expected type comes from property 'variants' which is declared here on type 'IntrinsicAttributes & Omit<HTMLMotionProps<"div">, "ref"> & RefAttributes<HTMLDivElement> & MUIStyledCommonProps<...>'
+
+[96mDocs/cursor_ready_package/components/TalentCard/TalentCard.tsx[0m:[93m246[0m:[93m11[0m - [91merror[0m[90m TS2322: [0mType '{ hidden: { y: string; }; visible: { y: number; transition: { duration: number; ease: number[]; }; }; }' is not assignable to type 'Variants'.
+  Property 'visible' is incompatible with index signature.
+    Type '{ y: number; transition: { duration: number; ease: number[]; }; }' is not assignable to type 'Variant'.
+      Type '{ y: number; transition: { duration: number; ease: number[]; }; }' is not assignable to type 'TargetAndTransition'.
+        Type '{ y: number; transition: { duration: number; ease: number[]; }; }' is not assignable to type '{ transition?: Transition<any> | undefined; transitionEnd?: ResolvedValues | undefined; }'.
+          Types of property 'transition' are incompatible.
+            Type '{ duration: number; ease: number[]; }' is not assignable to type 'Transition<any> | undefined'.
+              Type '{ duration: number; ease: number[]; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+                Type '{ duration: number; ease: number[]; }' is not assignable to type 'ValueAnimationTransition<any>'.
+                  Types of property 'ease' are incompatible.
+                    Type 'number[]' is not assignable to type 'Easing | Easing[] | undefined'.
+                      Type 'number[]' is not assignable to type 'EasingFunction | Easing[]'.
+                        Type 'number[]' is not assignable to type 'Easing[]'.
+                          Type 'number' is not assignable to type 'Easing'.
+
+[7m246[0m           variants={overlayVariants}
+[7m   [0m [91m          ~~~~~~~~[0m
+
+  [96mnode_modules/.pnpm/motion-dom@12.23.21/node_modules/motion-dom/dist/index.d.ts[0m:[93m1800[0m:[93m5[0m
+    [7m1800[0m     variants?: Variants;
+    [7m    [0m [96m    ~~~~~~~~[0m
+    The expected type comes from property 'variants' which is declared here on type 'IntrinsicAttributes & Omit<HTMLMotionProps<"div">, "ref"> & RefAttributes<HTMLDivElement>'
+
+[96mpackages/core-observability/src/tracing.ts[0m:[93m27[0m:[93m14[0m - [91merror[0m[90m TS2339: [0mProperty 'addSpanProcessor' does not exist on type 'NodeTracerProvider'.
+
+[7m27[0m     provider.addSpanProcessor(new BatchSpanProcessor(otlpExporter));
+[7m  [0m [91m             ~~~~~~~~~~~~~~~~[0m
+
+[96mpackages/core-observability/src/tracing.ts[0m:[93m29[0m:[93m14[0m - [91merror[0m[90m TS2339: [0mProperty 'addSpanProcessor' does not exist on type 'NodeTracerProvider'.
+
+[7m29[0m     provider.addSpanProcessor(new SimpleSpanProcessor(otlpExporter));
+[7m  [0m [91m             ~~~~~~~~~~~~~~~~[0m
+
+[96mpackages/core-payments/src/billing-service.ts[0m:[93m223[0m:[93m10[0m - [91merror[0m[90m TS2678: [0mType '"subscription_canceled"' is not comparable to type '"grace_period_started" | "subscription_reactivated" | "payment_failed" | "subscription_cancelled"'.
+
+[7m223[0m     case 'subscription_canceled':
+[7m   [0m [91m         ~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96mpackages/core-payments/src/billing-service.ts[0m:[93m228[0m:[93m10[0m - [91merror[0m[90m TS2678: [0mType '"subscription_extended"' is not comparable to type '"grace_period_started" | "subscription_reactivated" | "payment_failed" | "subscription_cancelled"'.
+
+[7m228[0m     case 'subscription_extended':
+[7m   [0m [91m         ~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96mpackages/core-queue/src/outbox.ts[0m:[93m51[0m:[93m7[0m - [91merror[0m[90m TS2322: [0mType 'OutboxEventPayload' is not assignable to type 'JsonNull | InputJsonValue'.
+  Type '{ talentId: string; profileData: Record<string, unknown>; }' is not assignable to type 'JsonNull | InputJsonValue'.
+    Type '{ talentId: string; profileData: Record<string, unknown>; }' is not assignable to type 'InputJsonObject'.
+      Property 'profileData' is incompatible with index signature.
+        Type 'Record<string, unknown>' is not assignable to type 'InputJsonValue | null | undefined'.
+          Type 'Record<string, unknown>' is missing the following properties from type 'readonly (InputJsonValue | null)[]': length, concat, join, slice, and 26 more.
+
+[7m51[0m       payload,
+[7m  [0m [91m      ~~~~~~~[0m
+
+  [96mnode_modules/.prisma/client/index.d.ts[0m:[93m20789[0m:[93m5[0m
+    [7m20789[0m     payload: JsonNullValueInput | InputJsonValue
+    [7m     [0m [96m    ~~~~~~~[0m
+    The expected type comes from property 'payload' which is declared here on type '(Without<OutboxCreateInput, OutboxUncheckedCreateInput> & OutboxUncheckedCreateInput) | (Without<...> & OutboxCreateInput)'
+
+[96mpackages/core-search/src/algolia-adapter.ts[0m:[93m336[0m:[93m7[0m - [91merror[0m[90m TS2322: [0mType '{ query: string; filters: SearchFilters | undefined; nbHits: any; processingTimeMs: any; cohort: string; }' is not assignable to type 'NullableJsonNullValueInput | InputJsonValue | undefined'.
+  Types of property 'filters' are incompatible.
+    Type 'SearchFilters | undefined' is not assignable to type 'InputJsonValue | null | undefined'.
+      Type 'SearchFilters' is not assignable to type 'InputJsonValue | null | undefined'.
+        Type 'SearchFilters' is not assignable to type 'InputJsonObject'.
+          Index signature for type 'string' is missing in type 'SearchFilters'.
+
+[7m336[0m       metadata: {
+[7m   [0m [91m      ~~~~~~~~[0m
+
+  [96mnode_modules/.prisma/client/index.d.ts[0m:[93m20859[0m:[93m5[0m
+    [7m20859[0m     metadata?: NullableJsonNullValueInput | InputJsonValue
+    [7m     [0m [96m    ~~~~~~~~[0m
+    The expected type comes from property 'metadata' which is declared here on type 'AuditEventPayload'
+
+[96mpackages/core-search/src/search-service.ts[0m:[93m193[0m:[93m9[0m - [91merror[0m[90m TS2322: [0mType '{ skills?: string[] | undefined; languages?: string[] | undefined; location?: string | undefined; city?: string | undefined; experience?: number | undefined; minExperience?: number | undefined; ... 42 more ...; languageProficiency?: { ...; }[] | undefined; }' is not assignable to type 'SearchFilters'.
+  Types of property 'experience' are incompatible.
+    Type 'number | undefined' is not assignable to type '[number, number] | undefined'.
+      Type 'number' is not assignable to type '[number, number]'.
+
+[7m193[0m         filters: validatedFilters,
+[7m   [0m [91m        ~~~~~~~[0m
+
+  [96mpackages/core-search/src/search-ranking.ts[0m:[93m84[0m:[93m3[0m
+    [7m84[0m   filters?: SearchFilters;
+    [7m  [0m [96m  ~~~~~~~[0m
+    The expected type comes from property 'filters' which is declared here on type 'SearchContext'
+
+[96mpackages/core-search/src/search-service.ts[0m:[93m196[0m:[93m9[0m - [91merror[0m[90m TS2322: [0mType '{ recentSearches: { searchTerm: string; createdAt: Date; }[]; clickedProfiles: { profileId: string; clickedAt: Date; }[]; } | undefined' is not assignable to type '{ recentSearches: string[]; clickedProfiles: string[]; savedProfiles: string[]; } | undefined'.
+  Property 'savedProfiles' is missing in type '{ recentSearches: { searchTerm: string; createdAt: Date; }[]; clickedProfiles: { profileId: string; clickedAt: Date; }[]; }' but required in type '{ recentSearches: string[]; clickedProfiles: string[]; savedProfiles: string[]; }'.
+
+[7m196[0m         searchHistory: await this.getUserSearchHistory(request.userId)
+[7m   [0m [91m        ~~~~~~~~~~~~~[0m
+
+  [96mpackages/core-search/src/search-ranking.ts[0m:[93m103[0m:[93m5[0m
+    [7m103[0m     savedProfiles: string[];
+    [7m   [0m [96m    ~~~~~~~~~~~~~[0m
+    'savedProfiles' is declared here.
+  [96mpackages/core-search/src/search-ranking.ts[0m:[93m100[0m:[93m3[0m
+    [7m100[0m   searchHistory?: {
+    [7m   [0m [96m  ~~~~~~~~~~~~~[0m
+    The expected type comes from property 'searchHistory' which is declared here on type 'SearchContext'
+
+[96mpackages/core-search/src/search-service.ts[0m:[93m204[0m:[93m9[0m - [91merror[0m[90m TS2322: [0mType '{ skills?: string[] | undefined; languages?: string[] | undefined; location?: string | undefined; city?: string | undefined; experience?: number | undefined; minExperience?: number | undefined; ... 42 more ...; languageProficiency?: { ...; }[] | undefined; }' is not assignable to type 'SearchFilters'.
+  Types of property 'experience' are incompatible.
+    Type 'number | undefined' is not assignable to type '[number, number] | undefined'.
+      Type 'number' is not assignable to type '[number, number]'.
+
+[7m204[0m         filters: validatedFilters
+[7m   [0m [91m        ~~~~~~~[0m
+
+  [96mpackages/core-search/src/provider.ts[0m:[93m5[0m:[93m3[0m
+    [7m5[0m   filters?: SearchFilters;
+    [7m [0m [96m  ~~~~~~~[0m
+    The expected type comes from property 'filters' which is declared here on type 'TalentSearchQuery'
+
+[96mpackages/core-search/src/search-service.ts[0m:[93m217[0m:[93m9[0m - [91merror[0m[90m TS2322: [0mType '{ skills?: string[] | undefined; languages?: string[] | undefined; location?: string | undefined; city?: string | undefined; experience?: number | undefined; minExperience?: number | undefined; ... 42 more ...; languageProficiency?: { ...; }[] | undefined; }' is not assignable to type 'SearchFilters'.
+  Types of property 'experience' are incompatible.
+    Type 'number | undefined' is not assignable to type '[number, number] | undefined'.
+      Type 'number' is not assignable to type '[number, number]'.
+
+[7m217[0m         filters: validatedFilters,
+[7m   [0m [91m        ~~~~~~~[0m
+
+  [96mpackages/core-search/src/search-service.ts[0m:[93m314[0m:[93m5[0m
+    [7m314[0m     filters: SearchFilters;
+    [7m   [0m [96m    ~~~~~~~[0m
+    The expected type comes from property 'filters' which is declared here on type '{ userId?: string | undefined; searchTerm: string; filters: SearchFilters; resultsCount: number; executionTime: number; searchId: string; }'
+
+[96mpackages/core-search/src/search-service.ts[0m:[93m256[0m:[93m67[0m - [91merror[0m[90m TS2345: [0mArgument of type 'SearchHit' is not assignable to parameter of type 'TalentProfile'.
+  Property 'completeness' is missing in type 'SearchHit' but required in type 'TalentProfile'.
+
+[7m256[0m       const factors = searchRankingEngine.calculateRankingFactors(hit, context);
+[7m   [0m [91m                                                                  ~~~[0m
+
+  [96mpackages/core-search/src/search-ranking.ts[0m:[93m24[0m:[93m3[0m
+    [7m24[0m   completeness: number; // Profile completeness score (0-1)
+    [7m  [0m [96m  ~~~~~~~~~~~~[0m
+    'completeness' is declared here.
+
+[96mpackages/core-search/src/search-service.ts[0m:[93m267[0m:[93m5[0m - [91merror[0m[90m TS2322: [0mType '{ _customRankingScore: number; _rankingFactors: RankingFactors; objectID: string; id?: string | undefined; userId?: string | undefined; name: string; bio?: string | undefined; ... 48 more ...; _geoloc?: { ...; } | undefined; }[]' is not assignable to type 'SearchHit[]'.
+  Type '{ _customRankingScore: number; _rankingFactors: RankingFactors; objectID: string; id?: string; userId?: string; name: string; bio?: string; skills: string[]; experience: number; ... 46 more ...; _geoloc?: { lat: number; lng: number; }; }' is not assignable to type 'SearchHit'.
+    Types of property '_rankingFactors' are incompatible.
+      Type 'RankingFactors' is not assignable to type 'Record<string, number>'.
+        Index signature for type 'string' is missing in type 'RankingFactors'.
+
+[7m267[0m     return rankedHits.sort((a, b) => (b._customRankingScore || 0) - (a._customRankingScore || 0));
+[7m   [0m [91m    ~~~~~~[0m
+
+[96mpackages/core-search/src/search-service.ts[0m:[93m300[0m:[93m9[0m - [91merror[0m[90m TS2353: [0mObject literal may only specify known properties, and 'savedProfiles' does not exist in type '{ recentSearches: { searchTerm: string; createdAt: Date; }[]; clickedProfiles: { profileId: string; clickedAt: Date; }[]; }'.
+
+[7m300[0m         savedProfiles: [] // Would be populated from saved profiles
+[7m   [0m [91m        ~~~~~~~~~~~~~[0m
+
+[96mpackages/core-search/src/search-service.ts[0m:[93m326[0m:[93m11[0m - [91merror[0m[90m TS2322: [0mType 'SearchFilters' is not assignable to type 'JsonNull | InputJsonValue | undefined'.
+  Type 'SearchFilters' is not assignable to type 'InputJsonObject'.
+    Index signature for type 'string' is missing in type 'SearchFilters'.
+
+[7m326[0m           filters: data.filters,
+[7m   [0m [91m          ~~~~~~~[0m
+
+  [96mnode_modules/.prisma/client/index.d.ts[0m:[93m21918[0m:[93m5[0m
+    [7m21918[0m     filters?: JsonNullValueInput | InputJsonValue
+    [7m     [0m [96m    ~~~~~~~[0m
+    The expected type comes from property 'filters' which is declared here on type '(Without<SearchHistoryCreateInput, SearchHistoryUncheckedCreateInput> & SearchHistoryUncheckedCreateInput) | (Without<...> & SearchHistoryCreateInput)'
+
+[96mpackages/core-search/src/search-service.ts[0m:[93m367[0m:[93m7[0m - [91merror[0m[90m TS2322: [0mType '{ skills?: string[] | undefined; languages?: string[] | undefined; location?: string | undefined; city?: string | undefined; experience?: number | undefined; minExperience?: number | undefined; ... 42 more ...; languageProficiency?: { ...; }[] | undefined; }' is not assignable to type 'SearchFilters'.
+  Types of property 'experience' are incompatible.
+    Type 'number | undefined' is not assignable to type '[number, number] | undefined'.
+      Type 'number' is not assignable to type '[number, number]'.
+
+[7m367[0m       filters: validatedFilters
+[7m   [0m [91m      ~~~~~~~[0m
+
+  [96mpackages/core-search/src/provider.ts[0m:[93m5[0m:[93m3[0m
+    [7m5[0m   filters?: SearchFilters;
+    [7m [0m [96m  ~~~~~~~[0m
+    The expected type comes from property 'filters' which is declared here on type 'TalentSearchQuery'
+
+[96mpackages/core-search/src/search-service.ts[0m:[93m370[0m:[93m5[0m - [91merror[0m[90m TS2322: [0mType 'SearchFacets | {}' is not assignable to type 'SearchFacets'.
+  Type '{}' is missing the following properties from type 'SearchFacets': skills, location, experience, rating, verified
+
+[7m370[0m     return searchResults.facets || {};
+[7m   [0m [91m    ~~~~~~[0m
+
+[96mpackages/core-search/src/search-service.ts[0m:[93m421[0m:[93m7[0m - [91merror[0m[90m TS2353: [0mObject literal may only specify known properties, and 'averageSearchTime' does not exist in type '{ totalSearches: number; uniqueUsers: number; averageResultsPerSearch: number; topSearchTerms: { term: string; count: number; }[]; conversionRate: number; }'.
+
+[7m421[0m       averageSearchTime: 245,
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~[0m
+
+[96mpackages/core-search/src/search-service.ts[0m:[93m450[0m:[93m36[0m - [91merror[0m[90m TS2339: [0mProperty 'processingTimeMs' does not exist on type '{ nbHits: number; dataSize: number; fileSize: number; lastBuild: number; numberOfPendingTasks: number; pendingTasks: boolean; lastUpdated: string; }'.
+
+[7m450[0m         averageResponseTime: stats.processingTimeMs || 0,
+[7m   [0m [91m                                   ~~~~~~~~~~~~~~~~[0m
+
+[96mpackages/core-search/src/search-service.ts[0m:[93m451[0m:[93m9[0m - [91merror[0m[90m TS2353: [0mObject literal may only specify known properties, and 'lastUpdated' does not exist in type '{ averageResponseTime: number; cacheHitRate: number; errorRate: number; indexSize: number; lastReindexTime: Date; }'.
+
+[7m451[0m         lastUpdated: stats.lastUpdated || new Date().toISOString(),
+[7m   [0m [91m        ~~~~~~~~~~~[0m
+
+[96mpackages/core-search/src/search-service.ts[0m:[93m459[0m:[93m9[0m - [91merror[0m[90m TS2353: [0mObject literal may only specify known properties, and 'lastUpdated' does not exist in type '{ averageResponseTime: number; cacheHitRate: number; errorRate: number; indexSize: number; lastReindexTime: Date; }'.
+
+[7m459[0m         lastUpdated: new Date().toISOString(),
+[7m   [0m [91m        ~~~~~~~~~~~[0m
+
+[96mpackages/core-search/src/talent-indexer.ts[0m:[93m231[0m:[93m68[0m - [91merror[0m[90m TS2345: [0mArgument of type '{ id: string; userId: string; isMinor: boolean; guardianUserId: string | null; verified: boolean; }' is not assignable to parameter of type 'PrismaTalentProfile'.
+  Type '{ id: string; userId: string; isMinor: boolean; guardianUserId: string | null; verified: boolean; }' is missing the following properties from type 'PrismaTalentProfile': skills, languages, specializations, awards, and 4 more.
+
+[7m231[0m           this.prepareProfileForSearch(this.mapTalentProfileToData(profile))
+[7m   [0m [91m                                                                   ~~~~~~~[0m
+
+[96mpackages/core-search/src/talent-indexer.ts[0m:[93m272[0m:[93m40[0m - [91merror[0m[90m TS2345: [0mArgument of type '{ id: string; userId: string; isMinor: boolean; guardianUserId: string | null; verified: boolean; }' is not assignable to parameter of type 'PrismaTalentProfile'.
+  Type '{ id: string; userId: string; isMinor: boolean; guardianUserId: string | null; verified: boolean; }' is missing the following properties from type 'PrismaTalentProfile': skills, languages, specializations, awards, and 4 more.
+
+[7m272[0m     return this.mapTalentProfileToData(profile);
+[7m   [0m [91m                                       ~~~~~~~[0m
+
+[96mpackages/core-search/src/talent-indexer.ts[0m:[93m299[0m:[93m55[0m - [91merror[0m[90m TS2345: [0mArgument of type 'PrismaTalentProfile' is not assignable to parameter of type 'TalentProfileData'.
+  Type 'PrismaTalentProfile' is missing the following properties from type 'TalentProfileData': searchableText, completeness
+
+[7m299[0m       completeness: this.calculateProfileCompleteness(profile),
+[7m   [0m [91m                                                      ~~~~~~~[0m
+
+
+Found 35 errors in 12 files.
+
+Errors  Files
+     2  Docs/cursor_ready_package/components/CastingCallCard/index.ts[90m:2[0m
+     2  Docs/cursor_ready_package/components/DashboardLayout/index.ts[90m:2[0m
+     3  Docs/cursor_ready_package/components/SearchInterface/index.ts[90m:2[0m
+     2  Docs/cursor_ready_package/components/SearchInterface/SearchInterface.tsx[90m:41[0m
+     1  Docs/cursor_ready_package/components/TalentCard/index.ts[90m:2[0m
+     2  Docs/cursor_ready_package/components/TalentCard/TalentCard.tsx[90m:209[0m
+     2  packages/core-observability/src/tracing.ts[90m:27[0m
+     2  packages/core-payments/src/billing-service.ts[90m:223[0m
+     1  packages/core-queue/src/outbox.ts[90m:51[0m
+     1  packages/core-search/src/algolia-adapter.ts[90m:336[0m
+    14  packages/core-search/src/search-service.ts[90m:193[0m
+     3  packages/core-search/src/talent-indexer.ts[90m:231[0m

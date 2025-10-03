@@ -1,0 +1,34 @@
+﻿[96mpackages/core-search/src/search-service.ts[0m:[93m217[0m:[93m9[0m - [91merror[0m[90m TS2322: [0mType '{ skills?: string[] | undefined; languages?: string[] | undefined; location?: string | undefined; city?: string | undefined; experience?: number | undefined; minExperience?: number | undefined; ... 42 more ...; languageProficiency?: { ...; }[] | undefined; }' is not assignable to type 'SearchFilters'.
+  Types of property 'experience' are incompatible.
+    Type 'number | undefined' is not assignable to type '[number, number] | undefined'.
+      Type 'number' is not assignable to type '[number, number]'.
+
+[7m217[0m         filters: validatedFilters,
+[7m   [0m [91m        ~~~~~~~[0m
+
+  [96mpackages/core-search/src/search-service.ts[0m:[93m313[0m:[93m5[0m
+    [7m313[0m     filters: SearchFilters;
+    [7m   [0m [96m    ~~~~~~~[0m
+    The expected type comes from property 'filters' which is declared here on type '{ userId?: string | undefined; searchTerm: string; filters: SearchFilters; resultsCount: number; executionTime: number; searchId: string; }'
+
+[96mpackages/core-search/src/talent-indexer.ts[0m:[93m223[0m:[93m11[0m - [91merror[0m[90m TS2322: [0mType '{ user: true; }' is not assignable to type 'never'.
+
+[7m223[0m           include: { user: true }
+[7m   [0m [91m          ~~~~~~~[0m
+
+[96mpackages/core-search/src/talent-indexer.ts[0m:[93m267[0m:[93m7[0m - [91merror[0m[90m TS2322: [0mType '{ user: true; }' is not assignable to type 'never'.
+
+[7m267[0m       include: { user: true }
+[7m   [0m [91m      ~~~~~~~[0m
+
+  [96mpackages/core-search/src/talent-indexer.ts[0m:[93m267[0m:[93m7[0m
+    [7m267[0m       include: { user: true }
+    [7m   [0m [96m      ~~~~~~~~~~~~~~~~~~~~~~~[0m
+    The expected type comes from property 'include' which is declared here on type '{ where: { id: string; }; include: never; }'
+
+
+Found 3 errors in 2 files.
+
+Errors  Files
+     1  packages/core-search/src/search-service.ts[90m:217[0m
+     2  packages/core-search/src/talent-indexer.ts[90m:223[0m

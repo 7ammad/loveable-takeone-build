@@ -1,0 +1,15 @@
+[33mfbbb7fd[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfrontend-blueprint[m[33m)[m fix(build): resolve build errors and compatibility issues
+[33med03e38[m pre-UI build: Complete backend infrastructure with all fixes
+[33m6e293a5[m feat(digital-twin): implement complete data aggregation system
+[33mabc83f9[m[33m ([m[1;31morigin/frontend-blueprint[m[33m)[m docs: Add comprehensive frontend implementation blueprint
+[33m8a1305d[m[33m ([m[1;31morigin/backend-clean[m[33m, [m[1;32mfeat/backend-foundation[m[33m, [m[1;32mbackend-clean[m[33m)[m fix: Resolve Next.js configuration warnings and improve package handling
+[33m0d7a817[m fix: Resolve final dev server issues and improve error handling
+[33me91ca10[m fix: Resolve dev server issues and optimize performance
+[33m30a2f48[m feat: Complete hardened KSA-ready backend implementation
+[33m3f5074c[m feat: complete authentication foundation and middleware
+[33mbfd5e81[m feat(auth,worker): end-to-end registration path working (DB pooled, Redis BullMQ, email job)
+[33me91b823[m chore(repo): remove /apps after consolidation
+[33m80c4776[m refactor(repo): consolidate apps into root app; move worker to /worker; copy web components/public/styles; keep API in root
+[33m1e6fd39[m chore(dredd): finalize dredd configuration
+[33m2c64941[m feat(auth): implement registration and login
+[33m29e4fa0[m feat(search): implement search provider and algolia adapter

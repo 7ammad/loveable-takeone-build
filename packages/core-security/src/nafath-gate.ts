@@ -2,6 +2,21 @@
 // import { getIdentityByUserId } from '@/lib/db';
 import { Redis } from '@upstash/redis';
 
+let redis: Redis | null = null;
+
+function getRedisClient(): Redis {
+  if (redis) return redis;
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  if (!url || !token) {
+    throw new Error('Redis configuration is missing.');
+  }
+  
+  redis = new Redis({ url, token });
+  return redis;
+}
+
 // Note: These functions need to be implemented in the database layer
 // For now, using placeholder implementations
 interface User {
@@ -75,11 +90,6 @@ export async function sendRenewalNotification(user: any): Promise<void> {
   }
 }
 
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL!,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-});
-
 const AUTHENTICA_API_KEY = process.env.AUTHENTICA_API_KEY!;
 const AUTHENTICA_BASE_URL = process.env.AUTHENTICA_BASE_URL || 'https://api.authentica.sa';
 // Use API key as webhook secret if not explicitly set (common pattern)
@@ -147,7 +157,7 @@ export async function initiateNafathVerification(userId: string, nationalId: str
 
     // Store transaction details for webhook correlation
     const transactionKey = `nafath_transaction:${data.transaction_id}`;
-    await redis.set(transactionKey, JSON.stringify({
+    await getRedisClient().set(transactionKey, JSON.stringify({
       userId,
       nationalId,
       transactionId: data.transaction_id,
@@ -200,7 +210,7 @@ export async function completeNafathVerification(
 
     // Clean up transaction record
     const transactionKey = `nafath_transaction:${verificationData.transactionId}`;
-    await redis.del(transactionKey);
+    await getRedisClient().del(transactionKey);
 
     // Log verification event for audit
     await logAuditEvent({
@@ -254,7 +264,7 @@ export async function processNafathWebhook(webhookData: any): Promise<{ success:
 
     // Check for transaction replay
     const transactionKey = `nafath_transaction:${transaction_id}`;
-    const existingTransaction = await redis.get(transactionKey);
+    const existingTransaction = await getRedisClient().get(transactionKey);
 
     if (!existingTransaction) {
       console.error('Transaction not found or expired');
@@ -290,7 +300,7 @@ export async function processNafathWebhook(webhookData: any): Promise<{ success:
       });
 
       // Clean up transaction record
-      await redis.del(transactionKey);
+      await getRedisClient().del(transactionKey);
 
       return { success: true, message: 'Verification rejected by user' };
     }

@@ -7,8 +7,6 @@ import {
   IconButton,
   Chip,
   Card,
-  CardContent,
-  CardMedia,
   LinearProgress,
 } from '@mui/material';
 import { ChevronLeft, ChevronRight, PlayArrow } from '@mui/icons-material';

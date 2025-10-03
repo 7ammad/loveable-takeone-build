@@ -1,10 +1,20 @@
 import crypto from 'crypto';
 import { Redis } from '@upstash/redis';
 
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL!,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-});
+let redis: Redis | null = null;
+
+function getRedisClient(): Redis {
+  if (redis) return redis;
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  if (!url || !token) {
+    throw new Error('Redis configuration is missing.');
+  }
+
+  redis = new Redis({ url, token });
+  return redis;
+}
 
 /**
  * Generates a CSRF state parameter for OAuth flows
@@ -23,7 +33,7 @@ export function generateCsrfState(userId?: string, redirectUri?: string): string
 
   // Store state in Redis with 10 minute expiry
   const key = `csrf_state:${state}`;
-  redis.set(key, JSON.stringify(payload), { ex: 600 });
+  getRedisClient().set(key, JSON.stringify(payload), { ex: 600 });
 
   return state;
 }
@@ -36,7 +46,7 @@ export function generateCsrfState(userId?: string, redirectUri?: string): string
  */
 export async function validateCsrfState(state: string, redirectUri?: string): Promise<string | null> {
   const key = `csrf_state:${state}`;
-  const stored = await redis.get(key);
+  const stored = await getRedisClient().get(key);
 
   if (!stored) {
     return null;
@@ -46,18 +56,18 @@ export async function validateCsrfState(state: string, redirectUri?: string): Pr
 
   // Check if state is expired (10 minutes)
   if (Date.now() - payload.createdAt > 10 * 60 * 1000) {
-    await redis.del(key);
+    await getRedisClient().del(key);
     return null;
   }
 
   // Validate redirect URI if provided
   if (redirectUri && payload.redirectUri && payload.redirectUri !== redirectUri) {
-    await redis.del(key);
+    await getRedisClient().del(key);
     return null;
   }
 
   // Clean up used state
-  await redis.del(key);
+  await getRedisClient().del(key);
 
   return payload.userId || null;
 }
@@ -68,5 +78,5 @@ export async function validateCsrfState(state: string, redirectUri?: string): Pr
  */
 export async function clearCsrfState(state: string): Promise<void> {
   const key = `csrf_state:${state}`;
-  await redis.del(key);
+  await getRedisClient().del(key);
 }
