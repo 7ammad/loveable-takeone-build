@@ -1,9 +1,18 @@
 # TakeOne UI Development Package for Loveable
 ## Complete Technical Blueprint & Integration Guide
 
-**Version:** 1.0  
+**Version:** 2.0  
 **Date:** October 3, 2025  
 **Purpose:** Complete technical documentation for building enterprise-grade UI for TakeOne Saudi Casting Marketplace using Loveable platform
+
+## 🎉 **LANDING PAGE STATUS: COMPLETE**
+
+**✅ Landing Page Built by Loveable Agent:**
+- **Location:** `src/pages/Index.tsx`
+- **Status:** Fully functional with all sections
+- **Components:** 10 major sections implemented
+- **Design:** KAFD Noir theme with responsive design
+- **Features:** Interactive carousels, animations, video backgrounds
 
 ---
 
@@ -66,59 +75,74 @@
 
 ```
 takeone-ui/
-├── app/                          # Next.js App Router
-│   ├── (auth)/                   # Authentication routes
-│   │   ├── login/
-│   │   ├── register/
-│   │   └── forgot-password/
-│   ├── (public)/                 # Public pages
-│   │   ├── page.tsx              # Landing page
-│   │   ├── about/
-│   │   └── pricing/
-│   ├── (dashboard)/              # Protected routes
-│   │   ├── dashboard/            # User dashboard
-│   │   ├── profile/              # Profile management
-│   │   ├── casting-calls/        # Browse casting calls
-│   │   ├── applications/         # Manage applications
-│   │   ├── messages/             # Messaging
-│   │   └── settings/             # User settings
-│   ├── api/                      # (Optional) API proxy layer
-│   ├── layout.tsx                # Root layout
-│   └── globals.css               # Global styles
-├── components/
-│   ├── ui/                       # Base UI components (Radix/shadcn)
-│   ├── features/                 # Feature-specific components
-│   │   ├── casting-call/
-│   │   ├── talent-profile/
-│   │   ├── application/
-│   │   └── messaging/
-│   └── layout/                   # Layout components
-│       ├── header.tsx
-│       ├── footer.tsx
-│       └── sidebar.tsx
-├── lib/
-│   ├── api/                      # API client functions
-│   ├── hooks/                    # Custom React hooks
-│   ├── utils/                    # Utility functions
-│   └── types/                    # TypeScript types
+├── src/
+│   ├── pages/
+│   │   ├── Index.tsx             # ✅ Landing page (COMPLETE)
+│   │   ├── NotFound.tsx          # ✅ 404 page
+│   │   ├── Login.tsx             # ❌ Build next
+│   │   ├── Register.tsx          # ❌ Build next
+│   │   ├── Dashboard.tsx         # ❌ Build next
+│   │   ├── Profile.tsx           # ❌ Build next
+│   │   ├── CastingCalls.tsx      # ❌ Build next
+│   │   └── TalentSearch.tsx      # ❌ Build next
+│   ├── components/
+│   │   ├── ui/                   # ✅ shadcn/ui library (COMPLETE)
+│   │   ├── Header.tsx            # ✅ Navigation header
+│   │   ├── Hero.tsx              # ✅ Hero section
+│   │   ├── TrustBar.tsx          # ✅ Partner logos
+│   │   ├── HowItWorks.tsx        # ✅ Process explanation
+│   │   ├── TalentShowcase.tsx    # ✅ Interactive carousel
+│   │   ├── CastingOpportunities.tsx # ✅ Job grid
+│   │   ├── Advantages.tsx        # ✅ Tabbed benefits
+│   │   ├── Testimonials.tsx      # ✅ User reviews
+│   │   ├── CTA.tsx               # ✅ Final call-to-action
+│   │   ├── Footer.tsx            # ✅ Site footer
+│   │   └── features/             # ❌ Build feature components
+│   │       ├── casting-call/
+│   │       ├── talent-profile/
+│   │       ├── application/
+│   │       └── messaging/
+│   ├── App.tsx                   # ✅ Main app with routing
+│   └── main.tsx                  # ✅ App entry point
 ├── public/
-│   ├── images/
-│   └── fonts/
-├── styles/
-│   └── themes/                   # Theme configurations
+│   ├── images/                   # ✅ Landing page assets
+│   ├── videos/                   # ✅ talent-bg.mp4
+│   └── fonts/                    # ✅ Typography assets
+├── lib/
+│   ├── api/                      # ❌ Build API client
+│   ├── hooks/                    # ❌ Build custom hooks
+│   ├── utils/                    # ❌ Build utilities
+│   └── types/                    # ❌ Build TypeScript types
 └── config/
-    ├── site.ts                   # Site configuration
-    └── api.ts                    # API endpoints
+    ├── site.ts                   # ❌ Build site config
+    └── api.ts                    # ❌ Build API endpoints
 
 ```
 
 ### 2.2. Routing Strategy
 
-**Next.js App Router** with route groups:
-- `(auth)`: Public authentication pages
-- `(public)`: Marketing and informational pages
-- `(dashboard)`: Protected user area
-- Parallel routes for modals and overlays
+**React Router** (Current Implementation):
+- **✅ Landing Page:** `/` (Index.tsx)
+- **✅ 404 Page:** `*` (NotFound.tsx)
+- **❌ Authentication:** `/login`, `/register`, `/forgot-password`
+- **❌ Dashboard:** `/dashboard` (role-specific)
+- **❌ Profile Management:** `/profile`, `/profile/edit`
+- **❌ Casting System:** `/casting-calls`, `/casting-calls/:id`
+- **❌ Talent Discovery:** `/talent`, `/talent/:id`
+- **❌ Applications:** `/applications`, `/applications/:id`
+- **❌ Messages:** `/messages`, `/messages/:id`
+- **❌ Settings:** `/settings`
+
+**Routing Setup in App.tsx:**
+```tsx
+<Routes>
+  <Route path="/" element={<Index />} />
+  <Route path="/login" element={<Login />} />
+  <Route path="/register" element={<Register />} />
+  <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+  <Route path="*" element={<NotFound />} />
+</Routes>
+```
 
 ### 2.3. State Management Strategy
 
@@ -133,9 +157,214 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 
 ---
 
-## 3. Design System Specifications
+## 3. Completed Landing Page Components
 
-### 3.1. KAFD Noir Color Palette
+### 3.1. Landing Page Architecture (COMPLETE ✅)
+
+**Main Component:** `src/pages/Index.tsx`
+- Orchestrates all landing page sections
+- Handles responsive layout and scroll behavior
+- Manages component interactions and state
+
+### 3.2. Component Breakdown (All Implemented ✅)
+
+#### **Header Component** (`src/components/Header.tsx`)
+- **Features:** Fixed navigation with logo, navigation links, login button
+- **Design:** Sticky header with blur backdrop effect
+- **Responsive:** Mobile hamburger menu
+- **Links:** "Discover Talent", "Find Jobs", Login button
+
+#### **Hero Section** (`src/components/Hero.tsx`)
+- **Features:** Full-screen hero with gradient background
+- **Content:** "Streamline The Art of Casting" headline
+- **CTAs:** "Land Your Dream Role", "Cast Your Next Star"
+- **Design:** Dark gradient with spotlight effects
+
+#### **Trust Bar** (`src/components/TrustBar.tsx`)
+- **Features:** Scrolling partner logos carousel
+- **Partners:** Netflix, MBC, Rotana, and other major brands
+- **Animation:** Smooth horizontal scrolling effect
+- **Responsive:** Adapts to different screen sizes
+
+#### **How It Works** (`src/components/HowItWorks.tsx`)
+- **Features:** 3-step process explanation
+- **Layout:** Large numbered steps with descriptions
+- **Design:** Clean, easy-to-follow workflow
+- **Content:** Step-by-step guide for both talent and hirers
+
+#### **Talent Showcase** (`src/components/TalentShowcase.tsx`)
+- **Features:** Interactive carousel with 7 talent profiles
+- **Background:** Video background (`public/talent-bg.mp4`)
+- **Interaction:** Expandable panels on hover
+- **Navigation:** Arrow controls with responsive design
+- **Responsive:** 1 panel (mobile), 3 panels (tablet), 5 panels (desktop)
+
+#### **Casting Opportunities** (`src/components/CastingOpportunities.tsx`)
+- **Features:** Grid of casting job cards
+- **Content:** Title, company, location, deadline
+- **Actions:** "Apply Now" buttons with urgency indicators
+- **Design:** Card-based layout with hover effects
+
+#### **Advantages** (`src/components/Advantages.tsx`)
+- **Features:** Tabbed interface for different user types
+- **Tabs:** "For Talent" vs "For Hirers"
+- **Content:** Benefits lists with icons for each user type
+- **Design:** Clean tabbed layout with smooth transitions
+
+#### **Testimonials** (`src/components/Testimonials.tsx`)
+- **Features:** User testimonials with images
+- **Layout:** Alternating left/right layout
+- **Design:** Quote styling with animations
+- **Content:** Real user feedback and success stories
+
+#### **CTA Section** (`src/components/CTA.tsx`)
+- **Features:** Final call-to-action with background image
+- **CTAs:** "Create My Profile", "Find Top Talent"
+- **Design:** Compelling background with prominent buttons
+- **Purpose:** Convert visitors to users
+
+#### **Footer** (`src/components/Footer.tsx`)
+- **Features:** 4-column layout with comprehensive links
+- **Columns:** Brand, For Talent, For Casting, Company
+- **Links:** Various page links and social media
+- **Design:** Dark theme with organized information
+
+### 3.3. Design System Implementation (COMPLETE ✅)
+
+**Styling Files:**
+- `src/index.css` - Global styles and CSS variables
+- `tailwind.config.ts` - Tailwind configuration with semantic tokens
+- `src/App.css` - Additional app-level styles
+
+**Color System:**
+- Uses HSL semantic tokens (background, foreground, primary, card, muted, etc.)
+- Dark theme with gray backgrounds
+- Primary accent color for CTAs and highlights
+
+**UI Components:**
+- Full shadcn/ui library installed in `src/components/ui/`
+- Button, Card, Tabs, and other primitives available
+
+### 3.4. Key Features Implemented ✅
+
+- ✅ Responsive design (mobile/tablet/desktop)
+- ✅ Animations with Framer Motion
+- ✅ Video backgrounds
+- ✅ Interactive carousels
+- ✅ Semantic HTML structure
+- ✅ Design system with tokens
+- ✅ Accessibility features
+- ✅ Performance optimizations
+
+---
+
+## 4. What Needs to Be Built Next
+
+### 4.1. Priority Order for Development
+
+#### **Phase 1: Authentication System (Days 1-2)** 🔐
+**Files to Create:**
+- `src/pages/Login.tsx`
+- `src/pages/Register.tsx`
+- `src/pages/ForgotPassword.tsx`
+- `src/components/auth/AuthForm.tsx`
+- `src/components/auth/RoleSelector.tsx`
+- `src/components/auth/NafathIntegration.tsx`
+
+**Features:**
+- Login/Register forms with role selection
+- Nafath integration (Saudi ID verification)
+- Multi-step registration process
+- Email verification flow
+- Password reset functionality
+
+#### **Phase 2: User Dashboards (Days 3-4)** 📊
+**Files to Create:**
+- `src/pages/Dashboard.tsx`
+- `src/components/dashboard/TalentDashboard.tsx`
+- `src/components/dashboard/HirerDashboard.tsx`
+- `src/components/dashboard/KPICards.tsx`
+- `src/components/dashboard/ActivityFeed.tsx`
+- `src/components/dashboard/QuickActions.tsx`
+
+**Features:**
+- Role-specific dashboard layouts
+- KPI cards with statistics
+- Recent activity feeds
+- Quick action buttons
+- Responsive sidebar navigation
+
+#### **Phase 3: Profile Management (Days 5-6)** 👤
+**Files to Create:**
+- `src/pages/Profile.tsx`
+- `src/pages/ProfileEdit.tsx`
+- `src/components/profile/TalentProfileForm.tsx`
+- `src/components/profile/HirerProfileForm.tsx`
+- `src/components/profile/PortfolioGallery.tsx`
+- `src/components/profile/ImageUpload.tsx`
+
+**Features:**
+- Profile creation and editing
+- Image/portfolio uploads
+- Skills and experience management
+- Company information setup
+- Profile completion tracking
+
+#### **Phase 4: Casting System (Days 7-8)** 🎬
+**Files to Create:**
+- `src/pages/CastingCalls.tsx`
+- `src/pages/CastingCallDetail.tsx`
+- `src/pages/CreateCastingCall.tsx`
+- `src/components/casting/CastingCallCard.tsx`
+- `src/components/casting/ApplicationForm.tsx`
+- `src/components/casting/FilterSidebar.tsx`
+
+**Features:**
+- Browse casting calls with filters
+- Detailed casting call pages
+- Application submission flow
+- Post new casting calls
+- Application management
+
+#### **Phase 5: Talent Discovery (Days 9-10)** 🔍
+**Files to Create:**
+- `src/pages/TalentSearch.tsx`
+- `src/pages/TalentProfile.tsx`
+- `src/components/talent/TalentCard.tsx`
+- `src/components/talent/TalentFilters.tsx`
+- `src/components/talent/TalentGrid.tsx`
+- `src/components/talent/ContactModal.tsx`
+
+**Features:**
+- Talent search with advanced filters
+- Talent profile pages
+- Contact and messaging system
+- Talent recommendations
+- Portfolio viewing
+
+### 4.2. Integration Points with Landing Page
+
+#### **Navigation Updates:**
+- Update `src/components/Header.tsx` to include authentication state
+- Add user menu dropdown when logged in
+- Update navigation links to new pages
+
+#### **CTA Integration:**
+- Connect "Land Your Dream Role" button to registration flow
+- Connect "Cast Your Next Star" button to hirer registration
+- Update footer links to point to new pages
+
+#### **Design Consistency:**
+- Use same color tokens from landing page
+- Maintain responsive patterns
+- Keep animation timing consistent
+- Follow established component patterns
+
+---
+
+## 5. Design System Specifications
+
+### 5.1. KAFD Noir Color Palette
 
 #### Primary Colors
 ```css
@@ -188,7 +417,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 --gray-900: #212529;
 ```
 
-### 3.2. Typography
+### 5.2. Typography
 
 #### Font Families
 ```css
@@ -219,7 +448,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 --font-bold: 700;
 ```
 
-### 3.3. Spacing System (8px Grid)
+### 5.3. Spacing System (8px Grid)
 
 ```css
 --spacing-xs: 4px;
@@ -231,7 +460,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 --spacing-3xl: 64px;
 ```
 
-### 3.4. Border Radius
+### 5.4. Border Radius
 
 ```css
 --radius-sm: 4px;
@@ -241,7 +470,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 --radius-full: 9999px;
 ```
 
-### 3.5. Shadows
+### 5.5. Shadows
 
 ```css
 --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -250,7 +479,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 ```
 
-### 3.6. Responsive Breakpoints
+### 5.6. Responsive Breakpoints
 
 ```css
 --breakpoint-mobile: 320px;
@@ -259,7 +488,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 --breakpoint-large: 1440px;
 ```
 
-### 3.7. Animation Tokens
+### 5.7. Animation Tokens
 
 ```css
 /* Durations */
@@ -275,9 +504,210 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 
 ---
 
-## 4. Backend API Integration
+## 6. Building on Existing React App
 
-### 4.1. Base URL Configuration
+### 6.1. Current Tech Stack (COMPLETE ✅)
+
+**Framework:** React with Vite
+**Routing:** React Router
+**Styling:** Tailwind CSS with custom tokens
+**UI Library:** shadcn/ui components
+**Animations:** Framer Motion
+**Icons:** Lucide React
+
+### 6.2. How to Extend the Current App
+
+#### **Step 1: Update App.tsx for New Routes**
+```tsx
+// Current App.tsx structure
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Index from './pages/Index';
+import NotFound from './pages/NotFound';
+
+// Add these imports
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Router>
+  );
+}
+```
+
+#### **Step 2: Create Authentication Context**
+```tsx
+// src/contexts/AuthContext.tsx
+import { createContext, useContext, useState, useEffect } from 'react';
+
+interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: 'talent' | 'hirer';
+}
+
+interface AuthContextType {
+  user: User | null;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => void;
+  isLoading: boolean;
+}
+
+const AuthContext = createContext<AuthContextType | null>(null);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Auth logic here...
+
+  return (
+    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider');
+  }
+  return context;
+}
+```
+
+#### **Step 3: Update Header Component**
+```tsx
+// Update src/components/Header.tsx
+import { useAuth } from '../contexts/AuthContext';
+
+export default function Header() {
+  const { user, logout } = useAuth();
+
+  return (
+    <header className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link to="/" className="text-2xl font-bold">
+            TakeOne
+          </Link>
+
+          {/* Navigation */}
+          <nav className="hidden md:flex items-center space-x-6">
+            <Link to="/casting-calls">Browse Jobs</Link>
+            <Link to="/talent">Find Talent</Link>
+          </nav>
+
+          {/* Auth Section */}
+          <div className="flex items-center space-x-4">
+            {user ? (
+              <div className="flex items-center space-x-4">
+                <span>Welcome, {user.name}</span>
+                <button onClick={logout}>Logout</button>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-4">
+                <Link to="/login">Login</Link>
+                <Link to="/register">
+                  <Button>Sign Up</Button>
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}
+```
+
+#### **Step 4: Create Protected Route Component**
+```tsx
+// src/components/ProtectedRoute.tsx
+import { useAuth } from '../contexts/AuthContext';
+import { Navigate } from 'react-router-dom';
+
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+  requiredRole?: 'talent' | 'hirer';
+}
+
+export default function ProtectedRoute({ 
+  children, 
+  requiredRole 
+}: ProtectedRouteProps) {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (requiredRole && user.role !== requiredRole) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <>{children}</>;
+}
+```
+
+### 6.3. Component Patterns to Follow
+
+#### **Use Existing Design Tokens**
+```tsx
+// Follow the same styling patterns as landing page components
+<div className="bg-background text-foreground">
+  <h1 className="text-4xl font-bold text-primary">
+    Page Title
+  </h1>
+  <Button className="bg-primary hover:bg-primary/90">
+    Action Button
+  </Button>
+</div>
+```
+
+#### **Responsive Design Patterns**
+```tsx
+// Use the same responsive patterns
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  {/* Content */}
+</div>
+```
+
+#### **Animation Patterns**
+```tsx
+// Use Framer Motion like the landing page
+import { motion } from 'framer-motion';
+
+<motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.5 }}
+>
+  {/* Content */}
+</motion.div>
+```
+
+---
+
+## 7. Backend API Integration
+
+### 7.1. Base URL Configuration
 
 ```typescript
 // config/api.ts
@@ -349,7 +779,7 @@ export const API_ENDPOINTS = {
 };
 ```
 
-### 4.2. API Client Setup
+### 7.2. API Client Setup
 
 ```typescript
 // lib/api/client.ts
@@ -435,7 +865,7 @@ class APIClient {
 export const apiClient = new APIClient();
 ```
 
-### 4.3. TanStack Query Setup
+### 7.3. TanStack Query Setup
 
 ```typescript
 // app/providers.tsx
@@ -468,7 +898,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 }
 ```
 
-### 4.4. Example API Hook
+### 7.4. Example API Hook
 
 ```typescript
 // lib/hooks/use-casting-calls.ts
@@ -528,9 +958,9 @@ export function useCreateCastingCall() {
 
 ---
 
-## 5. Data Models & TypeScript Types
+## 8. Data Models & TypeScript Types
 
-### 5.1. Core Data Models
+### 8.1. Core Data Models
 
 ```typescript
 // lib/types/index.ts
@@ -684,9 +1114,9 @@ export interface APIResponse<T = any> {
 
 ---
 
-## 6. Component Implementation Guide
+## 9. Component Implementation Guide
 
-### 6.1. Button Component
+### 9.1. Button Component
 
 ```typescript
 // components/ui/button.tsx
@@ -743,7 +1173,7 @@ Button.displayName = 'Button';
 export { Button, buttonVariants };
 ```
 
-### 6.2. Casting Call Card Component
+### 9.2. Casting Call Card Component
 
 ```typescript
 // components/features/casting-call/casting-call-card.tsx
@@ -848,9 +1278,9 @@ export function CastingCallCard({ castingCall, onApply, onViewDetails }: Casting
 
 ---
 
-## 7. Authentication & Security
+## 10. Authentication & Security
 
-### 7.1. Auth Context
+### 10.1. Auth Context
 
 ```typescript
 // lib/contexts/auth-context.tsx
@@ -941,7 +1371,7 @@ export function useAuth() {
 }
 ```
 
-### 7.2. Protected Route Component
+### 10.2. Protected Route Component
 
 ```typescript
 // components/auth/protected-route.tsx
@@ -975,9 +1405,9 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 ---
 
-## 8. Structured Prompts for Loveable Agent
+## 11. Structured Prompts for Loveable Agent
 
-### 8.1. Initial Setup Prompt
+### 11.1. Authentication System Prompt
 
 ```
 **Component:** Project Initialization
