@@ -8,7 +8,7 @@ import { HirerValuePropositions } from '@/components/HirerValuePropositions';
 import { HirerHowItWorks } from '@/components/HirerHowItWorks';
 import { HirerTestimonials } from '@/components/HirerTestimonials';
 import { HirerFinalCTA } from '@/components/HirerFinalCTA';
-import { Footer } from '@/components/Footer';
+import Footer from '@/components/Footer';
 
 export default function CastersPage() {
   return (

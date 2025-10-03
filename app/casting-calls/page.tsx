@@ -54,7 +54,7 @@ export default function CastingCallsPage() {
       location: 'Jeddah',
       compensation: 'SAR 40,000 - 60,000',
       deadline: '2025-10-12',
-      description: 'We're casting for a supporting role in our upcoming comedy series.',
+      description: 'We are casting for a supporting role in our upcoming comedy series.',
       requirements: 'Female, 25-35 years old, comedy experience preferred',
       isVerified: true,
       daysLeft: 3,
