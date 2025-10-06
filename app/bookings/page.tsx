@@ -17,6 +17,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import { DashboardNav } from '@/components/DashboardNav';
 
 interface Booking {
   id: string;
@@ -167,13 +169,16 @@ export default function BookingsPage() {
   });
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">My Audition Bookings</h1>
-        <p className="text-muted-foreground">
-          Manage your scheduled auditions and view booking history
-        </p>
-      </div>
+    <ProtectedRoute>
+      <div className="min-h-screen bg-background">
+        <DashboardNav />
+        <div className="container mx-auto py-8 px-4">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold mb-2">My Audition Bookings</h1>
+            <p className="text-muted-foreground">
+              Manage your scheduled auditions and view booking history
+            </p>
+          </div>
 
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3 max-w-md">
@@ -338,6 +343,8 @@ export default function BookingsPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+        </div>
+      </div>
+    </ProtectedRoute>
   );
 }
