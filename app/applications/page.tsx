@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import { DashboardNav } from '@/components/DashboardNav';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { 
   Search, 
-  Filter,
   Calendar,
   MapPin,
   Eye,
@@ -131,9 +131,10 @@ export default function ApplicationsPage() {
 
   return (
     <ProtectedRoute requiredRole="talent">
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
+        <DashboardNav />
         {/* Header */}
-        <header className="bg-background border-b">
+        <header className="bg-card border-b border-border">
           <div className="container mx-auto px-4 py-8">
             <h1 className="text-4xl font-bold text-foreground mb-2">My Applications</h1>
             <p className="text-muted-foreground">

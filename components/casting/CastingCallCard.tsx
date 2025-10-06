@@ -2,9 +2,8 @@
 
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { MapPin, Calendar, DollarSign, CheckCircle2, Clock } from 'lucide-react';
+import { MapPin, DollarSign, CheckCircle2, Clock } from 'lucide-react';
 import Link from 'next/link';
-import { formatDistanceToNow } from 'date-fns';
 
 interface CastingCall {
   id: string;

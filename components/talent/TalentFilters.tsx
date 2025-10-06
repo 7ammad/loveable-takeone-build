@@ -23,7 +23,7 @@ interface TalentFiltersProps {
 }
 
 export default function TalentFilters({ filters, onFilterChange, onClearFilters }: TalentFiltersProps) {
-  const updateFilter = (key: keyof TalentFilterOptions, value: any) => {
+  const updateFilter = (key: keyof TalentFilterOptions, value: string | number | string[] | boolean | undefined) => {
     onFilterChange({ ...filters, [key]: value });
   };
 

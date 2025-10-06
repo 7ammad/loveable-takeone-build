@@ -15,12 +15,48 @@ datasource db {
 }
 
 model TalentProfile {
-  id             String  @id @default(cuid())
-  userId         String  @unique
-  isMinor        Boolean @default(false)
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  stageName      String?
+  dateOfBirth    DateTime?
+  gender         String?  // 'male' | 'female' | 'other'
+  height         Int?
+  weight         Int?
+  eyeColor       String?
+  hairColor      String?
+  skills         String[] @default([])
+  languages      String[] @default([])
+  experience     Int?     // years of experience
+  city           String?
+  willingToTravel Boolean @default(false)
+  portfolioUrl   String?
+  demoReelUrl    String?
+  instagramUrl   String?
+  isMinor        Boolean  @default(false)
   guardianUserId String?
-  verified       Boolean @default(false)
-  // ... other talent fields
+  verified       Boolean  @default(false)
+  rating         Float?
+  completionPercentage Int @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model CasterProfile {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  companyName           String?
+  companyType           String?  // 'production_company' | 'advertising_agency' | 'independent'
+  commercialRegistration String?
+  businessPhone         String?
+  businessEmail         String?
+  website               String?
+  city                  String?
+  yearsInBusiness       Int?
+  teamSize              Int?
+  specializations       String[] @default([])
+  verified              Boolean  @default(false)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 }
 
 model Application {
@@ -28,10 +64,17 @@ model Application {
   castingCallId  String
   castingCall    CastingCall @relation(fields: [castingCallId], references: [id])
   talentUserId   String
-  status         String   @default("pending")
+  talentUser     User     @relation("TalentApplications", fields: [talentUserId], references: [id])
+  status         String   @default("pending") // pending | under_review | shortlisted | accepted | rejected
+  coverLetter    String?
+  availability   String?
+  contactPhone   String?
+  headshotUrl    String?
+  portfolioUrl   String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   events         ApplicationStatusEvent[]
+  booking        AuditionBooking?
 }
 
 model ApplicationStatusEvent {
@@ -126,6 +169,24 @@ model User {
   id        String   @id @default(cuid())
   email     String   @unique
   password  String
+  name      String
+  role      String   // 'talent' | 'caster'
+  
+  // Email & Phone Verification
+  emailVerified Boolean   @default(false)
+  emailVerifiedAt DateTime?
+  phone         String?
+  phoneVerified Boolean   @default(false)
+  phoneVerifiedAt DateTime?
+  
+  // Profile
+  avatar    String?
+  bio       String?
+  
+  // Account Status
+  isActive    Boolean   @default(true)
+  lastLoginAt DateTime?
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -137,34 +198,47 @@ model User {
   nafathData          Json?     // Store verification metadata
   nafathExpiresAt     DateTime? // Annual renewal tracking
 
-  // Search relations
-  savedSearches   SavedSearch[]
+  // Relations
+  savedSearches    SavedSearch[]
   searchExecutions SearchExecution[]
   searchHistory    SearchHistory[]
+  createdCastingCalls CastingCall[]
+  casterShortlists TalentShortlist[] @relation("CasterShortlists")
+  talentShortlists TalentShortlist[] @relation("TalentShortlists")
+  applications     Application[] @relation("TalentApplications")
+  availabilitySlots AvailabilitySlot[]
+  talentBookings   AuditionBooking[] @relation("TalentBookings")
+  casterBookings   AuditionBooking[] @relation("CasterBookings")
 }
 
 // ... other models from your plan (Users, CastingCall, etc.) will go here
 
 model CastingCall {
-  id             String   @id @default(cuid())
-  title          String
-  description    String?
-  company        String?
-  location       String?
-  compensation   String?
-  requirements   String?
-  deadline       DateTime?
-  contactInfo    String?
-  status         String   @default("pending_review")
-  sourceUrl      String?
-  sourceName     String?
-  contentHash    String?  @unique
-  isAggregated   Boolean  @default(true)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id               String   @id @default(cuid())
+  title            String
+  description      String?
+  company          String?
+  location         String?
+  compensation     String?
+  requirements     String?
+  deadline         DateTime?
+  contactInfo      String?
+  projectType      String?  // TV Series, Film, Commercial, Theater, Voice Acting
+  shootingDuration String?  // e.g. "6 months", "3 weeks", etc.
+  attachments      String[] @default([]) // Array of file URLs (images, PDFs)
+  status           String   @default("pending_review")
+  sourceUrl        String?
+  sourceName       String?
+  contentHash      String?  @unique
+  isAggregated     Boolean  @default(true)
+  createdBy        String?  // User ID who created this casting call
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   // Relations
-  applications   Application[]
+  applications     Application[]
+  creator          User?     @relation(fields: [createdBy], references: [id])
+  bookings         AuditionBooking[]
 }
 
 model IngestionSource {
@@ -226,6 +300,55 @@ model SearchExecution {
   user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+// Messaging System
+model Conversation {
+  id              String    @id @default(cuid())
+  participant1Id  String    // First user in conversation
+  participant2Id  String    // Second user in conversation
+  lastMessageAt   DateTime  @default(now())
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  messages        Message[]
+  
+  @@unique([participant1Id, participant2Id])
+  @@index([participant1Id])
+  @@index([participant2Id])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  senderId       String
+  receiverId     String
+  content        String
+  readAt         DateTime?
+  createdAt      DateTime     @default(now())
+  
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([receiverId])
+}
+
+// Notifications System
+model Notification {
+  id          String    @id @default(cuid())
+  userId      String
+  type        String    // 'message' | 'application_update' | 'casting_call' | 'profile_view' | 'system'
+  title       String
+  message     String
+  actionUrl   String?
+  isRead      Boolean   @default(false)
+  readAt      DateTime?
+  metadata    Json?
+  createdAt   DateTime  @default(now())
+  
+  @@index([userId, isRead])
+  @@index([createdAt])
+}
+
 model SearchHistory {
   id            String   @id @default(cuid())
   userId        String
@@ -236,4 +359,99 @@ model SearchHistory {
   createdAt     DateTime @default(now())
   
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Talent Shortlisting System
+model TalentShortlist {
+  id            String   @id @default(cuid())
+  casterUserId  String   // The caster who shortlisted the talent
+  talentUserId  String   // The talent being shortlisted
+  notes         String?  // Optional notes about the talent
+  tags          String[] @default([]) // Tags like "lead", "supporting", "comedy", etc.
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  caster        User     @relation("CasterShortlists", fields: [casterUserId], references: [id], onDelete: Cascade)
+  talent        User     @relation("TalentShortlists", fields: [talentUserId], references: [id], onDelete: Cascade)
+  
+  @@unique([casterUserId, talentUserId])
+  @@index([casterUserId])
+  @@index([talentUserId])
+}
+
+// Booking & Scheduling System
+model AvailabilitySlot {
+  id            String   @id @default(cuid())
+  talentUserId  String
+  talent        User     @relation(fields: [talentUserId], references: [id], onDelete: Cascade)
+  
+  // Recurring availability (e.g., "Every Monday 9am-5pm")
+  dayOfWeek     Int?     // 0-6 (Sunday-Saturday), null for one-time slots
+  startTime     String   // "09:00" (24-hour format)
+  endTime       String   // "17:00" (24-hour format)
+  timezone      String   @default("Asia/Riyadh")
+  
+  // One-time availability override
+  specificDate  DateTime?
+  
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@index([talentUserId])
+  @@index([dayOfWeek])
+  @@index([specificDate])
+}
+
+model AuditionBooking {
+  id              String   @id @default(cuid())
+  applicationId   String   @unique
+  application     Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  
+  talentUserId    String
+  talent          User     @relation("TalentBookings", fields: [talentUserId], references: [id], onDelete: Cascade)
+  
+  casterUserId    String
+  caster          User     @relation("CasterBookings", fields: [casterUserId], references: [id], onDelete: Cascade)
+  
+  castingCallId   String
+  castingCall     CastingCall @relation(fields: [castingCallId], references: [id], onDelete: Cascade)
+  
+  // Booking details
+  scheduledAt     DateTime
+  duration        Int      // minutes (e.g., 30, 60)
+  timezone        String   @default("Asia/Riyadh")
+  
+  // Meeting details
+  meetingType     String   // "in-person", "video", "phone"
+  location        String?  // Physical address or video link
+  meetingUrl      String?  // Zoom/Google Meet link
+  meetingPassword String?
+  
+  // Status
+  status          String   @default("scheduled") // scheduled, confirmed, cancelled, completed, no-show
+  cancelledBy     String?  // userId who cancelled
+  cancelledAt     DateTime?
+  cancellationReason String?
+  
+  // Reminders
+  reminderSent24h Boolean  @default(false)
+  reminderSent1h  Boolean  @default(false)
+  
+  // Notes
+  casterNotes     String?
+  talentNotes     String?
+  
+  // Cal.com integration
+  calcomEventId   String?  // Cal.com event ID for sync
+  calcomBookingUid String? @unique // Cal.com booking UID
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([talentUserId])
+  @@index([casterUserId])
+  @@index([castingCallId])
+  @@index([scheduledAt])
+  @@index([status])
 }

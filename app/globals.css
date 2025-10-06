@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@theme {
+  /* KAFD Noir - Primary Gold from Loveable */
+  --color-primary: #FFD700;                   /* Gold - main accent */
+  --color-primary-foreground: #121212;        /* Dark text on gold */
+  
+  /* KAFD Noir - Secondary Azure from Loveable */
+  --color-secondary: #007FFF;                 /* Azure blue */
+  --color-secondary-foreground: #FFFFFF;      /* White text on azure */
+  
+  /* Status Colors from Loveable */
+  --color-success: #28A745;                   /* Success green */
+  --color-warning: #FFC107;                   /* Warning yellow */
+  --color-destructive: #DC3545;               /* Error red */
+  --color-info: #17A2B8;                      /* Info cyan */
+  
+  /* KAFD Noir - Dark Palette from Loveable */
+  --color-background: #121212;                /* Noir background */
+  --color-foreground: #FFFFFF;                /* White text */
+  --color-card: #1A1A1A;                      /* Slightly lighter cards */
+  --color-card-foreground: #FFFFFF;
+  --color-border: #C0C0C0;                    /* Silver borders */
+  --color-muted: #343A40;                     /* Muted backgrounds */
+  --color-muted-foreground: #ADB5BD;          /* Muted text */
+  
+  /* Additional Noir Tokens from Loveable */
+  --color-accent: #FFD700;                    /* Gold accent */
+  --color-accent-foreground: #121212;
+  
+  /* Grayscale from Loveable */
+  --gray-50: #F8F9FA;
+  --gray-100: #F8F9FA;
+  --gray-200: #E9ECEF;
+  --gray-300: #DEE2E6;
+  --gray-400: #CED4DA;
+  --gray-500: #ADB5BD;
+  --gray-600: #6C757D;
+  --gray-700: #495057;
+  --gray-800: #343A40;
+  --gray-900: #212529;
+}
+
+@layer base {
+  :root { color-scheme: dark; }
+  html, body, #__next { height: 100%; }
+  body { @apply bg-background text-foreground antialiased; }
+}
+
+@keyframes fade-in {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+

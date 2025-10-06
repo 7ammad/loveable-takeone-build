@@ -1,31 +1,32 @@
 import { motion } from "framer-motion";
 import { Instagram, Twitter, Linkedin, Youtube } from "lucide-react";
+import Link from "next/link";
 
 const Footer = () => {
   const footerLinks = {
     platform: [
-      { label: "Discover Talent", href: "#discover" },
-      { label: "Find Jobs", href: "#opportunities" },
-      { label: "How It Works", href: "#" },
-      { label: "Pricing", href: "#" },
+      { label: "Discover Talent", href: "/talent" },
+      { label: "Find Jobs", href: "/casting-calls" },
+      { label: "How It Works", href: "/how-it-works" },
+      { label: "Pricing", href: "/pricing" },
     ],
     company: [
-      { label: "About Us", href: "#" },
-      { label: "Careers", href: "#" },
-      { label: "Press Kit", href: "#" },
-      { label: "Contact", href: "#" },
+      { label: "About Us", href: "/about" },
+      { label: "Careers", href: "/careers" },
+      { label: "Press Kit", href: "/press" },
+      { label: "Contact", href: "/contact" },
     ],
     resources: [
-      { label: "Help Center", href: "#" },
-      { label: "Community Guidelines", href: "#" },
-      { label: "Blog", href: "#" },
-      { label: "API", href: "#" },
+      { label: "Help Center", href: "/help" },
+      { label: "Community Guidelines", href: "/guidelines" },
+      { label: "Blog", href: "/blog" },
+      { label: "API", href: "/api-docs" },
     ],
     legal: [
-      { label: "Privacy Policy", href: "#" },
-      { label: "Terms of Service", href: "#" },
-      { label: "Cookie Policy", href: "#" },
-      { label: "Accessibility", href: "#" },
+      { label: "Privacy Policy", href: "/privacy" },
+      { label: "Terms of Service", href: "/terms" },
+      { label: "Cookie Policy", href: "/cookies" },
+      { label: "Accessibility", href: "/accessibility" },
     ],
   };
 
@@ -46,12 +47,12 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.platform.map((link, index) => (
                 <li key={index}>
-                  <a
+                  <Link
                     href={link.href}
                     className="text-muted-foreground hover:text-foreground transition-smooth"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -63,12 +64,12 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.company.map((link, index) => (
                 <li key={index}>
-                  <a
+                  <Link
                     href={link.href}
                     className="text-muted-foreground hover:text-foreground transition-smooth"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -80,12 +81,12 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.resources.map((link, index) => (
                 <li key={index}>
-                  <a
+                  <Link
                     href={link.href}
                     className="text-muted-foreground hover:text-foreground transition-smooth"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -97,12 +98,12 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.legal.map((link, index) => (
                 <li key={index}>
-                  <a
+                  <Link
                     href={link.href}
                     className="text-muted-foreground hover:text-foreground transition-smooth"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

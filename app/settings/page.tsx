@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import { DashboardNav } from '@/components/DashboardNav';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -31,9 +32,10 @@ export default function SettingsPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
+        <DashboardNav />
         {/* Header */}
-        <header className="bg-background border-b">
+        <header className="bg-card border-b border-border">
           <div className="container mx-auto px-4 py-8">
             <h1 className="text-4xl font-bold text-foreground mb-2">Settings</h1>
             <p className="text-muted-foreground">Manage your account settings and preferences</p>

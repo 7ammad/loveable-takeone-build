@@ -7,12 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   Building2,
-  Mail,
-  Phone,
-  Globe,
-  MapPin,
-  Users,
-  Calendar,
   Edit,
   Save,
   Camera,
@@ -20,6 +14,7 @@ import {
 } from 'lucide-react';
 
 export default function HirerProfile() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
 

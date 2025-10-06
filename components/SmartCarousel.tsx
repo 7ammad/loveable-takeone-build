@@ -1,22 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import {
-  Box,
-  Typography,
-  Chip,
-  IconButton,
-} from '@mui/material';
-import {
-  PlayArrow,
-  Pause,
-  ChevronLeft,
-  ChevronRight,
-  LocationOn,
-  Business,
-  CalendarToday,
-} from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface CastingCall {
@@ -46,7 +31,6 @@ export function SmartCarousel({ castingCalls }: SmartCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [dominantColor, setDominantColor] = useState('#FF44AA');
-  const containerRef = useRef<HTMLDivElement>(null);
 
   const currentCall = castingCalls[currentIndex];
 
@@ -61,10 +45,8 @@ export function SmartCarousel({ castingCalls }: SmartCarouselProps) {
     return () => clearInterval(interval);
   }, [isPlaying, castingCalls.length]);
 
-  // Simple color extraction from image (placeholder logic)
+  // Simple color rotation
   useEffect(() => {
-    // In a real implementation, you'd extract the dominant color from the image
-    // For now, we'll use a rotating set of colors
     const colors = ['#FF44AA', '#4A90E2', '#E24A90', '#90E24A', '#E2904A'];
     setDominantColor(colors[currentIndex % colors.length]);
   }, [currentIndex]);
@@ -85,19 +67,10 @@ export function SmartCarousel({ castingCalls }: SmartCarouselProps) {
   };
 
   return (
-    <Box sx={{ position: 'relative', width: '100%', maxWidth: '1400px', mx: 'auto' }}>
+    <div className="relative w-full max-w-7xl mx-auto">
       {/* Main Carousel Container */}
-      <Box
-        ref={containerRef}
-        sx={{
-          position: 'relative',
-          height: '400px',
-          overflow: 'hidden',
-          borderRadius: 3,
-          backgroundColor: 'background.paper',
-          border: '1px solid #333333',
-          mb: 4,
-        }}
+      <div
+        className="relative h-[400px] overflow-hidden rounded-lg bg-card border border-border mb-8"
         onMouseEnter={() => setIsPlaying(false)}
         onMouseLeave={() => setIsPlaying(true)}
       >
@@ -109,12 +82,8 @@ export function SmartCarousel({ castingCalls }: SmartCarouselProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
+            className="absolute inset-0"
             style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
               backgroundImage: `url(${currentCall.image})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
@@ -124,16 +93,7 @@ export function SmartCarousel({ castingCalls }: SmartCarouselProps) {
         </AnimatePresence>
 
         {/* Content Overlay */}
-        <Box
-          sx={{
-            position: 'relative',
-            zIndex: 1,
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            px: 6,
-          }}
-        >
+        <div className="relative z-10 h-full flex items-center px-12">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentCall.id}
@@ -141,232 +101,123 @@ export function SmartCarousel({ castingCalls }: SmartCarouselProps) {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -50 }}
               transition={{ duration: 0.6 }}
-              style={{ width: '100%', maxWidth: '600px' }}
+              className="w-full max-w-2xl"
             >
-              <Box sx={{ width: '100%', maxWidth: '600px' }}>
-                {/* Company Badge */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2, duration: 0.6 }}
+              {/* Company Badge */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.6 }}
+              >
+                <span
+                  className="inline-block px-4 py-2 rounded-md font-bold text-white text-sm mb-4"
+                  style={{ backgroundColor: dominantColor }}
                 >
-                  <Chip
-                    label={currentCall.company}
-                    sx={{
-                      backgroundColor: dominantColor,
-                      color: 'white',
-                      fontWeight: 'bold',
-                      fontSize: '0.8rem',
-                      px: 2,
-                      py: 1,
-                      mb: 2,
-                    }}
-                  />
-                </motion.div>
+                  {currentCall.company}
+                </span>
+              </motion.div>
 
-                {/* Main Title */}
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3, duration: 0.6 }}
-                >
-                  <Typography
-                    variant="h3"
-                    component="h1"
-                    sx={{
-                      color: 'white',
-                      fontWeight: 'bold',
-                      mb: 1,
-                      fontSize: { xs: '1.8rem', md: '2.2rem', lg: '2.5rem' },
-                      lineHeight: 1.1,
-                      textShadow: '0 4px 8px rgba(0,0,0,0.5)',
-                    }}
-                  >
-                    {currentCall.projectTitle}
-                  </Typography>
-                </motion.div>
+              {/* Main Title */}
+              <motion.h2
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.6 }}
+                className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2"
+                style={{ textShadow: '0 4px 8px rgba(0,0,0,0.5)' }}
+              >
+                {currentCall.projectTitle}
+              </motion.h2>
 
-                {/* Role and Production Type */}
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4, duration: 0.6 }}
-                >
-                  <Typography
-                    variant="h5"
-                    sx={{
-                      color: dominantColor,
-                      fontWeight: '600',
-                      mb: 3,
-                      fontSize: { xs: '1.2rem', md: '1.4rem' },
-                      textShadow: '0 2px 4px rgba(0,0,0,0.3)',
-                    }}
-                  >
-                    {currentCall.role} • {currentCall.productionType}
-                  </Typography>
-                </motion.div>
+              {/* Role and Production Type */}
+              <motion.p
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.6 }}
+                className="text-xl md:text-2xl font-semibold mb-6"
+                style={{ color: dominantColor, textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}
+              >
+                {currentCall.role} • {currentCall.productionType}
+              </motion.p>
 
-                {/* Casting Details Grid */}
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5, duration: 0.6 }}
-                >
-                  <Box sx={{
-                    display: 'grid',
-                    gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
-                    gap: 2,
-                    mb: 3
-                  }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', fontWeight: '500', minWidth: '60px' }}>
-                        Age:
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: 'white', fontWeight: '600' }}>
-                        {currentCall.age}
-                      </Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', fontWeight: '500', minWidth: '60px' }}>
-                        Sex:
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: 'white', fontWeight: '600' }}>
-                        {currentCall.sex}
-                      </Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <LocationOn sx={{ color: 'white', fontSize: '1rem' }} />
-                      <Typography variant="body2" sx={{ color: 'white', fontWeight: '600' }}>
-                        {currentCall.location}
-                      </Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Business sx={{ color: 'white', fontSize: '1rem' }} />
-                      <Typography variant="body2" sx={{ color: 'white', fontWeight: '600' }}>
-                        {currentCall.venue}
-                      </Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, gridColumn: { xs: '1', sm: '1 / -1' } }}>
-                      <CalendarToday sx={{ color: 'white', fontSize: '1rem' }} />
-                      <Typography variant="body2" sx={{ color: 'white', fontWeight: '600' }}>
-                        {currentCall.timeWindow}
-                      </Typography>
-                    </Box>
-                  </Box>
-                </motion.div>
-              </Box>
+              {/* Casting Details Grid */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.6 }}
+                className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-white/80 font-medium min-w-[60px]">Age:</span>
+                  <span className="text-white font-semibold">{currentCall.age}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-white/80 font-medium min-w-[60px]">Sex:</span>
+                  <span className="text-white font-semibold">{currentCall.sex}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-white">📍</span>
+                  <span className="text-white font-semibold">{currentCall.location}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-white">🏢</span>
+                  <span className="text-white font-semibold">{currentCall.venue}</span>
+                </div>
+                <div className="flex items-center gap-2 col-span-1 sm:col-span-2">
+                  <span className="text-white">📅</span>
+                  <span className="text-white font-semibold">{currentCall.timeWindow}</span>
+                </div>
+              </motion.div>
             </motion.div>
           </AnimatePresence>
-        </Box>
+        </div>
 
         {/* Navigation Controls */}
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: 0,
-            right: 0,
-            transform: 'translateY(-50%)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            px: 2,
-            zIndex: 2,
-          }}
-        >
-          <IconButton
+        <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between px-4 z-20">
+          <button
             onClick={handlePrev}
-            sx={{
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              color: 'white',
-              '&:hover': {
-                backgroundColor: 'rgba(0, 0, 0, 0.7)',
-              },
-            }}
+            className="w-10 h-10 rounded-full bg-black/50 text-white hover:bg-black/70 flex items-center justify-center transition-colors"
           >
-            <ChevronLeft />
-          </IconButton>
-          <IconButton
+            ←
+          </button>
+          <button
             onClick={handleNext}
-            sx={{
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              color: 'white',
-              '&:hover': {
-                backgroundColor: 'rgba(0, 0, 0, 0.7)',
-              },
-            }}
+            className="w-10 h-10 rounded-full bg-black/50 text-white hover:bg-black/70 flex items-center justify-center transition-colors"
           >
-            <ChevronRight />
-          </IconButton>
-        </Box>
+            →
+          </button>
+        </div>
 
         {/* Play/Pause Control */}
-        <Box
-          sx={{
-            position: 'absolute',
-            bottom: 16,
-            right: 16,
-            zIndex: 2,
-          }}
-        >
-          <IconButton
+        <div className="absolute bottom-4 right-4 z-20">
+          <button
             onClick={() => setIsPlaying(!isPlaying)}
-            sx={{
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              color: 'white',
-              '&:hover': {
-                backgroundColor: 'rgba(0, 0, 0, 0.7)',
-              },
-            }}
+            className="w-10 h-10 rounded-full bg-black/50 text-white hover:bg-black/70 flex items-center justify-center transition-colors"
           >
-            {isPlaying ? <Pause /> : <PlayArrow />}
-          </IconButton>
-        </Box>
-      </Box>
+            {isPlaying ? '⏸' : '▶'}
+          </button>
+        </div>
+      </div>
 
       {/* Thumbnail Navigation */}
-      <Box
-        sx={{
-          display: 'flex',
-          gap: 2,
-          overflowX: 'auto',
-          pb: 2,
-          '&::-webkit-scrollbar': {
-            height: 8,
-          },
-          '&::-webkit-scrollbar-thumb': {
-            backgroundColor: '#333333',
-            borderRadius: 4,
-          },
-        }}
-      >
+      <div className="flex gap-4 overflow-x-auto pb-4">
         {castingCalls.map((call, index) => (
-          <Box
+          <button
             key={call.id}
             onClick={() => handleThumbnailClick(index)}
-            sx={{
-              minWidth: 120,
-              height: 80,
-              borderRadius: 2,
-              overflow: 'hidden',
-              cursor: 'pointer',
-              border: currentIndex === index ? `2px solid ${dominantColor}` : '2px solid transparent',
-              transition: 'all 0.3s ease',
-              '&:hover': {
-                transform: 'scale(1.05)',
-                border: `2px solid ${dominantColor}`,
-              },
+            className="relative min-w-[120px] h-20 rounded-md overflow-hidden cursor-pointer border-2 transition-all hover:scale-105"
+            style={{
+              borderColor: currentIndex === index ? dominantColor : 'transparent',
             }}
           >
             <Image
               src={call.image}
               alt={call.projectTitle}
-              layout="fill"
-              objectFit="cover"
+              fill
+              className="object-cover"
             />
-          </Box>
+          </button>
         ))}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }
-

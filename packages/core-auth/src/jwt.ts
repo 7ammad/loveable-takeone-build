@@ -6,8 +6,9 @@ const REFRESH_TOKEN_SECRET = process.env.JWT_REFRESH_SECRET!;
 const JWT_AUDIENCE = process.env.JWT_AUDIENCE || 'saudi-casting-marketplace';
 const JWT_ISSUER = process.env.JWT_ISSUER || 'saudi-casting-marketplace';
 
-interface TokenPayload {
+export interface TokenPayload {
   userId: string;
+  role?: string;
   jti: string;
   aud: string;
   iss: string;
@@ -23,6 +24,7 @@ interface TokenPayload {
 export function generateAccessToken(
   userId: string,
   jti: string,
+  role?: string,
   verificationData?: {
     nafathVerified?: boolean;
     nafathVerifiedAt?: Date;
@@ -32,6 +34,7 @@ export function generateAccessToken(
   const payload: Partial<TokenPayload> = {
     userId,
     jti,
+    role,
   };
 
   // Add Nafath verification claims if provided
@@ -58,6 +61,7 @@ export function generateAccessToken(
 export function generateRefreshToken(
   userId: string,
   jti: string,
+  role?: string,
   verificationData?: {
     nafathVerified?: boolean;
     nafathVerifiedAt?: Date;
@@ -67,6 +71,7 @@ export function generateRefreshToken(
   const payload: Partial<TokenPayload> = {
     userId,
     jti,
+    role,
   };
 
   // Add Nafath verification claims if provided (for refresh tokens too)
@@ -88,6 +93,20 @@ export function generateRefreshToken(
     audience: JWT_AUDIENCE,
     issuer: JWT_ISSUER
   });
+}
+
+export async function verifyAccessToken(token: string): Promise<TokenPayload | null> {
+  try {
+    const payload = jwt.verify(token, ACCESS_TOKEN_SECRET, {
+      audience: JWT_AUDIENCE,
+      issuer: JWT_ISSUER,
+    }) as TokenPayload;
+    return payload;
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : 'verification failed';
+    console.warn('[JWT] Access token verification failed:', reason);
+    return null;
+  }
 }
 
 export async function verifyRefreshToken(token: string): Promise<TokenPayload | null> {

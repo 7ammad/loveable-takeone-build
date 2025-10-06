@@ -53,3 +53,4 @@ try {
 }
 
 export const { mediaQueue, emailQueue, smsQueue, indexerQueue, billingQueue, alertsQueue, scrapedRolesQueue, whatsappMessagesQueue, validationQueue, dlq } = queues;
+export { connection as redis };

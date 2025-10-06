@@ -14,8 +14,12 @@ import {
   Clock
 } from 'lucide-react';
 import Link from 'next/link';
+import { LandingHeader } from '@/components/Header';
+import { DashboardNav } from '@/components/DashboardNav';
+import { useAuth } from '@/lib/contexts/auth-context';
 
 export default function CastingCallsPage() {
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('all');
 
@@ -108,16 +112,18 @@ export default function CastingCallsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-background border-b">
-        <div className="container mx-auto px-4 py-8">
-          <h1 className="text-4xl font-bold text-foreground mb-2">Casting Opportunities</h1>
-          <p className="text-muted-foreground">
-            Discover your next role from verified casting calls across Saudi Arabia
-          </p>
-        </div>
-      </header>
+    <>
+      {user ? <DashboardNav /> : <LandingHeader />}
+      <div className="min-h-screen bg-background">
+        {/* Header */}
+        <header className="bg-card border-b border-border">
+          <div className="container mx-auto px-4 py-8">
+            <h1 className="text-4xl font-bold text-foreground mb-2">Casting Opportunities</h1>
+            <p className="text-muted-foreground">
+              Discover your next role from verified casting calls across Saudi Arabia
+            </p>
+          </div>
+        </header>
 
       <div className="container mx-auto px-4 py-8">
         {/* Search and Filters */}
@@ -238,7 +244,7 @@ export default function CastingCallsPage() {
                     </Button>
                   </Link>
                   <Link href={`/casting-calls/${call.id}/apply`} className="flex-1">
-                    <Button className="w-full">
+                    <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
                       Apply Now
                     </Button>
                   </Link>
@@ -250,12 +256,20 @@ export default function CastingCallsPage() {
 
         {/* Load More */}
         <div className="mt-8 text-center">
-          <Button variant="outline" size="lg">
+          <Button 
+            variant="outline" 
+            size="lg"
+            onClick={() => {
+              // TODO: Implement pagination logic
+              alert('Pagination coming soon! This will load more casting opportunities.');
+            }}
+          >
             Load More Opportunities
           </Button>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 

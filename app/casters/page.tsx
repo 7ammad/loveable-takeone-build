@@ -1,6 +1,6 @@
 'use client';
 
-import { Header } from '@/components/Header';
+import { LandingHeader } from '@/components/Header';
 import { HirerHeroSection } from '@/components/HirerHeroSection';
 import { TrustBar } from '@/components/TrustBar';
 import { LivePlatformFeed } from '@/components/LivePlatformFeed';
@@ -13,7 +13,7 @@ import Footer from '@/components/Footer';
 export default function CastersPage() {
   return (
     <div>
-      <Header />
+      <LandingHeader />
       <main>
         <HirerHeroSection />
         <TrustBar />

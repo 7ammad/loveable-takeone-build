@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useAuth } from '@/lib/contexts/auth-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Mail, Lock, User as UserIcon, Eye, EyeOff, Briefcase, Shield } from 'lucide-react';
+import { Mail, Lock, User as UserIcon, Eye, EyeOff, Briefcase } from 'lucide-react';
 
 type RegistrationStep = 'role' | 'details' | 'verification';
 type UserRole = 'talent' | 'caster';
@@ -62,8 +62,8 @@ export default function RegisterPage() {
         name: formData.name,
         role: selectedRole,
       });
-    } catch (err: any) {
-      setError(err.message || 'Registration failed. Please try again.');
+    } catch (err: unknown) {
+      setError((err as Error).message || 'Registration failed. Please try again.');
     }
   };
 
@@ -81,7 +81,7 @@ export default function RegisterPage() {
               Take<span className="text-primary">One</span>
             </h1>
           </Link>
-          <p className="mt-2 text-gray-400">Join Saudi Arabia's premier casting marketplace</p>
+          <p className="mt-2 text-gray-400">Join Saudi Arabia&apos;s premier casting marketplace</p>
         </div>
 
         {/* Registration Card */}
@@ -137,7 +137,7 @@ export default function RegisterPage() {
           {/* Step 1: Role Selection */}
           {currentStep === 'role' && (
             <div className="space-y-4">
-              <p className="text-muted-foreground mb-6">I want to...</p>
+              <p className="text-muted-foreground mb-6">I want to&hellip;</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Talent Card */}
                 <button
@@ -151,7 +151,7 @@ export default function RegisterPage() {
                   <UserIcon className="w-12 h-12 text-primary mb-4 mx-auto" />
                   <h3 className="text-xl font-semibold text-foreground mb-2">Find Work</h3>
                   <p className="text-sm text-muted-foreground">
-                    I'm a talent looking for casting opportunities
+                    I&apos;m a talent looking for casting opportunities
                   </p>
                 </button>
 
@@ -167,7 +167,7 @@ export default function RegisterPage() {
                   <Briefcase className="w-12 h-12 text-primary mb-4 mx-auto" />
                   <h3 className="text-xl font-semibold text-foreground mb-2">Hire Talent</h3>
                   <p className="text-sm text-muted-foreground">
-                    I'm a caster looking to hire talented individuals
+                    I&apos;m a caster looking to hire talented individuals
                   </p>
                 </button>
               </div>

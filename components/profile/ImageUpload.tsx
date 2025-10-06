@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Upload, X } from 'lucide-react';
+import Image from 'next/image';
 
 interface ImageUploadProps {
   onImageUpload: (url: string) => void;
@@ -81,11 +82,12 @@ export default function ImageUpload({
     <div className="space-y-4">
       {preview ? (
         <div className="relative">
-          <div className={`${aspectRatioClass} w-full max-w-xs mx-auto overflow-hidden rounded-lg border`}>
-            <img
+          <div className={`${aspectRatioClass} w-full max-w-xs mx-auto overflow-hidden rounded-lg border relative`}>
+            <Image
               src={preview}
               alt="Preview"
-              className="w-full h-full object-cover"
+              fill
+              className="object-cover"
             />
           </div>
           <Button

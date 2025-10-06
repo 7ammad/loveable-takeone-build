@@ -1,10 +1,10 @@
-import axios, { AxiosInstance, AxiosError } from 'axios';
+import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 // API Configuration
 export const API_CONFIG = {
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
   version: 'v1',
-  timeout: 10000,
+  timeout: 30000, // Increased to 30 seconds for slower queries
 };
 
 // API Endpoints
@@ -99,8 +99,9 @@ class APIClient {
     this.client.interceptors.response.use(
       (response) => response,
       async (error: AxiosError) => {
-        const originalRequest = error.config as any;
+        const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
         
+        // If 401 error and haven't retried yet, try to refresh token
         if (error.response?.status === 401 && !originalRequest._retry) {
           originalRequest._retry = true;
           
@@ -136,23 +137,23 @@ class APIClient {
     );
   }
   
-  get<T>(url: string, config?: any) {
+  get<T>(url: string, config?: Record<string, unknown>) {
     return this.client.get<T>(url, config);
   }
   
-  post<T>(url: string, data?: any, config?: any) {
+  post<T>(url: string, data?: unknown, config?: Record<string, unknown>) {
     return this.client.post<T>(url, data, config);
   }
   
-  patch<T>(url: string, data?: any, config?: any) {
+  patch<T>(url: string, data?: unknown, config?: Record<string, unknown>) {
     return this.client.patch<T>(url, data, config);
   }
   
-  put<T>(url: string, data?: any, config?: any) {
+  put<T>(url: string, data?: unknown, config?: Record<string, unknown>) {
     return this.client.put<T>(url, data, config);
   }
   
-  delete<T>(url: string, config?: any) {
+  delete<T>(url: string, config?: Record<string, unknown>) {
     return this.client.delete<T>(url, config);
   }
 }

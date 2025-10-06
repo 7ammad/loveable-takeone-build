@@ -2,11 +2,51 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom styles for TakeOne */
-body {
-  font-family: var(--font-latin);
+/* Theme tokens (Tailwind v4 @theme) */
+@theme {
+  /* Colors (HSL components only) */
+  --color-primary: 51 100% 50%;       /* Gold */
+  --color-secondary: 211 100% 50%;    /* Azure */
+  --color-destructive: 354 70% 54%;   /* Error red */
+
+  --color-background: 0 0% 7%;        /* Noir black */
+  --color-foreground: 0 0% 100%;      /* White */
+  --color-card: 0 0% 10%;             /* Dark gray */
+  --color-border: 0 0% 75%;           /* Silver */
+  --color-muted: 0 0% 20%;
+  --color-muted-foreground: 0 0% 75%;
+
+  /* Additional tokens used by components */
+  --color-noir-light: 0 0% 10%;
 }
 
-html[lang="ar"] body {
-  font-family: var(--font-arabic);
+/* Base document styles */
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html, body, #__next {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-latin);
+  }
+
+  html[lang="ar"] body {
+    font-family: var(--font-arabic);
+  }
+}
+
+/* Keyframes per spec */
+@keyframes fade-in {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }

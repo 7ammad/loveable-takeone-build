@@ -40,9 +40,9 @@ export default function AuthForm({ mode, onSubmit, isLoading = false }: AuthForm
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormData | RegisterFormData>({
+  } = useForm({
     resolver: zodResolver(mode === 'login' ? loginSchema : registerSchema),
-  });
+  }) as unknown as ReturnType<typeof useForm<RegisterFormData>>;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -53,7 +53,7 @@ export default function AuthForm({ mode, onSubmit, isLoading = false }: AuthForm
           </label>
           <Input
             id="fullName"
-            {...register('fullName' as any)}
+            {...register('fullName')}
             placeholder="John Doe"
             disabled={isLoading}
           />
@@ -122,7 +122,7 @@ export default function AuthForm({ mode, onSubmit, isLoading = false }: AuthForm
             <Input
               id="confirmPassword"
               type={showConfirmPassword ? 'text' : 'password'}
-              {...register('confirmPassword' as any)}
+              {...register('confirmPassword')}
               className="pl-10 pr-10"
               placeholder="••••••••"
               disabled={isLoading}

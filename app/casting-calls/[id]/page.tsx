@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,19 +8,20 @@ import {
   Calendar, 
   DollarSign, 
   CheckCircle2, 
-  Clock,
   Briefcase,
   Users,
   Share2,
   Bookmark,
-  ArrowLeft,
-  Building2
+  ArrowLeft
 } from 'lucide-react';
 import Link from 'next/link';
+import { LandingHeader } from '@/components/Header';
+import { DashboardNav } from '@/components/DashboardNav';
+import { useAuth } from '@/lib/contexts/auth-context';
 
 export default function CastingCallDetailPage() {
   const params = useParams();
-  const [showApplicationModal, setShowApplicationModal] = useState(false);
+  const { user } = useAuth();
 
   // Mock data - replace with real API call using params.id
   const castingCall = {
@@ -80,9 +80,11 @@ The series will consist of 20 episodes, each 45 minutes long, and will be filmed
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Breadcrumb */}
-      <div className="bg-background border-b">
+    <>
+      {user ? <DashboardNav /> : <LandingHeader />}
+      <div className="min-h-screen bg-background">
+        {/* Breadcrumb */}
+        <div className="bg-card border-b border-border">
         <div className="container mx-auto px-4 py-4">
           <Link href="/casting-calls" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -161,7 +163,7 @@ The series will consist of 20 episodes, each 45 minutes long, and will be filmed
 
                 {/* Apply Button */}
                 <div className="mt-6">
-                  <Button size="lg" className="w-full md:w-auto" onClick={() => setShowApplicationModal(true)}>
+                  <Button size="lg" className="w-full md:w-auto">
                     Apply for This Role
                   </Button>
                 </div>
@@ -325,13 +327,14 @@ The series will consist of 20 episodes, each 45 minutes long, and will be filmed
         </div>
       </div>
 
-      {/* Sticky Apply Button (Mobile) */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background border-t lg:hidden">
-        <Button size="lg" className="w-full" onClick={() => setShowApplicationModal(true)}>
-          Apply for This Role
-        </Button>
+        {/* Sticky Apply Button (Mobile) */}
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-background border-t lg:hidden">
+          <Button size="lg" className="w-full">
+            Apply for This Role
+          </Button>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

@@ -1,6 +1,8 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import Image from "next/image";
 
 const FinalCTA = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -19,10 +21,12 @@ const FinalCTA = () => {
         style={{ y }}
       >
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/50 to-background z-10" />
-        <img
+        <Image
           src="https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?q=80&w=2070"
           alt="Creative Scene"
-          className="w-full h-full object-cover opacity-30"
+          fill
+          className="object-cover opacity-30"
+          priority
         />
       </motion.div>
 
@@ -46,7 +50,7 @@ const FinalCTA = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          Join Saudi Arabia's premier platform for creative talent and hirers
+          Join Saudi Arabia&apos;s premier platform for creative talent and hirers
         </motion.p>
 
         <motion.div
@@ -56,19 +60,23 @@ const FinalCTA = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.4 }}
         >
-          <Button
-            size="lg"
-            className="bg-primary text-primary-foreground hover:bg-primary/90 px-10 py-4 rounded-lg"
-          >
-            Create My Profile
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            className="border-secondary text-secondary hover:bg-secondary hover:text-foreground px-10 py-4 rounded-lg"
-          >
-            Find Top Talent
-          </Button>
+          <Link href="/register?type=talent">
+            <Button
+              size="lg"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 px-10 py-4 rounded-lg"
+            >
+              Create My Profile
+            </Button>
+          </Link>
+          <Link href="/talent">
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-secondary text-secondary hover:bg-secondary hover:text-foreground px-10 py-4 rounded-lg"
+            >
+              Find Top Talent
+            </Button>
+          </Link>
         </motion.div>
       </div>
     </section>

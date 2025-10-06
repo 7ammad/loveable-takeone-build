@@ -60,9 +60,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       // Redirect to dashboard
       router.push('/dashboard');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Login failed:', error);
-      throw new Error(error.response?.data?.error || 'Login failed. Please try again.');
+      const axiosError = error as { response?: { data?: { error?: string } } };
+      throw new Error(axiosError.response?.data?.error || 'Login failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -70,17 +71,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
+      setIsLoading(true);
       const refreshToken = localStorage.getItem('refreshToken');
       if (refreshToken) {
         await apiClient.post(API_ENDPOINTS.auth.logout, { refreshToken });
       }
     } catch (error) {
       console.error('Logout error:', error);
+      // Continue with logout even if API call fails
     } finally {
+      // Clear all auth state
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       setUser(null);
-      router.push('/login');
+      setIsLoading(false);
+      // Redirect to homepage (not login, as per UX plan)
+      router.push('/');
     }
   };
 
@@ -99,9 +105,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       // Redirect to dashboard
       router.push('/dashboard');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Registration failed:', error);
-      throw new Error(error.response?.data?.error || 'Registration failed. Please try again.');
+      const axiosError = error as { response?: { data?: { error?: string } } };
+      throw new Error(axiosError.response?.data?.error || 'Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
     }

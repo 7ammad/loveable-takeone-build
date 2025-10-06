@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import Image from "next/image";
 
 const talents = [
   { name: "Sarah Al-Ahmed", specialty: "Lead Actress", tag: "Acting", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=face" },
@@ -50,10 +51,10 @@ const TalentGrid = () => {
   const visibleTalents = talents.slice(currentPosition, currentPosition + visiblePanels);
 
   return (
-    <section id="discover" className="py-20 bg-noir-light">
+    <section id="discover" className="py-20 bg-card">
       <div className="container mx-auto px-6">
         <motion.h2
-          className="text-3xl md:text-4xl font-bold text-center mb-3"
+          className="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-3"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -62,7 +63,7 @@ const TalentGrid = () => {
           Discover Elite Talent
         </motion.h2>
         <motion.p
-          className="text-base text-muted-foreground text-center mb-16"
+          className="text-lg md:text-xl text-muted-foreground text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -117,10 +118,11 @@ const TalentGrid = () => {
                       : "flex-1"
                   }`}
                 >
-                  <img
+                  <Image
                     src={talent.image}
                     alt={talent.name}
-                    className={`w-full h-full object-cover transition-transform duration-500 ${
+                    fill
+                    className={`object-cover transition-transform duration-500 ${
                       hoveredIndex === index ? "scale-105" : "scale-100"
                     }`}
                   />

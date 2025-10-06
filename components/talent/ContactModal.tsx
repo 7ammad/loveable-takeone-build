@@ -97,7 +97,7 @@ export default function ContactModal({ isOpen, onClose, talentName, talentId }: 
 
           <div className="p-4 bg-muted/50 rounded-lg">
             <p className="text-xs text-muted-foreground">
-              <strong>Note:</strong> This message will be sent through TakeOne's secure messaging system. 
+              <strong>Note:</strong> This message will be sent through TakeOne&apos;s secure messaging system. 
               The talent will be able to respond directly to you.
             </p>
           </div>

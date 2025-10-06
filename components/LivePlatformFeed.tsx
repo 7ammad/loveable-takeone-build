@@ -1,12 +1,7 @@
 'use client';
 
 import React from 'react';
-import {
-  Box,
-  Container,
-  Typography,
-  Button,
-} from '@mui/material';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { SmartCarousel } from './SmartCarousel';
 
@@ -111,50 +106,24 @@ export function LivePlatformFeed() {
       viewport={{ once: true }}
       transition={{ duration: 0.8, ease: 'easeInOut' }}
     >
-      <Box sx={{ py: 8, backgroundColor: 'background.default' }}>
-        <Container maxWidth="lg">
-        <Box sx={{ textAlign: 'center', mb: 6 }}>
-          <Typography
-            variant="h2"
-            component="h2"
-            sx={{
-              fontWeight: 'bold',
-              color: 'text.primary',
-              mb: 2,
-            }}
-          >
-            Live Platform Feed
-          </Typography>
-          <Typography
-            variant="h6"
-            sx={{
-              color: 'text.secondary',
-              maxWidth: '600px',
-              mx: 'auto',
-            }}
-          >
-            Swipe through the latest casting calls from top production companies across Saudi Arabia
-          </Typography>
-        </Box>
-        
-            <SmartCarousel castingCalls={castingCalls} />
-        
-        <Box sx={{ textAlign: 'center', mt: 6 }}>
-          <Button
-            variant="contained"
-            size="large"
-            sx={{
-              px: 4,
-              py: 2,
-              fontSize: '1.1rem',
-              fontWeight: 'bold',
-            }}
-          >
-            View All Casting Calls
-          </Button>
-        </Box>
-      </Container>
-      </Box>
+      <section className="py-24 bg-background">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-6">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-2">Live Platform Feed</h2>
+            <p className="text-lg text-muted-foreground max-w-[600px] mx-auto">
+              Swipe through the latest casting calls from top production companies across Saudi Arabia
+            </p>
+          </div>
+
+          <SmartCarousel castingCalls={castingCalls} />
+
+          <div className="text-center mt-6">
+            <Link href="/casting-calls" className="inline-block px-6 py-3 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 font-semibold">
+              View All Casting Calls
+            </Link>
+          </div>
+        </div>
+      </section>
     </motion.div>
   );
 }

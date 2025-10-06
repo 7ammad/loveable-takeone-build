@@ -7,17 +7,11 @@ const logos = [
 
 const LogoMarquee = () => {
   return (
-    <section className="py-16 bg-noir-light">
+    <section className="py-16 bg-card border-y border-border/50">
       <div className="container mx-auto px-6">
-        <motion.h2
-          className="text-2xl md:text-3xl font-bold text-center mb-10"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          Trusted by Industry Leaders
-        </motion.h2>
+        <div className="text-center mb-6">
+          <span className="uppercase tracking-wider text-sm text-muted-foreground">TRUSTED BY INDUSTRY LEADERS</span>
+        </div>
 
         <div className="relative overflow-hidden">
           <div className="flex">
@@ -35,7 +29,7 @@ const LogoMarquee = () => {
               {logos.map((logo, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-center min-w-[200px] h-24 text-2xl font-semibold text-foreground/60 hover:text-foreground transition-smooth"
+                  className="flex items-center justify-center min-w-[200px] h-24 text-2xl font-semibold text-foreground/40 hover:text-foreground transition-smooth"
                 >
                   {logo}
                 </div>

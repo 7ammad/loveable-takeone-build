@@ -21,8 +21,8 @@ export default function ForgotPasswordPage() {
       // TODO: Call API to send reset email
       await new Promise(resolve => setTimeout(resolve, 1500));
       setIsSubmitted(true);
-    } catch (err: any) {
-      setError(err.message || 'Failed to send reset email. Please try again.');
+    } catch (err: unknown) {
+      setError((err as Error).message || 'Failed to send reset email. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -39,12 +39,12 @@ export default function ForgotPasswordPage() {
             
             <h2 className="text-2xl font-bold text-foreground mb-2">Check Your Email</h2>
             <p className="text-muted-foreground mb-6">
-              We've sent password reset instructions to <span className="font-medium text-foreground">{email}</span>
+              We&apos;ve sent password reset instructions to <span className="font-medium text-foreground">{email}</span>
             </p>
             
             <div className="space-y-3">
               <p className="text-sm text-muted-foreground">
-                Didn't receive the email? Check your spam folder or
+                Didn&apos;t receive the email? Check your spam folder or
               </p>
               <Button 
                 variant="outline" 
@@ -84,7 +84,7 @@ export default function ForgotPasswordPage() {
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-foreground mb-2">Forgot Password?</h2>
             <p className="text-sm text-muted-foreground">
-              No worries! Enter your email address and we'll send you instructions to reset your password.
+              No worries! Enter your email address and we&apos;ll send you instructions to reset your password.
             </p>
           </div>
 

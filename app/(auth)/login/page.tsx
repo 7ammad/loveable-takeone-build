@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/contexts/auth-context';
 import { Button } from '@/components/ui/button';
@@ -9,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Mail, Lock, Eye, EyeOff, Shield } from 'lucide-react';
 
 export default function LoginPage() {
-  const router = useRouter();
   const { login, isLoading } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -27,8 +25,8 @@ export default function LoginPage() {
 
     try {
       await login({ email, password });
-    } catch (err: any) {
-      setError(err.message || 'Login failed. Please try again.');
+    } catch (err: unknown) {
+      setError((err as Error).message || 'Login failed. Please try again.');
     }
   };
 
@@ -145,7 +143,7 @@ export default function LoginPage() {
 
           {/* Register Link */}
           <p className="mt-6 text-center text-sm text-muted-foreground">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link href="/register" className="text-primary font-medium hover:underline">
               Sign up
             </Link>

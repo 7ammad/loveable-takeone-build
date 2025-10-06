@@ -43,10 +43,10 @@ const AdvantageSection = () => {
   const [activeTab, setActiveTab] = useState<"talent" | "hirers">("talent");
 
   return (
-    <section className="py-20 bg-noir-light">
+    <section className="py-24 bg-card">
       <div className="container mx-auto px-6">
         <motion.h2
-          className="text-3xl md:text-4xl font-bold text-center mb-12"
+          className="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-12"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}

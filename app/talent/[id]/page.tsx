@@ -17,9 +17,13 @@ import {
   Instagram
 } from 'lucide-react';
 import Link from 'next/link';
+import { LandingHeader } from '@/components/Header';
+import { DashboardNav } from '@/components/DashboardNav';
+import { useAuth } from '@/lib/contexts/auth-context';
 
 export default function TalentDetailPage() {
   const params = useParams();
+  const { user } = useAuth();
 
   // Mock data - replace with real API call using params.id
   const talent = {
@@ -82,16 +86,18 @@ export default function TalentDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Breadcrumb */}
-      <div className="bg-background border-b">
-        <div className="container mx-auto px-4 py-4">
-          <Link href="/talent" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Talent Search
-          </Link>
+    <>
+      {user ? <DashboardNav /> : <LandingHeader />}
+      <div className="min-h-screen bg-background">
+        {/* Breadcrumb */}
+        <div className="bg-card border-b border-border">
+          <div className="container mx-auto px-4 py-4">
+            <Link href="/talent" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Talent Search
+            </Link>
+          </div>
         </div>
-      </div>
 
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -321,7 +327,8 @@ export default function TalentDetailPage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 

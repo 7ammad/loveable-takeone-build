@@ -1,14 +1,8 @@
 'use client';
 
 import React from 'react';
-import {
-  Box,
-  Container,
-  Typography,
-  Stack,
-  Button,
-} from '@mui/material';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 
 export function HirerFinalCTA() {
   return (
@@ -18,95 +12,30 @@ export function HirerFinalCTA() {
       viewport={{ once: true }}
       transition={{ duration: 0.8, ease: 'easeInOut' }}
     >
-      <Box
-        sx={{
-          py: 8,
-          backgroundColor: 'primary.main',
-          background: 'linear-gradient(135deg, #FF44AA 0%, #E91E63 100%)',
-        }}
-      >
-        <Container maxWidth="md">
-        <Box sx={{ textAlign: 'center' }}>
-          <Typography
-            variant="h2"
-            component="h2"
-            sx={{
-              fontWeight: 'bold',
-              color: 'white',
-              mb: 3,
-            }}
-          >
+      <section className="py-20 bg-gradient-to-br from-primary via-primary to-[#E91E63]">
+        <div className="container mx-auto px-6 max-w-4xl text-center">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
             Ready to Find Your Perfect Cast?
-          </Typography>
+          </h2>
           
-          <Typography
-            variant="h6"
-            sx={{
-              color: 'rgba(255, 255, 255, 0.9)',
-              mb: 4,
-              maxWidth: '600px',
-              mx: 'auto',
-              lineHeight: 1.6,
-            }}
-          >
+          <p className="text-xl text-white/90 mb-8 max-w-[600px] mx-auto leading-relaxed">
             Join leading production companies and casting directors who are already using TakeOne to discover and connect with Saudi Arabia&apos;s most talented performers.
-          </Typography>
+          </p>
           
-          <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={2}
-            justifyContent="center"
-            alignItems="center"
-          >
-            <Button
-              variant="contained"
-              size="large"
-              sx={{
-                px: 4,
-                py: 2,
-                fontSize: '1.1rem',
-                fontWeight: 'bold',
-                backgroundColor: 'white',
-                color: 'primary.main',
-                '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                },
-              }}
-            >
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Link href="/register" className="px-8 py-4 rounded-md bg-white text-primary hover:bg-white/90 font-bold text-lg">
               Start Casting Today
-            </Button>
-            <Button
-              variant="outlined"
-              size="large"
-              sx={{
-                px: 4,
-                py: 2,
-                fontSize: '1.1rem',
-                fontWeight: 'bold',
-                borderColor: 'white',
-                color: 'white',
-                '&:hover': {
-                  borderColor: 'rgba(255, 255, 255, 0.8)',
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                },
-              }}
-            >
+            </Link>
+            <Link href="#how-it-works" className="px-8 py-4 rounded-md border-2 border-white text-white hover:bg-white/10 font-bold text-lg">
               Learn More
-            </Button>
-          </Stack>
+            </Link>
+          </div>
           
-          <Typography
-            variant="body2"
-            sx={{
-              color: 'rgba(255, 255, 255, 0.7)',
-              mt: 3,
-            }}
-          >
+          <p className="text-sm text-white/70 mt-6">
             No setup fees • Free to post • Cancel anytime
-          </Typography>
-        </Box>
-      </Container>
-      </Box>
+          </p>
+        </div>
+      </section>
     </motion.div>
   );
 }

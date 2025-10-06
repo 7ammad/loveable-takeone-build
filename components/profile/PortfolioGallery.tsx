@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, X } from 'lucide-react';
+import Image from 'next/image';
 import ImageUpload from './ImageUpload';
 
 interface PortfolioGalleryProps {
@@ -24,10 +25,11 @@ export default function PortfolioGallery({ images, onAddImage, onRemoveImage }: 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {images.map((image, index) => (
           <div key={index} className="relative group aspect-square">
-            <img
+            <Image
               src={image}
               alt={`Portfolio ${index + 1}`}
-              className="w-full h-full object-cover rounded-lg"
+              fill
+              className="object-cover rounded-lg"
             />
             <Button
               variant="destructive"

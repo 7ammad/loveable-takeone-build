@@ -1,0 +1,500 @@
+﻿        /* TakeOne Design System - KAFD Noir Theme */
+        :root {
+            /* Colors */
+            --takeone-color-noir: #121212;
+            --takeone-color-gold: #FFD700;
+            --takeone-color-azure: #007FFF;
+            --takeone-color-white: #FFFFFF;
+            --takeone-color-silver: #C0C0C0;
+            --takeone-color-success: #28A745;
+            --takeone-color-warning: #FFC107;
+            --takeone-color-error: #DC3545;
+            
+            /* Grayscale */
+            --takeone-gray-100: #F8F9FA;
+            --takeone-gray-200: #E9ECEF;
+            --takeone-gray-300: #DEE2E6;
+            --takeone-gray-400: #CED4DA;
+            --takeone-gray-500: #ADB5BD;
+            --takeone-gray-600: #6C757D;
+            --takeone-gray-700: #495057;
+            --takeone-gray-800: #343A40;
+            --takeone-gray-900: #212529;
+            
+            /* Typography */
+            --takeone-font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --takeone-font-size-caption: 0.64rem;
+            --takeone-font-size-small: 0.8rem;
+            --takeone-font-size-body: 1rem;
+            --takeone-font-size-h3: 1.25rem;
+            --takeone-font-size-h2: 1.563rem;
+            --takeone-font-size-h1: 1.953rem;
+            --takeone-font-size-display: 2.441rem;
+            
+            /* Spacing */
+            --takeone-spacing-xs: 4px;
+            --takeone-spacing-sm: 8px;
+            --takeone-spacing-md: 16px;
+            --takeone-spacing-lg: 24px;
+            --takeone-spacing-xl: 32px;
+            --takeone-spacing-2xl: 48px;
+            --takeone-spacing-3xl: 64px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--takeone-font-family);
+            background: var(--takeone-gray-100);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--takeone-spacing-xl);
+        }
+        
+        /* Profile Header */
+        .profile-header {
+            background: var(--takeone-color-white);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(18, 18, 18, 0.08);
+            margin-bottom: var(--takeone-spacing-xl);
+            overflow: hidden;
+        }
+        
+        .profile-hero {
+            background: linear-gradient(135deg, var(--takeone-color-noir) 0%, var(--takeone-gray-800) 100%);
+            padding: var(--takeone-spacing-2xl) var(--takeone-spacing-xl) var(--takeone-spacing-xl);
+            color: var(--takeone-color-white);
+            position: relative;
+        }
+        
+        .profile-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%23FFD700" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="%23007FFF" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>') repeat;
+            opacity: 0.3;
+        }
+        
+        .profile-content {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: var(--takeone-spacing-xl);
+            align-items: center;
+        }
+        
+        .profile-image-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--takeone-color-azure), var(--takeone-color-gold));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--takeone-font-size-display);
+            font-weight: 700;
+            color: var(--takeone-color-white);
+            position: relative;
+            border: 4px solid var(--takeone-color-white);
+        }
+        
+        .verification-badge-large {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 32px;
+            height: 32px;
+            background: var(--takeone-color-success);
+            border-radius: 50%;
+            border: 3px solid var(--takeone-color-white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .profile-info h1 {
+            font-size: var(--takeone-font-size-display);
+            font-weight: 700;
+            margin-bottom: var(--takeone-spacing-xs);
+        }
+        
+        .profile-headline {
+            font-size: var(--takeone-font-size-h3);
+            opacity: 0.9;
+            margin-bottom: var(--takeone-spacing-sm);
+        }
+        
+        .profile-location {
+            display: flex;
+            align-items: center;
+            gap: var(--takeone-spacing-xs);
+            opacity: 0.8;
+            margin-bottom: var(--takeone-spacing-md);
+        }
+        
+        .profile-stats {
+            display: flex;
+            gap: var(--takeone-spacing-xl);
+        }
+        
+        .stat-item-large {
+            text-align: center;
+        }
+        
+        .stat-value-large {
+            font-size: var(--takeone-font-size-h2);
+            font-weight: 700;
+            display: block;
+        }
+        
+        .stat-label-large {
+            font-size: var(--takeone-font-size-small);
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .profile-actions {
+            display: flex;
+            flex-direction: column;
+            gap: var(--takeone-spacing-sm);
+        }
+        
+        /* Main Content Grid */
+        .profile-main {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: var(--takeone-spacing-xl);
+        }
+        
+        .profile-left {
+            display: flex;
+            flex-direction: column;
+            gap: var(--takeone-spacing-xl);
+        }
+        
+        .profile-right {
+            display: flex;
+            flex-direction: column;
+            gap: var(--takeone-spacing-xl);
+        }
+        
+        /* Content Sections */
+        .content-section {
+            background: var(--takeone-color-white);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(18, 18, 18, 0.08);
+            padding: var(--takeone-spacing-xl);
+        }
+        
+        .section-title {
+            font-size: var(--takeone-font-size-h3);
+            font-weight: 600;
+            color: var(--takeone-color-noir);
+            margin-bottom: var(--takeone-spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--takeone-spacing-sm);
+        }
+        
+        .section-icon {
+            width: 20px;
+            height: 20px;
+            color: var(--takeone-color-azure);
+        }
+        
+        /* Portfolio Grid */
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--takeone-spacing-md);
+        }
+        
+        .portfolio-item {
+            aspect-ratio: 16/9;
+            background: var(--takeone-gray-200);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s ease-out;
+        }
+        
+        .portfolio-item:hover {
+            transform: scale(1.02);
+        }
+        
+        .portfolio-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--takeone-gray-300), var(--takeone-gray-200));
+            color: var(--takeone-gray-600);
+            font-size: var(--takeone-font-size-small);
+        }
+        
+        /* Experience Timeline */
+        .experience-timeline {
+            position: relative;
+            padding-left: var(--takeone-spacing-xl);
+        }
+        
+        .experience-timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--takeone-gray-300);
+        }
+        
+        .experience-item {
+            position: relative;
+            margin-bottom: var(--takeone-spacing-xl);
+        }
+        
+        .experience-item::before {
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: 4px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--takeone-color-azure);
+            border: 2px solid var(--takeone-color-white);
+            box-shadow: 0 0 0 2px var(--takeone-color-azure);
+        }
+        
+        .experience-title {
+            font-weight: 600;
+            color: var(--takeone-color-noir);
+            margin-bottom: var(--takeone-spacing-xs);
+        }
+        
+        .experience-company {
+            color: var(--takeone-color-azure);
+            font-weight: 500;
+            margin-bottom: var(--takeone-spacing-xs);
+        }
+        
+        .experience-date {
+            font-size: var(--takeone-font-size-small);
+            color: var(--takeone-gray-600);
+            margin-bottom: var(--takeone-spacing-sm);
+        }
+        
+        .experience-description {
+            color: var(--takeone-gray-700);
+            font-size: var(--takeone-font-size-small);
+        }
+        
+        /* Skills & Reviews */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: var(--takeone-spacing-md);
+        }
+        
+        .skill-item {
+            text-align: center;
+            padding: var(--takeone-spacing-md);
+            background: var(--takeone-gray-100);
+            border-radius: 8px;
+            border: 1px solid var(--takeone-gray-300);
+        }
+        
+        .skill-name {
+            font-weight: 500;
+            margin-bottom: var(--takeone-spacing-xs);
+        }
+        
+        .skill-level {
+            font-size: var(--takeone-font-size-small);
+            color: var(--takeone-gray-600);
+        }
+        
+        .review-item {
+            padding: var(--takeone-spacing-lg);
+            background: var(--takeone-gray-100);
+            border-radius: 8px;
+            margin-bottom: var(--takeone-spacing-md);
+        }
+        
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--takeone-spacing-sm);
+        }
+        
+        .review-author {
+            font-weight: 500;
+        }
+        
+        .review-rating {
+            display: flex;
+            gap: 2px;
+        }
+        
+        .star {
+            width: 12px;
+            height: 12px;
+            fill: var(--takeone-color-gold);
+        }
+        
+        .review-text {
+            color: var(--takeone-gray-700);
+            font-size: var(--takeone-font-size-small);
+            line-height: 1.5;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: var(--takeone-spacing-sm) var(--takeone-spacing-lg);
+            border-radius: 8px;
+            font-size: var(--takeone-font-size-body);
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease-out;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--takeone-spacing-sm);
+        }
+        
+        .btn-primary {
+            background: var(--takeone-color-gold);
+            color: var(--takeone-color-noir);
+        }
+        
+        .btn-primary:hover {
+            background: #E6C200;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--takeone-color-azure);
+            border: 1px solid var(--takeone-color-azure);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--takeone-color-azure);
+            color: var(--takeone-color-white);
+        }
+        
+        .icon {
+            width: 20px;
+            height: 20px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .profile-main {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: var(--takeone-spacing-lg);
+            }
+            
+            .profile-stats {
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: var(--takeone-spacing-lg);
+            }
+            
+            .profile-hero {
+                padding: var(--takeone-spacing-xl) var(--takeone-spacing-lg);
+            }
+            
+            .profile-image-large {
+                width: 100px;
+                height: 100px;
+                font-size: var(--takeone-font-size-h1);
+            }
+            
+            .profile-info h1 {
+                font-size: var(--takeone-font-size-h1);
+            }
+            
+            .profile-actions {
+                width: 100%;
+            }
+            
+            .portfolio-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .skills-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-hero">
+                <div class="profile-content">
+                    <div class="profile-image-large">
+                        SA
+                        <div class="verification-badge-large">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                                <polyline points="20,6 9,17 4,12"/>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-info">
+                        <h1>Sarah Al-Rashid</h1>
+                        <p class="profile-headline">Professional Actress & Voice Artist</p>
+                        <div class="profile-location">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                            </svg>
+                            Riyadh, Saudi Arabia
+                        </div>
+                        <div class="profile-stats">
+                            <div class="stat-item-large">
+                                <span class="stat-value-large">5+</span>
+                                <span class="stat-label-large">Years Experience</span>
+                            </div>
+                            <div class="stat-item-large">
+                                <span class="stat-value-large">47</span>
+                                <span class="stat-label-large">Projects Completed</span>
+                            </div>
+                            <div class="stat-item-large">
+                                <span class="stat-value-large">4.9</span>
+                                <span class="stat-label-large">Average Rating</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-actions">

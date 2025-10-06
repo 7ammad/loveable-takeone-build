@@ -1,13 +1,6 @@
 'use client';
 
 import React from 'react';
-import {
-  Box,
-  Container,
-  Typography,
-  Card,
-  CardContent,
-} from '@mui/material';
 import { motion } from 'framer-motion';
 
 export function HirerTestimonials() {
@@ -39,93 +32,41 @@ export function HirerTestimonials() {
       viewport={{ once: true }}
       transition={{ duration: 0.8, ease: 'easeInOut' }}
     >
-      <Box sx={{ py: 8, backgroundColor: 'rgba(26, 26, 26, 0.5)' }}>
-        <Container maxWidth="lg">
-        <Box sx={{ textAlign: 'center', mb: 6 }}>
-          <Typography
-            variant="h2"
-            component="h2"
-            sx={{
-              fontWeight: 'bold',
-              color: 'text.primary',
-              mb: 2,
-            }}
-          >
-            What Our Casters Say
-          </Typography>
-          <Typography
-            variant="h6"
-            sx={{
-              color: 'text.secondary',
-              maxWidth: '600px',
-              mx: 'auto',
-            }}
-          >
-            Join leading production companies and casting directors who trust TakeOne for their talent needs.
-          </Typography>
-        </Box>
-        
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-          {testimonials.map((testimonial, index) => (
-            <Box key={index} sx={{ flex: '1 1 300px', minWidth: '300px' }}>
-              <Card
-                sx={{
-                  height: '100%',
-                  backgroundColor: 'background.paper',
-                  border: '1px solid #333333',
-                  transition: 'all 0.3s ease-in-out',
-                  '&:hover': {
-                    transform: 'translateY(-4px)',
-                    borderColor: 'primary.main',
-                    boxShadow: '0 8px 32px rgba(255, 68, 170, 0.1)',
-                  },
-                }}
+      <section className="py-24 bg-card">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">What Our Casters Say</h2>
+            <p className="text-lg text-muted-foreground max-w-[600px] mx-auto">
+              Join leading production companies and casting directors who trust TakeOne for their talent needs.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {testimonials.map((testimonial, index) => (
+              <motion.div
+                key={index}
+                whileHover={{ y: -4 }}
+                className="h-full"
               >
-                <CardContent sx={{ p: 4 }}>
-                  <Box sx={{ textAlign: 'center', mb: 3 }}>
-                    <Typography variant="h3" sx={{ fontSize: '3rem' }}>
-                      {testimonial.image}
-                    </Typography>
-                  </Box>
+                <div className="h-full bg-background border border-border rounded-lg p-8 transition-all duration-300 hover:border-primary/50 hover:shadow-[0_8px_32px_rgba(255,68,170,0.1)]">
+                  <div className="text-center mb-6">
+                    <span className="text-5xl">{testimonial.image}</span>
+                  </div>
                   
-                  <Typography
-                    variant="body1"
-                    sx={{
-                      color: 'text.primary',
-                      fontStyle: 'italic',
-                      lineHeight: 1.6,
-                      mb: 3,
-                      fontSize: '1.1rem',
-                    }}
-                  >
+                  <blockquote className="text-foreground italic leading-relaxed mb-6 text-lg">
                     &ldquo;{testimonial.quote}&rdquo;
-                  </Typography>
+                  </blockquote>
                   
-                  <Box sx={{ textAlign: 'center' }}>
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        fontWeight: 'bold',
-                        color: 'text.primary',
-                        mb: 0.5,
-                      }}
-                    >
-                      {testimonial.name}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ color: 'text.secondary' }}
-                    >
-                      {testimonial.role}
-                    </Typography>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Box>
-          ))}
-        </Box>
-      </Container>
-      </Box>
+                  <div className="text-center">
+                    <p className="font-bold text-foreground mb-1">{testimonial.name}</p>
+                    <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
     </motion.div>
   );
 }

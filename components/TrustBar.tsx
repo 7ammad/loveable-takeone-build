@@ -1,11 +1,6 @@
 'use client';
 
 import React from 'react';
-import {
-  Box,
-  Container,
-  Typography,
-} from '@mui/material';
 import { motion } from 'framer-motion';
 
 export function TrustBar() {
@@ -18,78 +13,36 @@ export function TrustBar() {
       viewport={{ once: true }}
       transition={{ duration: 0.8, ease: 'easeInOut' }}
     >
-      <Box
-        sx={{
-          py: 4,
-          backgroundColor: 'rgba(26, 26, 26, 0.5)',
-          backdropFilter: 'blur(10px)',
-          borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-          overflow: 'hidden',
-        }}
-      >
-        <Container maxWidth="lg">
-        <Box sx={{ textAlign: 'center', mb: 3 }}>
-          <Typography
-            variant="h6"
-            sx={{
-              color: 'text.secondary',
-              fontWeight: 'semibold',
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
+      <section className="py-16 bg-card border-y border-border/50 overflow-hidden">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-4">
+            <span className="uppercase tracking-wider text-sm text-muted-foreground">Trusted by Saudi Arabia&apos;s Leading Studios</span>
+          </div>
+          <div
+            className="flex"
+            style={{
+              animation: 'scroll 30s linear infinite',
             }}
+            onMouseEnter={(e) => ((e.currentTarget.style.animationPlayState = 'paused'))}
+            onMouseLeave={(e) => ((e.currentTarget.style.animationPlayState = 'running'))}
           >
-            Trusted by Saudi Arabia&apos;s Leading Studios
-          </Typography>
-        </Box>
-
-        <Box
-          sx={{
-            display: 'flex',
-            animation: 'scroll 30s linear infinite',
-            '&:hover': {
-              animationPlayState: 'paused',
-            },
-            '@keyframes scroll': {
-              '0%': {
-                transform: 'translateX(0)',
-              },
-              '100%': {
-                transform: 'translateX(-50%)',
-              },
-            },
-          }}
-        >
-          {[...logos, ...logos, ...logos].map((logo, index) => (
-            <Box
-              key={index}
-              sx={{
-                flexShrink: 0,
-                mx: 4,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                minWidth: '200px',
-              }}
-            >
-              <Typography
-                variant="h4"
-                sx={{
-                  fontWeight: 'bold',
-                  color: 'text.secondary',
-                  transition: 'color 0.3s ease',
-                  '&:hover': {
-                    color: 'text.primary',
-                  },
-                }}
+            {[...logos, ...logos, ...logos].map((logo, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-center min-w-[200px] h-24 mx-4 text-2xl font-semibold text-foreground/40 hover:text-foreground transition-smooth"
               >
                 {logo}
-              </Typography>
-            </Box>
-          ))}
-        </Box>
-      </Container>
-      </Box>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+      <style jsx>{`
+        @keyframes scroll {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+      `}</style>
     </motion.div>
   );
 }

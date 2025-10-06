@@ -1,99 +1,31 @@
 'use client';
 
 import React from 'react';
-import {
-  Box,
-  Container,
-  Typography,
-  Button,
-  Stack,
-} from '@mui/material';
+import Link from 'next/link';
 
 export function HeroSection() {
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative',
-        overflow: 'hidden',
-        background: 'linear-gradient(135deg, rgba(255, 68, 170, 0.1) 0%, transparent 50%, rgba(255, 68, 170, 0.05) 100%)',
-      }}
-    >
-      <Container maxWidth="lg">
-        <Box sx={{ textAlign: 'center' }}>
-          <Typography
-            variant="h1"
-            component="h1"
-            sx={{
-              fontSize: { xs: '3rem', md: '5rem', lg: '6rem' },
-              fontWeight: 'bold',
-              color: 'text.primary',
-              mb: 2,
-              lineHeight: 1.1,
-            }}
-          >
-            Find Your Next
-            <br />
-            <Box component="span" color="primary.main">
-              Casting Call
-            </Box>
-          </Typography>
-          
-          <Typography
-            variant="h5"
-            sx={{
-              color: 'text.secondary',
-              mb: 4,
-              maxWidth: '800px',
-              mx: 'auto',
-              lineHeight: 1.6,
-            }}
-          >
-            Stop searching through endless DMs and social media posts. TakeOne brings every active casting call in Saudi Arabia to one organized platform.
-          </Typography>
-          
-          <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={2}
-            justifyContent="center"
-            alignItems="center"
-          >
-            <Button
-              variant="contained"
-              size="large"
-              sx={{
-                px: 4,
-                py: 2,
-                fontSize: '1.1rem',
-                fontWeight: 'bold',
-              }}
-            >
-              Browse Casting Calls
-            </Button>
-            <Button
-              variant="outlined"
-              size="large"
-              sx={{
-                px: 4,
-                py: 2,
-                fontSize: '1.1rem',
-                fontWeight: 'bold',
-                borderColor: 'text.primary',
-                color: 'text.primary',
-                '&:hover': {
-                  borderColor: 'primary.main',
-                  color: 'primary.main',
-                },
-              }}
-            >
-              Learn More
-            </Button>
-          </Stack>
-        </Box>
-      </Container>
-    </Box>
+    <section className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-primary/10 via-transparent to-primary/5">
+      <div className="container mx-auto px-6 text-center">
+        <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-4 leading-tight">
+          Find Your Next
+          <br />
+          <span className="text-primary">Casting Call</span>
+        </h1>
+        
+        <p className="text-xl text-muted-foreground mb-8 max-w-[800px] mx-auto leading-relaxed">
+          Stop searching through endless DMs and social media posts. TakeOne brings every active casting call in Saudi Arabia to one organized platform.
+        </p>
+        
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <Link href="/casting-calls" className="px-8 py-4 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-lg">
+            Browse Casting Calls
+          </Link>
+          <Link href="#how-it-works" className="px-8 py-4 rounded-md border border-foreground text-foreground hover:border-primary hover:text-primary font-bold text-lg">
+            Learn More
+          </Link>
+        </div>
+      </div>
+    </section>
   );
 }

@@ -34,14 +34,14 @@ export default function NafathIntegration({ onVerificationComplete }: NafathInte
       setStatus('waiting');
       
       // Start polling for verification status
-      pollVerificationStatus(mockTransactionId);
+      pollVerificationStatus();
     } catch (error) {
       console.error('Failed to initiate Nafath verification:', error);
       setStatus('failed');
     }
   };
 
-  const pollVerificationStatus = async (txId: string) => {
+  const pollVerificationStatus = async () => {
     // TODO: Implement actual polling logic
     // Poll every 3 seconds for up to 2 minutes
     let attempts = 0;
@@ -90,7 +90,7 @@ export default function NafathIntegration({ onVerificationComplete }: NafathInte
           <div className="flex-1">
             <h3 className="font-semibold text-foreground mb-1">Nafath Verification</h3>
             <p className="text-sm text-muted-foreground mb-4">
-              Verify your identity using Saudi Arabia's national authentication system
+              Verify your identity using Saudi Arabia&apos;s national authentication system
             </p>
 
             {status === 'idle' && (
