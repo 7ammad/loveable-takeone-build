@@ -1,12 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Save } from 'lucide-react';
 import ImageUpload from './ImageUpload';
 import PortfolioGallery from './PortfolioGallery';
+import { apiClient } from '@/lib/api/client';
+import type { TalentProfile } from '@/lib/types';
 
 export default function TalentProfileForm() {
   const [formData, setFormData] = useState({
@@ -20,19 +22,96 @@ export default function TalentProfileForm() {
     city: '',
     experience: '',
     willingToTravel: false,
-    bio: '',
+    skills: [] as string[],
+    languages: [] as string[],
     instagramUrl: '',
     demoReelUrl: '',
   });
 
-  const updateFormData = (field: string, value: string | boolean) => {
+  const updateFormData = (field: string, value: string | boolean | string[]) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  // Prefill form with existing profile data, if present
+  useEffect(() => {
+    let isMounted = true;
+    async function loadExistingProfile() {
+      try {
+        const res = await apiClient.get<{ success: boolean; data: TalentProfile | null }>(
+          '/api/v1/profiles/me'
+        );
+        const profile = res.data?.data;
+        if (profile && isMounted) {
+          setFormData({
+            stageName: profile.stageName || '',
+            dateOfBirth: profile.dateOfBirth ? String(profile.dateOfBirth).slice(0, 10) : '',
+            gender: (profile.gender as string) || '',
+            height: profile.height != null ? String(profile.height) : '',
+            weight: profile.weight != null ? String(profile.weight) : '',
+            eyeColor: profile.eyeColor || '',
+            hairColor: profile.hairColor || '',
+            city: profile.city || '',
+            experience: profile.experience != null ? String(profile.experience) : '',
+            willingToTravel: !!profile.willingToTravel,
+            skills: profile.skills || [],
+            languages: profile.languages || [],
+            instagramUrl: profile.instagramUrl || '',
+            demoReelUrl: profile.demoReelUrl || '',
+          });
+        }
+      } catch (e) {
+        console.error('Failed to load existing profile for edit:', e);
+      }
+    }
+    loadExistingProfile();
+    return () => { isMounted = false; };
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Submit to API
-    console.log('Submitting:', formData);
+    try {
+      const token = localStorage.getItem('accessToken');
+      
+      // Prepare data for API - convert numbers and ensure required fields
+      const apiData = {
+        stageName: formData.stageName,
+        dateOfBirth: formData.dateOfBirth,
+        gender: formData.gender as 'male' | 'female' | 'other',
+        city: formData.city,
+        height: formData.height ? parseInt(formData.height) : null,
+        weight: formData.weight ? parseInt(formData.weight) : null,
+        eyeColor: formData.eyeColor || null,
+        hairColor: formData.hairColor || null,
+        experience: formData.experience ? parseInt(formData.experience) : null,
+        willingToTravel: formData.willingToTravel,
+        skills: formData.skills,
+        languages: formData.languages,
+        instagramUrl: formData.instagramUrl || null,
+        demoReelUrl: formData.demoReelUrl || null,
+      };
+      
+      const response = await fetch('/api/v1/profiles/talent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(apiData),
+      });
+      
+      if (response.ok) {
+        alert('Profile saved successfully!');
+        // Redirect to dashboard or profile page
+        window.location.href = '/dashboard';
+      } else {
+        const errorData = await response.json();
+        console.error('API Error:', errorData);
+        alert(`Failed to create profile: ${errorData.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error creating profile:', error);
+      alert('Error creating profile. Please try again.');
+    }
   };
 
   return (
@@ -110,18 +189,6 @@ export default function TalentProfileForm() {
               />
             </div>
           </div>
-
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Bio
-            </label>
-            <textarea
-              className="w-full min-h-[120px] p-3 rounded-md border border-input bg-background text-foreground resize-y"
-              value={formData.bio}
-              onChange={(e) => updateFormData('bio', e.target.value)}
-              placeholder="Tell us about yourself..."
-            />
-          </div>
         </CardContent>
       </Card>
 
@@ -178,6 +245,37 @@ export default function TalentProfileForm() {
         </CardContent>
       </Card>
 
+      {/* Skills and Languages */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Skills & Languages</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              Skills (comma-separated) *
+            </label>
+            <Input
+              value={formData.skills?.join(', ') || ''}
+              onChange={(e) => updateFormData('skills', e.target.value.split(',').map(s => s.trim()).filter(s => s))}
+              placeholder="Acting, Dancing, Singing, Voice Over"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              Languages (comma-separated) *
+            </label>
+            <Input
+              value={formData.languages?.join(', ') || ''}
+              onChange={(e) => updateFormData('languages', e.target.value.split(',').map(s => s.trim()).filter(s => s))}
+              placeholder="Arabic, English, French"
+              required
+            />
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Experience */}
       <Card>
         <CardHeader>
@@ -186,14 +284,13 @@ export default function TalentProfileForm() {
         <CardContent className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
-              Years of Experience *
+              Years of Experience
             </label>
             <Input
               type="number"
               value={formData.experience}
               onChange={(e) => updateFormData('experience', e.target.value)}
               placeholder="5"
-              required
             />
           </div>
           <div className="flex items-center gap-3">

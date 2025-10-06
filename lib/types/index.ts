@@ -4,6 +4,8 @@ export interface User {
   email: string;
   name: string;
   role: 'talent' | 'caster';
+  avatar?: string;
+  bio?: string;
   createdAt: string;
   updatedAt: string;
   emailVerified: boolean;
@@ -101,7 +103,7 @@ export interface Application {
   status: 'pending' | 'under_review' | 'shortlisted' | 'accepted' | 'rejected' | 'withdrawn';
   coverLetter?: string;
   availability?: string;
-  additionalInfo?: Record<string, any>;
+  additionalInfo?: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
   castingCall?: CastingCall;
@@ -131,7 +133,7 @@ export interface Notification {
   type: 'application_update' | 'message' | 'casting_call' | 'system';
   title: string;
   body: string;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
   read: boolean;
   createdAt: string;
 }
@@ -148,7 +150,7 @@ export interface PaginatedResponse<T> {
 }
 
 // API Response
-export interface APIResponse<T = any> {
+export interface APIResponse<T = unknown> {
   success: boolean;
   message?: string;
   data?: T;
