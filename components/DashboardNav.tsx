@@ -31,6 +31,7 @@ import {
   Users,
   Plus,
   Calendar,
+  Shield,
 } from 'lucide-react';
 import { NotificationDropdown } from '@/components/NotificationDropdown';
 
@@ -68,7 +69,22 @@ export function DashboardNav() {
     { href: '/messages', label: 'Messages', icon: MessageCircle },
   ];
 
-  const navLinks = user?.role === 'talent' ? talentNavLinks : casterNavLinks;
+  const adminNavLinks = [
+    { href: '/dashboard', label: 'Dashboard', icon: Home },
+    { href: '/admin', label: 'Admin Panel', icon: Shield },
+    { href: '/casting-calls/manage', label: 'My Jobs', icon: FileText },
+    { href: '/casting-calls/create', label: 'Post Job', icon: Plus },
+    { href: '/talent', label: 'Search Talent', icon: Users },
+    { href: '/messages', label: 'Messages', icon: MessageCircle },
+  ];
+
+  // Determine navigation links based on role
+  let navLinks = casterNavLinks;
+  if (user?.role === 'talent') {
+    navLinks = talentNavLinks;
+  } else if (user?.role === 'admin') {
+    navLinks = adminNavLinks;
+  }
 
   const isActive = (href: string) => {
     if (href === '/dashboard') {

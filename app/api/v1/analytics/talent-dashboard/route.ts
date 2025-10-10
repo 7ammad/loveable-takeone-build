@@ -196,7 +196,7 @@ export async function GET(req: NextRequest) {
         },
         recentApplications: recentApplications.map(app => ({
           id: app.id,
-          castingCallId: app.castingCallId,
+          casting_call_id: app.castingCallId,
           title: app.castingCall.title,
           company: app.castingCall.company,
           location: app.castingCall.location,

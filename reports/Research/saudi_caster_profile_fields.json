@@ -1,0 +1,284 @@
+{
+  "required_fields_all": [
+    {
+      "field": "company_name_en",
+      "label_en": "Company Name (English)",
+      "label_ar": "اسم الشركة (بالإنجليزية)",
+      "type": "text",
+      "required": true,
+      "validation": "min_length:2, max_length:100"
+    },
+    {
+      "field": "company_name_ar",
+      "label_en": "Company Name (Arabic)",
+      "label_ar": "اسم الشركة (بالعربية)",
+      "type": "text",
+      "required": false,
+      "validation": "max_length:100"
+    },
+    {
+      "field": "company_type",
+      "label_en": "Company Type",
+      "label_ar": "نوع الشركة",
+      "type": "select",
+      "required": true,
+      "options": "from_taxonomy"
+    },
+    {
+      "field": "commercial_registration",
+      "label_en": "Commercial Registration Number",
+      "label_ar": "رقم السجل التجاري",
+      "type": "text",
+      "required": true,
+      "validation": "saudi_cr_format",
+      "description": "10-digit Saudi commercial registration number"
+    },
+    {
+      "field": "license_numbers",
+      "label_en": "License Numbers",
+      "label_ar": "أرقام التراخيص",
+      "type": "array",
+      "required": true,
+      "description": "Media/entertainment licenses from relevant authorities"
+    },
+    {
+      "field": "city",
+      "label_en": "Primary City",
+      "label_ar": "المدينة الرئيسية",
+      "type": "select",
+      "required": true,
+      "options": [
+        "Riyadh",
+        "Jeddah",
+        "Dammam",
+        "Dhahran",
+        "Al Khobar",
+        "Taif",
+        "Medina",
+        "Abha",
+        "Other"
+      ]
+    },
+    {
+      "field": "company_description",
+      "label_en": "Company Description",
+      "label_ar": "وصف الشركة",
+      "type": "textarea",
+      "required": true,
+      "validation": "min_length:50, max_length:1000"
+    },
+    {
+      "field": "website_url",
+      "label_en": "Website URL",
+      "label_ar": "رابط الموقع الإلكتروني",
+      "type": "url",
+      "required": false
+    },
+    {
+      "field": "contact_email",
+      "label_en": "Contact Email",
+      "label_ar": "البريد الإلكتروني للتواصل",
+      "type": "email",
+      "required": true
+    },
+    {
+      "field": "contact_phone",
+      "label_en": "Contact Phone",
+      "label_ar": "رقم الهاتف",
+      "type": "phone",
+      "required": true,
+      "validation": "saudi_phone_format"
+    },
+    {
+      "field": "company_size",
+      "label_en": "Company Size",
+      "label_ar": "حجم الشركة",
+      "type": "select",
+      "required": true,
+      "options": [
+        "Freelance (1)",
+        "Small (2-10)",
+        "Medium (11-50)",
+        "Large (51-250)",
+        "Enterprise (250+)"
+      ]
+    },
+    {
+      "field": "established_year",
+      "label_en": "Year Established",
+      "label_ar": "سنة التأسيس",
+      "type": "number",
+      "required": true,
+      "validation": "min:1950, max:2025"
+    }
+  ],
+  "conditional_fields": {
+    "film_production": [
+      {
+        "field": "production_scale",
+        "label_en": "Production Scale",
+        "type": "multiselect",
+        "options": [
+          "Independent Films",
+          "Feature Films",
+          "Short Films",
+          "Documentaries",
+          "International Co-productions"
+        ]
+      },
+      {
+        "field": "studio_facilities",
+        "label_en": "Studio Facilities",
+        "type": "boolean"
+      },
+      {
+        "field": "equipment_owned",
+        "label_en": "Equipment Owned",
+        "type": "multiselect",
+        "options": [
+          "Cameras",
+          "Lighting",
+          "Sound Equipment",
+          "Editing Suites",
+          "Post-production"
+        ]
+      }
+    ],
+    "tv_channels": [
+      {
+        "field": "broadcast_type",
+        "label_en": "Broadcast Type",
+        "type": "multiselect",
+        "options": [
+          "Terrestrial",
+          "Satellite",
+          "Cable",
+          "Digital",
+          "Streaming"
+        ]
+      },
+      {
+        "field": "content_genres",
+        "label_en": "Content Genres",
+        "type": "multiselect",
+        "options": [
+          "News",
+          "Entertainment",
+          "Sports",
+          "Educational",
+          "Children",
+          "Religious",
+          "Cultural"
+        ]
+      },
+      {
+        "field": "language_broadcast",
+        "label_en": "Broadcasting Languages",
+        "type": "multiselect",
+        "options": [
+          "Arabic",
+          "English",
+          "Multilingual"
+        ]
+      }
+    ],
+    "advertising_agencies": [
+      {
+        "field": "agency_specializations",
+        "label_en": "Specializations",
+        "type": "multiselect",
+        "options": [
+          "TV Commercials",
+          "Digital Marketing",
+          "Social Media",
+          "Print",
+          "Outdoor",
+          "Radio",
+          "Branding",
+          "PR"
+        ]
+      },
+      {
+        "field": "client_industries",
+        "label_en": "Client Industries",
+        "type": "multiselect",
+        "options": [
+          "FMCG",
+          "Automotive",
+          "Banking",
+          "Retail",
+          "Healthcare",
+          "Technology",
+          "Government",
+          "Real Estate"
+        ]
+      }
+    ],
+    "casting_agencies": [
+      {
+        "field": "casting_specialties",
+        "label_en": "Casting Specialties",
+        "type": "multiselect",
+        "options": [
+          "Lead Actors",
+          "Supporting Actors",
+          "Child Actors",
+          "Models",
+          "Voice Talent",
+          "Presenters",
+          "Extras"
+        ]
+      },
+      {
+        "field": "talent_database_size",
+        "label_en": "Talent Database Size",
+        "type": "select",
+        "options": [
+          "Under 100",
+          "100-500",
+          "500-1000",
+          "1000-5000",
+          "5000+"
+        ]
+      }
+    ]
+  },
+  "portfolio_fields": [
+    {
+      "field": "recent_projects",
+      "label_en": "Recent Projects",
+      "type": "array",
+      "structure": {
+        "project_name": "text",
+        "project_type": "select",
+        "client_name": "text",
+        "project_year": "number",
+        "project_description": "textarea",
+        "project_url": "url",
+        "project_image": "image"
+      }
+    },
+    {
+      "field": "client_testimonials",
+      "label_en": "Client Testimonials",
+      "type": "array",
+      "structure": {
+        "client_name": "text",
+        "client_company": "text",
+        "testimonial_text": "textarea",
+        "testimonial_date": "date"
+      }
+    },
+    {
+      "field": "awards_recognition",
+      "label_en": "Awards & Recognition",
+      "type": "array",
+      "structure": {
+        "award_name": "text",
+        "award_year": "number",
+        "awarding_body": "text",
+        "project_name": "text"
+      }
+    }
+  ]
+}

@@ -67,7 +67,7 @@ export default function EditCastingCallPage() {
   useEffect(() => {
     async function fetchCastingCall() {
       try {
-        const response = await apiClient.get<{ success: boolean; data: CastingCall }>(`/casting-calls/${castingCallId}`);
+        const response = await apiClient.get<{ success: boolean; data: CastingCall }>(`/api/v1/casting-calls/${castingCallId}`);
         const data = response.data;
         
         if (data.success && data.data) {
@@ -156,7 +156,7 @@ export default function EditCastingCallPage() {
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      await apiClient.delete(`/casting-calls/${castingCallId}`);
+      await apiClient.delete(`/api/v1/casting-calls/${castingCallId}`);
       router.push('/dashboard');
     } catch (err) {
       console.error('Failed to delete casting call:', err);

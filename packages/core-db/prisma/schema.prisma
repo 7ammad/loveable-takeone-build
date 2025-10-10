@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../../../node_modules/.prisma/client"
@@ -15,76 +9,167 @@ datasource db {
 }
 
 model TalentProfile {
-  id             String   @id @default(cuid())
-  userId         String   @unique
-  stageName      String?
-  dateOfBirth    DateTime?
-  gender         String?  // 'male' | 'female' | 'other'
-  height         Int?
-  weight         Int?
-  eyeColor       String?
-  hairColor      String?
-  skills         String[] @default([])
-  languages      String[] @default([])
-  experience     Int?     // years of experience
-  city           String?
-  willingToTravel Boolean @default(false)
-  portfolioUrl   String?
-  demoReelUrl    String?
-  instagramUrl   String?
-  isMinor        Boolean  @default(false)
-  guardianUserId String?
-  verified       Boolean  @default(false)
-  rating         Float?
-  completionPercentage Int @default(0)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id                   String    @id @default(cuid())
+  userId               String    @unique
+  stageName            String?
+  dateOfBirth          DateTime?
+  gender               String?
+  height               Int?
+  weight               Int?
+  eyeColor             String?
+  hairColor            String?
+  skills               String[]  @default([])
+  languages            String[]  @default([])
+  experience           Int?
+  city                 String?
+  willingToTravel      Boolean   @default(false)
+  portfolioUrl         String?
+  demoReelUrl          String?
+  instagramUrl         String?
+  isMinor              Boolean   @default(false)
+  guardianUserId       String?
+  verified             Boolean   @default(false)
+  rating               Float?
+  completionPercentage Int       @default(0)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 }
 
 model CasterProfile {
-  id                    String   @id @default(cuid())
-  userId                String   @unique
-  companyName           String?
-  companyType           String?  // 'production_company' | 'advertising_agency' | 'independent'
+  id                     String             @id @default(cuid())
+  userId                 String             @unique
+  companyType            String?
   commercialRegistration String?
-  businessPhone         String?
-  businessEmail         String?
-  website               String?
-  city                  String?
-  yearsInBusiness       Int?
-  teamSize              Int?
-  specializations       String[] @default([])
-  verified              Boolean  @default(false)
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  businessPhone          String?
+  businessEmail          String?
+  website                String?
+  city                   String?
+  teamSize               Int?
+  specializations        String[]           @default([])
+  verified               Boolean            @default(false)
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+  address                String?
+  averageRating          Float?
+  bannerUrl              String?
+  companyCategory        String?
+  companyDescription     String?
+  companyNameAr          String?
+  companyNameEn          String?
+  companySize            String?
+  complianceStatus       String             @default("pending")
+  establishedYear        Int?
+  facebookUrl            String?
+  instagramUrl           String?
+  lastComplianceCheck    DateTime?
+  licenseAuthorities     String[]           @default([])
+  licenseNumbers         String[]           @default([])
+  linkedinUrl            String?
+  logoUrl                String?
+  reviewCount            Int                @default(0)
+  showreelUrl            String?
+  totalHires             Int                @default(0)
+  totalJobsPosted        Int                @default(0)
+  twitterUrl             String?
+  typeSpecificFields     Json?
+  verificationDocuments  String[]           @default([])
+  verifiedAt             DateTime?
+  profileType            String             @default("basic")
+  user                   User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projects               CasterProject[]
+  reviews                CasterReview[]
+  teamMembers            CasterTeamMember[]
+}
+
+model CasterProject {
+  id                 String        @id @default(cuid())
+  casterProfileId    String
+  projectName        String
+  projectType        String
+  clientName         String?
+  projectYear        Int
+  projectDescription String?
+  projectUrl         String?
+  imageUrls          String[]      @default([])
+  videoUrl           String?
+  featured           Boolean       @default(false)
+  displayOrder       Int           @default(0)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  casterProfile      CasterProfile @relation(fields: [casterProfileId], references: [id], onDelete: Cascade)
+
+  @@index([casterProfileId])
+  @@index([featured, displayOrder])
+}
+
+model CasterTeamMember {
+  id              String        @id @default(cuid())
+  casterProfileId String
+  name            String
+  role            String
+  email           String?
+  bio             String?
+  imageUrl        String?
+  permissions     String[]      @default([])
+  isActive        Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  casterProfile   CasterProfile @relation(fields: [casterProfileId], references: [id], onDelete: Cascade)
+
+  @@index([casterProfileId])
+}
+
+model CasterReview {
+  id              String        @id @default(cuid())
+  casterProfileId String
+  talentUserId    String
+  rating          Int
+  reviewText      String?
+  projectName     String?
+  professionalism Int?
+  communication   Int?
+  paymentOnTime   Int?
+  workEnvironment Int?
+  isAnonymous     Boolean       @default(false)
+  isVerified      Boolean       @default(false)
+  verifiedHire    Boolean       @default(false)
+  flagged         Boolean       @default(false)
+  flagReason      String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  casterProfile   CasterProfile @relation(fields: [casterProfileId], references: [id], onDelete: Cascade)
+
+  @@index([casterProfileId])
+  @@index([rating])
+  @@index([isVerified])
 }
 
 model Application {
-  id             String   @id @default(cuid())
-  castingCallId  String
-  castingCall    CastingCall @relation(fields: [castingCallId], references: [id])
-  talentUserId   String
-  talentUser     User     @relation("TalentApplications", fields: [talentUserId], references: [id])
-  status         String   @default("pending") // pending | under_review | shortlisted | accepted | rejected
-  coverLetter    String?
-  availability   String?
-  contactPhone   String?
-  headshotUrl    String?
-  portfolioUrl   String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  events         ApplicationStatusEvent[]
-  booking        AuditionBooking?
+  id            String                   @id @default(cuid())
+  castingCallId String
+  talentUserId  String
+  status        String                   @default("pending")
+  createdAt     DateTime                 @default(now())
+  updatedAt     DateTime                 @updatedAt
+  availability  String?
+  contactPhone  String?
+  coverLetter   String?
+  headshotUrl   String?
+  portfolioUrl  String?
+  castingCall   CastingCall              @relation(fields: [castingCallId], references: [id])
+  talentUser    User                     @relation("TalentApplications", fields: [talentUserId], references: [id])
+  events        ApplicationStatusEvent[]
+  booking       AuditionBooking?
 }
 
 model ApplicationStatusEvent {
   id            String      @id @default(cuid())
   applicationId String
-  application   Application @relation(fields: [applicationId], references: [id])
   fromStatus    String?
   toStatus      String
   at            DateTime    @default(now())
   actorUserId   String?
+  application   Application @relation(fields: [applicationId], references: [id])
 }
 
 model Outbox {
@@ -95,18 +180,18 @@ model Outbox {
   attempts  Int      @default(0)
   lastError String?
   nextRunAt DateTime @default(now())
-  status    String   @default("pending") // pending|processing|dead
+  status    String   @default("pending")
 }
 
 model AuditEvent {
-  id              String   @id @default(cuid())
-  eventType       String   // e.g., "SearchPerformed", "LoginSuccess", "ProfileUpdated"
-  actorUserId     String?  // The user who performed the action
-  targetId        String?  // The ID of the entity that was affected (e.g., a profile ID)
-  ipAddress       String?
-  userAgent       String?
-  metadata        Json?    // For storing search filters, cohort info, etc.
-  createdAt       DateTime @default(now())
+  id          String   @id @default(cuid())
+  eventType   String
+  actorUserId String?
+  targetId    String?
+  ipAddress   String?
+  userAgent   String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
 }
 
 model RevokedToken {
@@ -115,106 +200,94 @@ model RevokedToken {
 }
 
 model MediaAsset {
-  id         String   @id @default(cuid())
-  userId     String // The user who uploaded the file
-  filename   String
-  mimetype   String
-  size       Int
-  s3Key      String   @unique
-  visibility String   @default("private") // private | public | unlisted
-  status     String   @default("pending") // pending | uploaded | processing | ready | error
-  pHash      String?
-  watermark  String? // Tamper-evident watermark for self-tapes
-  ttlPolicy  String?  // e.g., "archive_180d"
-  virusScanResult Json? // Virus scan results
-  transcodeData Json? // Store details about transcoded outputs (e.g., HLS manifest URL)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id              String   @id @default(cuid())
+  userId          String
+  filename        String
+  mimetype        String
+  size            Int
+  s3Key           String   @unique
+  visibility      String   @default("private")
+  status          String   @default("pending")
+  pHash           String?
+  watermark       String?
+  ttlPolicy       String?
+  virusScanResult Json?
+  transcodeData   Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model Plan {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  price       Int // in halalas to avoid floating point issues
-  currency    String   @default("SAR")
-  features    Json
-  isActive    Boolean  @default(true)
-  moyasarPlanId String?  @unique // ID from Moyasar's system
+  id            String         @id @default(cuid())
+  name          String         @unique
+  price         Int
+  currency      String         @default("SAR")
+  features      Json
+  isActive      Boolean        @default(true)
+  moyasarPlanId String?        @unique
   subscriptions Subscription[]
 }
 
 model Subscription {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-  planId      String
-  plan        Plan     @relation(fields: [planId], references: [id])
-  status      String   // e.g., "active", "past_due", "canceled"
-  startDate   DateTime
-  endDate     DateTime
-  trialEndDate DateTime?
-  events      SubscriptionStatusEvent[]
-  moyasarSubscriptionId String? @unique
+  id                    String                    @id @default(cuid())
+  userId                String                    @unique
+  planId                String
+  status                String
+  startDate             DateTime
+  endDate               DateTime
+  trialEndDate          DateTime?
+  moyasarSubscriptionId String?                   @unique
+  plan                  Plan                      @relation(fields: [planId], references: [id])
+  events                SubscriptionStatusEvent[]
 }
 
 model SubscriptionStatusEvent {
-  id             String   @id @default(cuid())
+  id             String       @id @default(cuid())
   subscriptionId String
-  subscription   Subscription @relation(fields: [subscriptionId], references: [id])
   fromStatus     String?
   toStatus       String
-  at             DateTime @default(now())
+  at             DateTime     @default(now())
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id])
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String
-  role      String   // 'talent' | 'caster'
-  
-  // Email & Phone Verification
-  emailVerified Boolean   @default(false)
-  emailVerifiedAt DateTime?
-  phone         String?
-  phoneVerified Boolean   @default(false)
-  phoneVerifiedAt DateTime?
-  
-  // Profile
-  avatar    String?
-  bio       String?
-  
-  // Account Status
-  isActive    Boolean   @default(true)
-  lastLoginAt DateTime?
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Nafath Verification Fields
-  nafathVerified      Boolean   @default(false)
+  id                  String             @id @default(cuid())
+  email               String             @unique
+  password            String
+  name                String
+  role                String
+  emailVerified       Boolean            @default(false)
+  emailVerifiedAt     DateTime?
+  phone               String?
+  phoneVerified       Boolean            @default(false)
+  phoneVerifiedAt     DateTime?
+  avatar              String?
+  bio                 String?
+  isActive            Boolean            @default(true)
+  lastLoginAt         DateTime?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  nafathVerified      Boolean            @default(false)
   nafathVerifiedAt    DateTime?
-  nafathNationalId    String?   @unique
+  nafathNationalId    String?            @unique
   nafathTransactionId String?
-  nafathData          Json?     // Store verification metadata
-  nafathExpiresAt     DateTime? // Annual renewal tracking
-
-  // Relations
-  savedSearches    SavedSearch[]
-  searchExecutions SearchExecution[]
-  searchHistory    SearchHistory[]
+  nafathData          Json?
+  nafathExpiresAt     DateTime?
+  applications        Application[]      @relation("TalentApplications")
+  casterBookings      AuditionBooking[]  @relation("CasterBookings")
+  talentBookings      AuditionBooking[]  @relation("TalentBookings")
+  availabilitySlots   AvailabilitySlot[]
+  casterProfile       CasterProfile?
   createdCastingCalls CastingCall[]
-  casterShortlists TalentShortlist[] @relation("CasterShortlists")
-  talentShortlists TalentShortlist[] @relation("TalentShortlists")
-  applications     Application[] @relation("TalentApplications")
-  availabilitySlots AvailabilitySlot[]
-  talentBookings   AuditionBooking[] @relation("TalentBookings")
-  casterBookings   AuditionBooking[] @relation("CasterBookings")
+  savedSearches       SavedSearch[]
+  searchExecutions    SearchExecution[]
+  searchHistory       SearchHistory[]
+  casterShortlists    TalentShortlist[]  @relation("CasterShortlists")
+  talentShortlists    TalentShortlist[]  @relation("TalentShortlists")
 }
 
-// ... other models from your plan (Users, CastingCall, etc.) will go here
-
 model CastingCall {
-  id               String   @id @default(cuid())
+  id               String            @id @default(cuid())
   title            String
   description      String?
   company          String?
@@ -223,33 +296,42 @@ model CastingCall {
   requirements     String?
   deadline         DateTime?
   contactInfo      String?
-  projectType      String?  // TV Series, Film, Commercial, Theater, Voice Acting
-  shootingDuration String?  // e.g. "6 months", "3 weeks", etc.
-  attachments      String[] @default([]) // Array of file URLs (images, PDFs)
-  status           String   @default("pending_review")
+  status           String            @default("pending_review")
   sourceUrl        String?
   sourceName       String?
-  contentHash      String?  @unique
-  isAggregated     Boolean  @default(true)
-  createdBy        String?  // User ID who created this casting call
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-
-  // Relations
+  contentHash      String?           @unique
+  isAggregated     Boolean           @default(true)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  attachments      String[]          @default([])
+  createdBy        String?
+  projectType      String?
+  shootingDuration String?
   applications     Application[]
-  creator          User?     @relation(fields: [createdBy], references: [id])
   bookings         AuditionBooking[]
+  creator          User?             @relation(fields: [createdBy], references: [id])
 }
 
 model IngestionSource {
+  id               String    @id @default(cuid())
+  sourceType       String
+  sourceIdentifier String
+  sourceName       String
+  lastProcessedAt  DateTime?
+  isActive         Boolean   @default(true)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+model ProcessedMessage {
   id                String   @id @default(cuid())
-  sourceType        String   // 'WEB' or 'WHATSAPP'
-  sourceIdentifier  String   // URL for WEB, Group Chat ID for WHATSAPP
-  sourceName        String   // e.g., "MBC Careers", "Riyadh Actors Group"
-  lastProcessedAt   DateTime?
-  isActive          Boolean  @default(true)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  whatsappMessageId String   @unique
+  sourceId          String
+  processedAt       DateTime @default(now())
+
+  @@index([whatsappMessageId])
+  @@index([sourceId])
+  @@index([processedAt])
 }
 
 model Receipt {
@@ -266,51 +348,47 @@ model Receipt {
 }
 
 model SavedSearch {
-  id           String   @id @default(cuid())
-  userId       String
-  name         String
-  description  String?
-  searchTerm   String   @default("")
-  filters      Json     @default("{}")
-  sortBy       String   @default("relevance")
-  sortOrder    String   @default("desc")
-  isPublic     Boolean  @default(false)
-  tags         String[] @default([])
-  notifications Json    @default("{}")
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  executions   SearchExecution[]
-  
+  id            String            @id @default(cuid())
+  userId        String
+  name          String
+  description   String?
+  searchTerm    String            @default("")
+  filters       Json              @default("{}")
+  sortBy        String            @default("relevance")
+  sortOrder     String            @default("desc")
+  isPublic      Boolean           @default(false)
+  tags          String[]          @default([])
+  notifications Json              @default("{}")
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  executions    SearchExecution[]
+
   @@unique([userId, name])
 }
 
 model SearchExecution {
-  id            String      @id @default(cuid())
+  id            String       @id @default(cuid())
   savedSearchId String?
   userId        String
   searchTerm    String
-  filters       Json        @default("{}")
+  filters       Json         @default("{}")
   resultsCount  Int
-  executionTime Int         // milliseconds
-  createdAt     DateTime    @default(now())
-  
-  savedSearch   SavedSearch? @relation(fields: [savedSearchId], references: [id], onDelete: SetNull)
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  executionTime Int
+  createdAt     DateTime     @default(now())
+  savedSearch   SavedSearch? @relation(fields: [savedSearchId], references: [id])
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-// Messaging System
 model Conversation {
-  id              String    @id @default(cuid())
-  participant1Id  String    // First user in conversation
-  participant2Id  String    // Second user in conversation
-  lastMessageAt   DateTime  @default(now())
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  
-  messages        Message[]
-  
+  id             String    @id @default(cuid())
+  participant1Id String
+  participant2Id String
+  lastMessageAt  DateTime  @default(now())
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  messages       Message[]
+
   @@unique([participant1Id, participant2Id])
   @@index([participant1Id])
   @@index([participant2Id])
@@ -324,27 +402,25 @@ model Message {
   content        String
   readAt         DateTime?
   createdAt      DateTime     @default(now())
-  
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  
+
   @@index([conversationId])
   @@index([senderId])
   @@index([receiverId])
 }
 
-// Notifications System
 model Notification {
-  id          String    @id @default(cuid())
-  userId      String
-  type        String    // 'message' | 'application_update' | 'casting_call' | 'profile_view' | 'system'
-  title       String
-  message     String
-  actionUrl   String?
-  isRead      Boolean   @default(false)
-  readAt      DateTime?
-  metadata    Json?
-  createdAt   DateTime  @default(now())
-  
+  id        String    @id @default(cuid())
+  userId    String
+  type      String
+  title     String
+  message   String
+  actionUrl String?
+  isRead    Boolean   @default(false)
+  readAt    DateTime?
+  metadata  Json?
+  createdAt DateTime  @default(now())
+
   @@index([userId, isRead])
   @@index([createdAt])
 }
@@ -355,103 +431,107 @@ model SearchHistory {
   searchTerm    String
   filters       Json     @default("{}")
   resultsCount  Int
-  executionTime Int      // milliseconds
+  executionTime Int
   createdAt     DateTime @default(now())
-  
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-// Talent Shortlisting System
 model TalentShortlist {
-  id            String   @id @default(cuid())
-  casterUserId  String   // The caster who shortlisted the talent
-  talentUserId  String   // The talent being shortlisted
-  notes         String?  // Optional notes about the talent
-  tags          String[] @default([]) // Tags like "lead", "supporting", "comedy", etc.
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  
-  caster        User     @relation("CasterShortlists", fields: [casterUserId], references: [id], onDelete: Cascade)
-  talent        User     @relation("TalentShortlists", fields: [talentUserId], references: [id], onDelete: Cascade)
-  
+  id           String   @id @default(cuid())
+  casterUserId String
+  talentUserId String
+  notes        String?
+  tags         String[] @default([])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  caster       User     @relation("CasterShortlists", fields: [casterUserId], references: [id], onDelete: Cascade)
+  talent       User     @relation("TalentShortlists", fields: [talentUserId], references: [id], onDelete: Cascade)
+
   @@unique([casterUserId, talentUserId])
   @@index([casterUserId])
   @@index([talentUserId])
 }
 
-// Booking & Scheduling System
 model AvailabilitySlot {
-  id            String   @id @default(cuid())
-  talentUserId  String
-  talent        User     @relation(fields: [talentUserId], references: [id], onDelete: Cascade)
-  
-  // Recurring availability (e.g., "Every Monday 9am-5pm")
-  dayOfWeek     Int?     // 0-6 (Sunday-Saturday), null for one-time slots
-  startTime     String   // "09:00" (24-hour format)
-  endTime       String   // "17:00" (24-hour format)
-  timezone      String   @default("Asia/Riyadh")
-  
-  // One-time availability override
-  specificDate  DateTime?
-  
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  
+  id           String    @id @default(cuid())
+  talentUserId String
+  dayOfWeek    Int?
+  startTime    String
+  endTime      String
+  timezone     String    @default("Asia/Riyadh")
+  specificDate DateTime?
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  talent       User      @relation(fields: [talentUserId], references: [id], onDelete: Cascade)
+
   @@index([talentUserId])
   @@index([dayOfWeek])
   @@index([specificDate])
 }
 
 model AuditionBooking {
-  id              String   @id @default(cuid())
-  applicationId   String   @unique
-  application     Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-  
-  talentUserId    String
-  talent          User     @relation("TalentBookings", fields: [talentUserId], references: [id], onDelete: Cascade)
-  
-  casterUserId    String
-  caster          User     @relation("CasterBookings", fields: [casterUserId], references: [id], onDelete: Cascade)
-  
-  castingCallId   String
-  castingCall     CastingCall @relation(fields: [castingCallId], references: [id], onDelete: Cascade)
-  
-  // Booking details
-  scheduledAt     DateTime
-  duration        Int      // minutes (e.g., 30, 60)
-  timezone        String   @default("Asia/Riyadh")
-  
-  // Meeting details
-  meetingType     String   // "in-person", "video", "phone"
-  location        String?  // Physical address or video link
-  meetingUrl      String?  // Zoom/Google Meet link
-  meetingPassword String?
-  
-  // Status
-  status          String   @default("scheduled") // scheduled, confirmed, cancelled, completed, no-show
-  cancelledBy     String?  // userId who cancelled
-  cancelledAt     DateTime?
+  id                 String      @id @default(cuid())
+  applicationId      String      @unique
+  talentUserId       String
+  casterUserId       String
+  castingCallId      String
+  scheduledAt        DateTime
+  duration           Int
+  timezone           String      @default("Asia/Riyadh")
+  meetingType        String
+  location           String?
+  meetingUrl         String?
+  meetingPassword    String?
+  status             String      @default("scheduled")
+  cancelledBy        String?
+  cancelledAt        DateTime?
   cancellationReason String?
-  
-  // Reminders
-  reminderSent24h Boolean  @default(false)
-  reminderSent1h  Boolean  @default(false)
-  
-  // Notes
-  casterNotes     String?
-  talentNotes     String?
-  
-  // Cal.com integration
-  calcomEventId   String?  // Cal.com event ID for sync
-  calcomBookingUid String? @unique // Cal.com booking UID
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
+  reminderSent24h    Boolean     @default(false)
+  reminderSent1h     Boolean     @default(false)
+  casterNotes        String?
+  talentNotes        String?
+  calcomEventId      String?
+  calcomBookingUid   String?     @unique
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+  application        Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  caster             User        @relation("CasterBookings", fields: [casterUserId], references: [id], onDelete: Cascade)
+  castingCall        CastingCall @relation(fields: [castingCallId], references: [id], onDelete: Cascade)
+  talent             User        @relation("TalentBookings", fields: [talentUserId], references: [id], onDelete: Cascade)
+
   @@index([talentUserId])
   @@index([casterUserId])
   @@index([castingCallId])
   @@index([scheduledAt])
   @@index([status])
+}
+
+model LlmLearningPattern {
+  id            String    @id @default(cuid())
+  pattern       String
+  type          String    // 'talent_keyword', 'project_keyword', 'contact_keyword', 'payment_keyword', 'location_keyword'
+  confidence    Float     @default(0.5)
+  occurrences   Int       @default(0)
+  lastSeen      DateTime
+  examples      String[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([pattern, type])
+  @@index([confidence])
+  @@index([type])
+}
+
+model LlmFeedback {
+  id                String    @id @default(cuid())
+  originalText      String
+  wasMissed         Boolean
+  correctClassification Boolean
+  extractedPatterns String[]
+  userFeedback      String?   // 'correct', 'incorrect'
+  timestamp         DateTime
+  createdAt         DateTime  @default(now())
+
+  @@index([timestamp])
 }

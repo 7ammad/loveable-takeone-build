@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+/// <reference types="vitest/globals" />
 import axios from 'axios';
 import { generateAccessToken } from '@packages/core-auth';
 

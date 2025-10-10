@@ -1,0 +1,7 @@
+-- AlterTable
+ALTER TABLE "CasterProfile" ALTER COLUMN "companyType" DROP NOT NULL,
+ALTER COLUMN "businessPhone" DROP NOT NULL,
+ALTER COLUMN "businessEmail" DROP NOT NULL,
+ALTER COLUMN "city" DROP NOT NULL,
+ALTER COLUMN "companyCategory" DROP NOT NULL,
+ALTER COLUMN "companyNameEn" DROP NOT NULL;

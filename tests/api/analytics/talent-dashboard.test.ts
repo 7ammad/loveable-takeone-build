@@ -1,6 +1,8 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+/// <reference types="vitest/globals" />
 import axios from 'axios';
-import { generateAccessToken } from '@packages/core-auth';
+import { generateAccessToken } from '@/packages/core-auth/src/jwt';
+
+declare const process: { env: { [key: string]: string | undefined } };
 
 const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:3000';
 
@@ -23,8 +25,12 @@ describe('Talent Analytics Dashboard API', () => {
       try {
         await axios.get(`${API_BASE_URL}/api/v1/analytics/talent-dashboard`);
         expect.fail('Should have thrown an error');
-      } catch (error: any) {
-        expect(error.response?.status).toBe(401);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          expect(error.response?.status).toBe(401);
+        } else {
+          expect.fail('Expected an Axios error');
+        }
       }
     });
 
@@ -34,8 +40,12 @@ describe('Talent Analytics Dashboard API', () => {
           headers: { Authorization: 'Bearer invalid-token' }
         });
         expect.fail('Should have thrown an error');
-      } catch (error: any) {
-        expect(error.response?.status).toBe(401);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          expect(error.response?.status).toBe(401);
+        } else {
+          expect.fail('Expected an Axios error');
+        }
       }
     });
 
@@ -45,9 +55,13 @@ describe('Talent Analytics Dashboard API', () => {
           headers: { Authorization: `Bearer ${casterToken}` }
         });
         expect.fail('Should have thrown an error');
-      } catch (error: any) {
-        expect(error.response?.status).toBe(403);
-        expect(error.response?.data?.error).toContain('Only talent');
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          expect(error.response?.status).toBe(403);
+          expect(error.response?.data?.error).toContain('Only talent');
+        } else {
+          expect.fail('Expected an Axios error');
+        }
       }
     });
 
@@ -120,7 +134,7 @@ describe('Talent Analytics Dashboard API', () => {
       if (recentApplications.length > 0) {
         const app = recentApplications[0];
         expect(app).toHaveProperty('id');
-        expect(app).toHaveProperty('castingCallId');
+        expect(app).toHaveProperty('casting_call_id');
         expect(app).toHaveProperty('title');
         expect(app).toHaveProperty('status');
         expect(app).toHaveProperty('appliedDate');
@@ -247,4 +261,3 @@ describe('Talent Analytics Dashboard API', () => {
     });
   });
 });
-

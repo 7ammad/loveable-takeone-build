@@ -12,11 +12,12 @@ import {
   Camera,
   CheckCircle2
 } from 'lucide-react';
+import ActiveCastingCallsWidget from './caster/ActiveCastingCallsWidget';
 
 export default function HirerProfile() {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const [profileType, setProfileType] = useState<'basic' | 'advanced'>('basic');
 
   // Mock profile data - replace with real API call
   const [profileData, setProfileData] = useState({
@@ -32,6 +33,7 @@ export default function HirerProfile() {
     specializations: ['Drama', 'Comedy', 'Documentary', 'Commercial'],
     description: 'Leading production company in Saudi Arabia, specializing in high-quality television content and commercial productions.',
     verified: true,
+    profileType: 'basic', // Will be fetched from API
   });
 
   const handleSave = () => {
@@ -45,7 +47,24 @@ export default function HirerProfile() {
       <header className="bg-background border-b">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-foreground">Company Profile</h1>
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">Company Profile</h1>
+              <div className="flex items-center gap-2 mt-2">
+                <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                  profileType === 'advanced' 
+                    ? 'bg-amber-100 text-amber-700' 
+                    : 'bg-blue-100 text-blue-700'
+                }`}>
+                  {profileType === 'advanced' ? '⭐ Advanced Profile' : '⚡ Basic Profile'}
+                </span>
+                <button
+                  onClick={() => setProfileType(profileType === 'basic' ? 'advanced' : 'basic')}
+                  className="text-xs text-primary hover:underline"
+                >
+                  Switch to {profileType === 'basic' ? 'Advanced' : 'Basic'}
+                </button>
+              </div>
+            </div>
             <Button onClick={() => isEditing ? handleSave() : setIsEditing(true)}>
               {isEditing ? (
                 <>
@@ -130,6 +149,11 @@ export default function HirerProfile() {
 
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
+            {/* Active Casting Calls - Most Important Section */}
+            {user?.id && (
+              <ActiveCastingCallsWidget userId={user.id} isOwnProfile={true} />
+            )}
+
             {/* Company Information */}
             <Card>
               <CardHeader>
@@ -295,6 +319,52 @@ export default function HirerProfile() {
                 />
               </CardContent>
             </Card>
+
+            {/* Advanced Features - Only shown for Advanced Profile Type */}
+            {profileType === 'advanced' && (
+              <>
+                {/* Showreel Section */}
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle>Showreel</CardTitle>
+                      {isEditing && <Button size="sm">+ Add Video</Button>}
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
+                      <p className="text-sm text-muted-foreground">Add your company showreel</p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Awards & Recognition */}
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle>Awards & Recognition</CardTitle>
+                      {isEditing && <Button size="sm">+ Add Award</Button>}
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">No awards added yet</p>
+                  </CardContent>
+                </Card>
+
+                {/* Testimonials */}
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle>Testimonials</CardTitle>
+                      {isEditing && <Button size="sm">+ Add Testimonial</Button>}
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">No testimonials yet</p>
+                  </CardContent>
+                </Card>
+              </>
+            )}
 
             {/* Past Productions */}
             <Card>

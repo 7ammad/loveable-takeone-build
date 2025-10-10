@@ -4,14 +4,16 @@ import { prisma } from '@packages/core-db';
 import { z } from 'zod';
 
 const casterProfileSchema = z.object({
-  companyName: z.string().min(1),
-  companyType: z.enum(['production_company', 'advertising_agency', 'independent']),
-  city: z.string().min(1),
-  businessPhone: z.string().min(1),
-  businessEmail: z.string().email(),
+  companyNameEn: z.string().min(1).optional(),
+  companyNameAr: z.string().optional(),
+  companyType: z.string().optional(),
+  companyCategory: z.string().optional(),
+  companyDescription: z.string().optional(),
+  city: z.string().optional(),
+  businessPhone: z.string().optional(),
+  businessEmail: z.string().email().optional(),
   website: z.string().optional().nullable(),
-  yearsInBusiness: z.number().optional(),
-  teamSize: z.number().optional(),
+  companySize: z.string().optional(),
   specializations: z.array(z.string()).default([]),
   commercialRegistration: z.string().optional().nullable(),
 });
@@ -69,14 +71,16 @@ export async function POST(req: NextRequest) {
     const profile = await prisma.casterProfile.create({
       data: {
         userId: payload.userId,
-        companyName: validatedData.companyName,
+        companyNameEn: validatedData.companyNameEn,
+        companyNameAr: validatedData.companyNameAr,
         companyType: validatedData.companyType,
+        companyCategory: validatedData.companyCategory,
+        companyDescription: validatedData.companyDescription,
         city: validatedData.city,
         businessPhone: validatedData.businessPhone,
         businessEmail: validatedData.businessEmail,
         website: validatedData.website,
-        yearsInBusiness: validatedData.yearsInBusiness,
-        teamSize: validatedData.teamSize,
+        companySize: validatedData.companySize,
         specializations: validatedData.specializations,
         commercialRegistration: validatedData.commercialRegistration,
         verified: false, // Default to unverified
@@ -156,14 +160,16 @@ export async function PATCH(req: NextRequest) {
     const updatedProfile = await prisma.casterProfile.update({
       where: { userId: payload.userId },
       data: {
-        companyName: validatedData.companyName,
+        companyNameEn: validatedData.companyNameEn,
+        companyNameAr: validatedData.companyNameAr,
         companyType: validatedData.companyType,
+        companyCategory: validatedData.companyCategory,
+        companyDescription: validatedData.companyDescription,
         city: validatedData.city,
         businessPhone: validatedData.businessPhone,
         businessEmail: validatedData.businessEmail,
         website: validatedData.website,
-        yearsInBusiness: validatedData.yearsInBusiness,
-        teamSize: validatedData.teamSize,
+        companySize: validatedData.companySize,
         specializations: validatedData.specializations,
         commercialRegistration: validatedData.commercialRegistration,
         updatedAt: new Date(),

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+/// <reference types="vitest/globals" />
 import { API_ENDPOINTS, generateTestUser } from '../../setup';
 import { prisma } from '@/packages/core-db/src/client';
 

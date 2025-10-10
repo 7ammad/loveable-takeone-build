@@ -8,6 +8,7 @@ export const CastingCallSchema = z.object({
   location: z.string().optional(),
   compensation: z.string().optional(),
   requirements: z.string().optional(),
+  roles: z.string().optional(),
   deadline: z.string().datetime().optional().nullable(),
   contactInfo: z.string().optional(),
   sourceUrl: z.string().optional(),

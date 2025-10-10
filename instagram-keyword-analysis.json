@@ -1,0 +1,294 @@
+{
+  "statistics": {
+    "totalPosts": 41,
+    "legitimate": 22,
+    "falsePositives": 19
+  },
+  "topRejectionKeywords": [
+    {
+      "word": "ورشة",
+      "count": 5
+    },
+    {
+      "word": "كتابة",
+      "count": 4
+    },
+    {
+      "word": "الفيلم",
+      "count": 3
+    },
+    {
+      "word": "القصير",
+      "count": 3
+    },
+    {
+      "word": "الزرفة",
+      "count": 3
+    },
+    {
+      "word": "عمل",
+      "count": 3
+    },
+    {
+      "word": "سينما",
+      "count": 3
+    },
+    {
+      "word": "لمدة",
+      "count": 2
+    },
+    {
+      "word": "شكرا",
+      "count": 2
+    },
+    {
+      "word": "على",
+      "count": 2
+    },
+    {
+      "word": "تمثيلية",
+      "count": 2
+    },
+    {
+      "word": "بين",
+      "count": 2
+    },
+    {
+      "word": "خلال",
+      "count": 2
+    },
+    {
+      "word": "سجل",
+      "count": 1
+    },
+    {
+      "word": "أسابيع",
+      "count": 1
+    },
+    {
+      "word": "لإتقان",
+      "count": 1
+    },
+    {
+      "word": "بشكل",
+      "count": 1
+    },
+    {
+      "word": "إحترافي",
+      "count": 1
+    },
+    {
+      "word": "تعلم",
+      "count": 1
+    },
+    {
+      "word": "أدوات",
+      "count": 1
+    },
+    {
+      "word": "جديدة",
+      "count": 1
+    },
+    {
+      "word": "انتم",
+      "count": 1
+    },
+    {
+      "word": "محزمنا",
+      "count": 1
+    },
+    {
+      "word": "الحمد",
+      "count": 1
+    },
+    {
+      "word": "لله",
+      "count": 1
+    },
+    {
+      "word": "٣٨٦",
+      "count": 1
+    },
+    {
+      "word": "الف",
+      "count": 1
+    },
+    {
+      "word": "تذكرة",
+      "count": 1
+    },
+    {
+      "word": "أساطير",
+      "count": 1
+    },
+    {
+      "word": "يوم",
+      "count": 1
+    }
+  ],
+  "topCastingKeywords": [
+    {
+      "word": "ذات",
+      "count": 5
+    },
+    {
+      "word": "كتابة",
+      "count": 4
+    },
+    {
+      "word": "الزرفة",
+      "count": 4
+    },
+    {
+      "word": "على",
+      "count": 4
+    },
+    {
+      "word": "ستوديو",
+      "count": 4
+    },
+    {
+      "word": "يصلح",
+      "count": 4
+    },
+    {
+      "word": "يطلع",
+      "count": 4
+    },
+    {
+      "word": "إعلان",
+      "count": 4
+    },
+    {
+      "word": "الفيلم",
+      "count": 3
+    },
+    {
+      "word": "ممثلين",
+      "count": 3
+    },
+    {
+      "word": "الأفلام",
+      "count": 3
+    },
+    {
+      "word": "السيناريو",
+      "count": 3
+    },
+    {
+      "word": "الممثلين",
+      "count": 3
+    },
+    {
+      "word": "القصير",
+      "count": 2
+    },
+    {
+      "word": "تعلم",
+      "count": 2
+    },
+    {
+      "word": "السعودي",
+      "count": 2
+    },
+    {
+      "word": "تدريب",
+      "count": 2
+    },
+    {
+      "word": "رائعة",
+      "count": 2
+    },
+    {
+      "word": "وكتاب",
+      "count": 2
+    },
+    {
+      "word": "الطموحين",
+      "count": 2
+    },
+    {
+      "word": "إلى",
+      "count": 2
+    },
+    {
+      "word": "سعودي",
+      "count": 2
+    },
+    {
+      "word": "كاستينغ",
+      "count": 2
+    },
+    {
+      "word": "شاورمر",
+      "count": 2
+    },
+    {
+      "word": "ورشة",
+      "count": 1
+    },
+    {
+      "word": "لمدة",
+      "count": 1
+    },
+    {
+      "word": "أسابيع",
+      "count": 1
+    },
+    {
+      "word": "لإتقان",
+      "count": 1
+    },
+    {
+      "word": "بشكل",
+      "count": 1
+    },
+    {
+      "word": "إحترافي",
+      "count": 1
+    }
+  ],
+  "sampleLegitimate": [
+    "Me & Aydarous",
+    "Writing the Short Screenplay Course",
+    "رساله من روبرت لكم",
+    "AlZarfah The Movie’s Official Music Video",
+    "وقت الشلوطة",
+    "الزرفة",
+    "الزرفة",
+    "إخراجي لأعمالي جعلني أندمج في عدة أدوار كمؤلف ومخرج ومنتج ومصمم صوت للعمل",
+    "Darwin Taif",
+    "SAYNARIO SPOTLIGHT on Saudi filmmaker Maha Al-Saati",
+    "بسمة",
+    "جلسة تواصل رائعة ضمن فعاليات رمضان في ألف واد",
+    "AlGaid 2025",
+    "دعوة_عامة | لجميع صانعي الأفلام وكتاب السيناريو الطموحين!",
+    "Casting incredible Saudi talents for our latest project with Apple.",
+    "سينما_حي",
+    "فرسان_قريح",
+    "صيفي",
+    "يصلح_يطلع_في_إعلان مع @SaudiCasting",
+    "يصلح_يطلع_في_إعلان مع @SaudiCasting"
+  ],
+  "sampleFalsePositives": [
+    "Instagram Post from sara.balghonaim",
+    "Instagram Post from sara.balghonaim",
+    "ورشة كتابة الفيلم القصير",
+    "Instagram Post from sara.balghonaim",
+    "Instagram Post from sara.balghonaim",
+    "Screening tonight at Nitehawk Cinema",
+    "Instagram Post from sara.balghonaim",
+    "Instagram Post from sara.balghonaim",
+    "Instagram Post from abady_mm",
+    "Instagram Post from abady_mm",
+    "Instagram Post from abady_mm",
+    "Instagram Post from abady_mm",
+    "Instagram Post from abady_mm",
+    "Instagram Post from om2z",
+    "Instagram Post from om2z",
+    "Instagram Post from om2z",
+    "Instagram Post from om2z",
+    "Instagram Post from om2z",
+    "ورشة عمل تمثيلية في سينما حي"
+  ]
+}

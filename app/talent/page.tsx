@@ -41,6 +41,51 @@ export default function TalentSearchPage() {
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [selectedLocation, setSelectedLocation] = useState('');
 
+  return (
+    <ProtectedRoute requiredRole="caster">
+      <div className="min-h-screen bg-background">
+        <DashboardNav />
+        <TalentSearchContent
+          talent={talent}
+          setTalent={setTalent}
+          loading={loading}
+          setLoading={setLoading}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          selectedSkills={selectedSkills}
+          setSelectedSkills={setSelectedSkills}
+          selectedLocation={selectedLocation}
+          setSelectedLocation={setSelectedLocation}
+        />
+      </div>
+    </ProtectedRoute>
+  );
+}
+
+function TalentSearchContent({
+  talent,
+  setTalent,
+  loading,
+  setLoading,
+  searchQuery,
+  setSearchQuery,
+  selectedSkills,
+  setSelectedSkills,
+  selectedLocation,
+  setSelectedLocation,
+}: {
+  talent: TalentProfile[];
+  setTalent: React.Dispatch<React.SetStateAction<TalentProfile[]>>;
+  loading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  searchQuery: string;
+  setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
+  selectedSkills: string[];
+  setSelectedSkills: React.Dispatch<React.SetStateAction<string[]>>;
+  selectedLocation: string;
+  setSelectedLocation: React.Dispatch<React.SetStateAction<string>>;
+}) {
+
   // Mock data for now - will be replaced with real API call
   useEffect(() => {
     async function fetchTalent() {
@@ -132,26 +177,20 @@ export default function TalentSearchPage() {
   };
 
   return (
-    <ProtectedRoute requiredRole="caster">
-      <div className="min-h-screen bg-background">
-        <DashboardNav />
-        
-        {/* Header */}
-        <header className="bg-card border-b border-border">
-          <div className="container mx-auto px-4 py-8">
-            <h1 className="text-4xl font-bold text-foreground mb-2">Search Talent</h1>
-            <p className="text-muted-foreground">
-              Discover and connect with talented individuals for your projects
-            </p>
-          </div>
-        </header>
+    <div className="container mx-auto px-4 py-8">
+      {/* Header */}
+      <header className="bg-card border-b border-border mb-8 -mx-4 px-4 py-8">
+        <h1 className="text-4xl font-bold text-foreground mb-2">Search Talent</h1>
+        <p className="text-muted-foreground">
+          Discover and connect with talented individuals for your projects
+        </p>
+      </header>
 
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            
-            {/* Filters Sidebar */}
-            <div className="lg:col-span-1">
-              <Card>
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        
+        {/* Filters Sidebar */}
+        <div className="lg:col-span-1">
+          <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Filter className="w-5 h-5" />
@@ -348,7 +387,5 @@ export default function TalentSearchPage() {
             </div>
           </div>
         </div>
-      </div>
-    </ProtectedRoute>
   );
 }

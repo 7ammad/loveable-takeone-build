@@ -1,5 +1,7 @@
-import { beforeAll, afterAll, afterEach } from 'vitest';
+/// <reference types="vitest/globals" />
 import { prisma } from '@/packages/core-db/src/client';
+
+declare const process: { env: { [key: string]: string | undefined } };
 
 // Setup before all tests
 beforeAll(async () => {

@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import './globals.css';
 import { AuthProvider } from '@/lib/contexts/auth-context';
+import '@/lib/digital-twin/init'; // Initialize Digital Twin on server start
 
 const inter = Inter({
   subsets: ['latin'],

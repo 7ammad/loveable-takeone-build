@@ -1,12 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import { DashboardNav } from '@/components/DashboardNav';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Heart, Search, Filter, User, Mail, Calendar, Tag } from 'lucide-react';
+import { Heart, Search, User, Mail, Calendar, Tag } from 'lucide-react';
 import { apiClient } from '@/lib/api/client';
 
 interface ShortlistedTalent {
@@ -77,22 +79,35 @@ export default function ShortlistPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <ProtectedRoute requiredRole="caster">
+        <div className="min-h-screen bg-background">
+          <DashboardNav />
+          <div className="container mx-auto px-4 py-8">
+            <div className="flex items-center justify-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            </div>
+          </div>
         </div>
-      </div>
+      </ProtectedRoute>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Talent Shortlist</h1>
-        <p className="text-muted-foreground">
-          Manage your saved talent profiles and organize them with tags and notes.
-        </p>
-      </div>
+    <ProtectedRoute requiredRole="caster">
+      <div className="min-h-screen bg-background">
+        <DashboardNav />
+        
+        {/* Header */}
+        <header className="bg-card border-b border-border">
+          <div className="container mx-auto px-4 py-8">
+            <h1 className="text-4xl font-bold text-foreground mb-2">Talent Shortlist</h1>
+            <p className="text-muted-foreground">
+              Manage your saved talent profiles and organize them with tags and notes.
+            </p>
+          </div>
+        </header>
+
+        <div className="container mx-auto px-4 py-8">
 
       {/* Filters */}
       <Card className="mb-6">
@@ -249,6 +264,8 @@ export default function ShortlistPage() {
           ))}
         </div>
       )}
-    </div>
+        </div>
+      </div>
+    </ProtectedRoute>
   );
 }

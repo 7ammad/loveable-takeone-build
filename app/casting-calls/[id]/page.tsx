@@ -161,12 +161,30 @@ The series will consist of 20 episodes, each 45 minutes long, and will be filmed
                   </div>
                 </div>
 
-                {/* Apply Button */}
-                <div className="mt-6">
-                  <Button size="lg" className="w-full md:w-auto">
-                    Apply for This Role
-                  </Button>
-                </div>
+                {/* Apply Button - Only for Talent */}
+                {user?.role === 'talent' && (
+                  <div className="mt-6">
+                    <Link href={`/casting-calls/${params.id}/apply`}>
+                      <Button size="lg" className="w-full md:w-auto">
+                        Apply for This Role
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+                
+                {/* Edit Button - Only for Casters */}
+                {user?.role === 'caster' && (
+                  <div className="mt-6 flex gap-3">
+                    <Link href={`/casting-calls/${params.id}/edit`}>
+                      <Button size="lg" className="w-full md:w-auto">
+                        Edit Casting Call
+                      </Button>
+                    </Link>
+                    <Button size="lg" variant="outline" className="w-full md:w-auto">
+                      View Applications
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -327,12 +345,16 @@ The series will consist of 20 episodes, each 45 minutes long, and will be filmed
         </div>
       </div>
 
-        {/* Sticky Apply Button (Mobile) */}
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-background border-t lg:hidden">
-          <Button size="lg" className="w-full">
-            Apply for This Role
-          </Button>
-        </div>
+        {/* Sticky Apply Button (Mobile) - Only for Talent */}
+        {user?.role === 'talent' && (
+          <div className="fixed bottom-0 left-0 right-0 p-4 bg-background border-t lg:hidden">
+            <Link href={`/casting-calls/${params.id}/apply`} className="block">
+              <Button size="lg" className="w-full">
+                Apply for This Role
+              </Button>
+            </Link>
+          </div>
+        )}
       </div>
     </>
   );

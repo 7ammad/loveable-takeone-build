@@ -1,15 +1,29 @@
+/**
+ * Admin API: Get pending casting calls for validation
+ */
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@packages/core-db';
-import { handle } from '@/app/api/v1/helpers'; // Assuming helpers are restored/recreated
+import { withAdminAuth } from '@packages/core-security/src/admin-auth';
 
-export const GET = handle(async () => {
-  const pendingCastingCalls = await prisma.castingCall.findMany({
-    where: {
-      status: 'pending_review',
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
+export const GET = withAdminAuth(async (req: NextRequest) => {
+  try {
+    // Fetch pending casting calls (aggregated ones awaiting review)
+    const pendingCalls = await prisma.castingCall.findMany({
+      where: {
+        isAggregated: true,
+        status: 'pending_review',
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
 
-  return new Response(JSON.stringify(pendingCastingCalls));
+    return NextResponse.json({ data: pendingCalls });
+  } catch (error) {
+    console.error('[Admin] Error fetching pending calls:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch pending calls' },
+      { status: 500 }
+    );
+  }
 });

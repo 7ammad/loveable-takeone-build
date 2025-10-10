@@ -13,9 +13,13 @@ import {
   Inbox,
   Clock,
   XCircle,
-  AlertCircle
+  AlertCircle,
+  Video,
+  Phone,
+  MapPin
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -53,6 +57,22 @@ interface RecentApplication {
   appliedDate: Date;
 }
 
+interface UpcomingAudition {
+  id: string;
+  scheduledAt: string;
+  duration: number;
+  meetingType: string;
+  meetingUrl?: string;
+  location?: string;
+  status: string;
+  castingCall: {
+    title: string;
+  };
+  caster: {
+    name: string;
+  };
+}
+
 export default function TalentDashboard() {
   const { user } = useAuth();
   const [profileCompletion, setProfileCompletion] = useState<{ percentage: number; steps: ProfileCompletionStep[] }>({ percentage: 0, steps: [] });
@@ -72,6 +92,7 @@ export default function TalentDashboard() {
     responseRate: '0%',
   });
   const [recentApplications, setRecentApplications] = useState<RecentApplication[]>([]);
+  const [upcomingAuditions, setUpcomingAuditions] = useState<UpcomingAudition[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Fetch profile data
@@ -129,6 +150,29 @@ export default function TalentDashboard() {
     }
 
     fetchAnalytics();
+  }, [user]);
+
+  // Fetch upcoming auditions
+  useEffect(() => {
+    async function fetchUpcomingAuditions() {
+      if (user?.role !== 'talent') return;
+
+      try {
+        const response = await apiClient.get<{
+          success: boolean;
+          data: UpcomingAudition[];
+        }>('/api/v1/bookings?status=scheduled,confirmed&upcoming=true');
+
+        if (response.data.success) {
+          // Get only next 3 auditions
+          setUpcomingAuditions(response.data.data.slice(0, 3));
+        }
+      } catch (error) {
+        console.error('Failed to fetch upcoming auditions:', error);
+      }
+    }
+
+    fetchUpcomingAuditions();
   }, [user]);
 
   const getStatusColor = (status: string) => {
@@ -292,7 +336,7 @@ export default function TalentDashboard() {
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <Link href="/profile/edit" aria-label="Complete Profile">
                     <Button variant="outline" className="w-full h-auto py-6 flex flex-col items-center gap-2">
                       <User className="w-8 h-8 text-primary" />
@@ -307,8 +351,14 @@ export default function TalentDashboard() {
                   </Link>
                   <Link href="/applications" aria-label="My Applications">
                     <Button variant="outline" className="w-full h-auto py-6 flex flex-col items-center gap-2">
-                      <Calendar className="w-8 h-8 text-primary" />
+                      <FileText className="w-8 h-8 text-primary" />
                       <span>My Applications</span>
+                    </Button>
+                  </Link>
+                  <Link href="/bookings" aria-label="My Auditions">
+                    <Button variant="outline" className="w-full h-auto py-6 flex flex-col items-center gap-2">
+                      <Calendar className="w-8 h-8 text-primary" />
+                      <span>My Auditions</span>
                     </Button>
                   </Link>
                 </div>
@@ -365,6 +415,87 @@ export default function TalentDashboard() {
                       </div>
                       <p className="text-sm text-muted-foreground">Active</p>
                     </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Upcoming Auditions */}
+            {upcomingAuditions.length > 0 && (
+              <Card className="border-primary/20 bg-primary/5">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-2">
+                      <Calendar className="w-5 h-5 text-primary" />
+                      Upcoming Auditions
+                    </CardTitle>
+                    <Link href="/bookings" className="text-sm text-primary hover:underline">
+                      View All
+                    </Link>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {upcomingAuditions.map((audition) => {
+                      const auditionDate = new Date(audition.scheduledAt);
+                      const now = new Date();
+                      const hoursUntil = Math.floor((auditionDate.getTime() - now.getTime()) / (1000 * 60 * 60));
+                      const isToday = auditionDate.toDateString() === now.toDateString();
+                      const isTomorrow = auditionDate.toDateString() === new Date(now.getTime() + 24 * 60 * 60 * 1000).toDateString();
+
+                      return (
+                        <div key={audition.id} className="p-4 bg-background rounded-lg border border-border">
+                          <div className="flex items-start justify-between mb-2">
+                            <div className="flex-1">
+                              <p className="text-sm font-semibold text-foreground">
+                                {audition.castingCall.title}
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                with {audition.caster.name}
+                              </p>
+                            </div>
+                            {hoursUntil <= 24 && (
+                              <Badge className="bg-red-100 text-red-700 border-red-200">
+                                {isToday ? 'Today' : isTomorrow ? 'Tomorrow' : `${hoursUntil}h`}
+                              </Badge>
+                            )}
+                          </div>
+                          
+                          <div className="flex items-center gap-4 text-xs text-muted-foreground mt-3">
+                            <div className="flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              {auditionDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+                            </div>
+                            <div className="flex items-center gap-1">
+                              {audition.meetingType === 'video' ? (
+                                <>
+                                  <Video className="w-3 h-3" />
+                                  <span>Video Call</span>
+                                </>
+                              ) : audition.meetingType === 'phone' ? (
+                                <>
+                                  <Phone className="w-3 h-3" />
+                                  <span>Phone</span>
+                                </>
+                              ) : (
+                                <>
+                                  <MapPin className="w-3 h-3" />
+                                  <span>In-Person</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+
+                          {audition.meetingUrl && (
+                            <Link href={audition.meetingUrl} target="_blank" rel="noopener noreferrer">
+                              <Button size="sm" className="w-full mt-3">
+                                Join Meeting
+                              </Button>
+                            </Link>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </CardContent>
               </Card>

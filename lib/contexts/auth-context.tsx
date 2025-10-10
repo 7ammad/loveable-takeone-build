@@ -103,8 +103,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('refreshToken', response.data.refreshToken);
       setUser(response.data.user);
       
-      // Redirect to dashboard
-      router.push('/dashboard');
+      // Redirect based on role
+      if (data.role === 'caster') {
+        // Casters go to onboarding to complete profile
+        router.push('/onboarding/caster');
+      } else {
+        // Talent goes directly to dashboard
+        router.push('/dashboard');
+      }
     } catch (error: unknown) {
       console.error('Registration failed:', error);
       const axiosError = error as { response?: { data?: { error?: string } } };

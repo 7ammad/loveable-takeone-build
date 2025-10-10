@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -10,106 +10,96 @@ import {
   MapPin,
   Calendar,
   DollarSign,
-  CheckCircle2,
-  Clock
+  CheckCircle2
 } from 'lucide-react';
 import Link from 'next/link';
 import { LandingHeader } from '@/components/Header';
 import { DashboardNav } from '@/components/DashboardNav';
 import { useAuth } from '@/lib/contexts/auth-context';
+import { apiClient } from '@/lib/api/client';
+
+interface CastingCall {
+  id: string;
+  title: string;
+  description: string;
+  location: string;
+  compensation?: string;
+  deadline?: string;
+  company?: string;
+  requirements?: string;
+  status: string;
+  createdAt: string;
+  isAggregated?: boolean;
+}
 
 export default function CastingCallsPage() {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('all');
+  const [castingCalls, setCastingCalls] = useState<CastingCall[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Mock data - replace with real API call
-  const castingCalls = [
-    {
-      id: 1,
-      title: 'Lead Actor for Historical Drama Series',
-      company: 'MBC Studios',
-      location: 'Riyadh',
-      compensation: 'SAR 50,000 - 80,000',
-      deadline: '2025-10-15',
-      description: 'Seeking an experienced male actor for a leading role in our upcoming historical drama series.',
-      requirements: 'Male, 30-45 years old, fluent in Arabic',
-      isVerified: true,
-      daysLeft: 5,
-      applicants: 15,
-    },
-    {
-      id: 2,
-      title: 'Voice Actor for Animated Series',
-      company: 'Manga Productions',
-      location: 'Remote',
-      compensation: 'SAR 30,000 - 50,000',
-      deadline: '2025-10-20',
-      description: 'Looking for talented voice actors for our new animated series project.',
-      requirements: 'Experience in voice acting, Arabic and English fluency',
-      isVerified: true,
-      daysLeft: 10,
-      applicants: 22,
-    },
-    {
-      id: 3,
-      title: 'Supporting Role in Comedy Series',
-      company: 'Telfaz11',
-      location: 'Jeddah',
-      compensation: 'SAR 40,000 - 60,000',
-      deadline: '2025-10-12',
-      description: 'We are casting for a supporting role in our upcoming comedy series.',
-      requirements: 'Female, 25-35 years old, comedy experience preferred',
-      isVerified: true,
-      daysLeft: 3,
-      applicants: 8,
-    },
-    {
-      id: 4,
-      title: 'Commercial Advertisement Actor',
-      company: 'Creative Hub Agency',
-      location: 'Riyadh',
-      compensation: 'SAR 20,000 - 35,000',
-      deadline: '2025-10-18',
-      description: 'Seeking actors for a major brand commercial campaign.',
-      requirements: 'Any gender, 20-40 years old, photogenic',
-      isVerified: false,
-      daysLeft: 8,
-      applicants: 31,
-    },
-    {
-      id: 5,
-      title: 'Theater Performance Lead',
-      company: 'King Abdullah Cultural Center',
-      location: 'Dhahran',
-      compensation: 'SAR 45,000 - 70,000',
-      deadline: '2025-10-25',
-      description: 'Lead role in a classical theater production.',
-      requirements: 'Theater experience, strong stage presence',
-      isVerified: true,
-      daysLeft: 15,
-      applicants: 12,
-    },
-    {
-      id: 6,
-      title: 'Documentary Narrator',
-      company: 'Saudi Film Commission',
-      location: 'Riyadh',
-      compensation: 'SAR 25,000 - 40,000',
-      deadline: '2025-10-22',
-      description: 'Professional narrator needed for documentary series about Saudi heritage.',
-      requirements: 'Clear Arabic voice, narration experience',
-      isVerified: true,
-      daysLeft: 12,
-      applicants: 18,
-    },
-  ];
+  // Fetch casting calls from API
+  useEffect(() => {
+    async function fetchCastingCalls() {
+      try {
+        setLoading(true);
+        const response = await apiClient.get<{
+          success: boolean;
+          data: {
+            castingCalls: CastingCall[];
+            pagination: any;
+          };
+        }>('/api/v1/casting-calls');
+        
+        if (response.data.success && response.data.data?.castingCalls) {
+          setCastingCalls(response.data.data.castingCalls);
+        }
+      } catch (error) {
+        console.error('Failed to fetch casting calls:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchCastingCalls();
+  }, []);
+
+  const getDaysUntilDeadline = (deadline: string) => {
+    const today = new Date();
+    const deadlineDate = new Date(deadline);
+    const diffTime = deadlineDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
 
   const getUrgencyColor = (daysLeft: number) => {
     if (daysLeft <= 3) return 'text-red-600 bg-red-50 border-red-200';
     if (daysLeft <= 7) return 'text-orange-600 bg-orange-50 border-orange-200';
     return 'text-green-600 bg-green-50 border-green-200';
   };
+
+  // Filter and search logic
+  const filteredCalls = castingCalls.filter(call => {
+    // Search filter
+    const matchesSearch = searchQuery === '' || 
+      call.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      call.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      call.location?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      call.company?.toLowerCase().includes(searchQuery.toLowerCase());
+
+    // Quick filter
+    if (selectedFilter === 'all') return matchesSearch;
+    if (selectedFilter === 'verified') return matchesSearch && !call.isAggregated;
+    if (selectedFilter === 'remote') return matchesSearch && call.location?.toLowerCase().includes('remote');
+    if (selectedFilter === 'urgent') {
+      if (!call.deadline) return false;
+      const daysLeft = getDaysUntilDeadline(call.deadline);
+      return matchesSearch && daysLeft <= 7;
+    }
+    
+    return matchesSearch;
+  });
 
   return (
     <>
@@ -166,16 +156,50 @@ export default function CastingCallsPage() {
         {/* Results Count */}
         <div className="mb-6">
           <p className="text-sm text-muted-foreground">
-            Showing <span className="font-semibold text-foreground">{castingCalls.length}</span> casting opportunities
+            Showing <span className="font-semibold text-foreground">{filteredCalls.length}</span> casting opportunities
           </p>
         </div>
 
         {/* Casting Calls Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {castingCalls.map((call) => (
+          {loading ? (
+            // Loading skeleton
+            Array.from({ length: 6 }).map((_, i) => (
+              <Card key={i} className="overflow-hidden">
+                <div className="p-6">
+                  <div className="animate-pulse">
+                    <div className="h-6 bg-muted rounded w-3/4 mb-4"></div>
+                    <div className="h-4 bg-muted rounded w-1/2 mb-2"></div>
+                    <div className="h-4 bg-muted rounded w-1/3 mb-4"></div>
+                    <div className="h-20 bg-muted rounded w-full mb-4"></div>
+                    <div className="h-10 bg-muted rounded w-full"></div>
+                  </div>
+                </div>
+              </Card>
+            ))
+          ) : filteredCalls.length === 0 ? (
+            <div className="col-span-full">
+              <Card className="p-12 text-center">
+                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Search className="w-8 h-8 text-muted-foreground" />
+                </div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">No casting calls found</h3>
+                <p className="text-muted-foreground mb-6">
+                  {searchQuery || selectedFilter !== 'all' 
+                    ? 'Try adjusting your filters or search query'
+                    : 'No casting opportunities available at the moment'}
+                </p>
+              </Card>
+            </div>
+          ) : (
+            filteredCalls.map((call) => {
+              const daysLeft = call.deadline ? getDaysUntilDeadline(call.deadline) : null;
+              const isVerified = !call.isAggregated;
+              
+              return (
             <Card key={call.id} className="overflow-hidden hover:shadow-lg transition-shadow">
               {/* Status Indicator */}
-              <div className={`h-1 ${call.isVerified ? 'bg-green-500' : 'bg-gradient-to-r from-yellow-400 to-orange-500'}`} />
+              <div className={`h-1 ${isVerified ? 'bg-green-500' : 'bg-gradient-to-r from-yellow-400 to-orange-500'}`} />
               
               <div className="p-6">
                 {/* Header */}
@@ -187,8 +211,8 @@ export default function CastingCallsPage() {
                       </h3>
                     </Link>
                     <p className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
-                      {call.company}
-                      {call.isVerified && (
+                      {call.company || 'Company not specified'}
+                      {isVerified && (
                         <span className="inline-flex items-center gap-1 text-green-600">
                           <CheckCircle2 className="w-3 h-3" />
                           <span className="text-xs">Verified</span>
@@ -198,60 +222,76 @@ export default function CastingCallsPage() {
                   </div>
                   
                   {/* Urgency Badge */}
-                  <div className={`px-3 py-1 rounded-full border ${getUrgencyColor(call.daysLeft)}`}>
-                    <span className="text-xs font-medium">{call.daysLeft} days left</span>
-                  </div>
+                  {daysLeft !== null && (
+                    <div className={`px-3 py-1 rounded-full border ${getUrgencyColor(daysLeft)}`}>
+                      <span className="text-xs font-medium">
+                        {daysLeft > 0 ? `${daysLeft} days left` : daysLeft === 0 ? 'Today' : 'Expired'}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Key Details */}
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <MapPin className="w-4 h-4 text-primary" />
-                    <span>{call.location}</span>
+                    <span>{call.location || 'Location TBD'}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <DollarSign className="w-4 h-4 text-primary" />
-                    <span className="truncate">{call.compensation}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Calendar className="w-4 h-4 text-primary" />
-                    <span>{new Date(call.deadline).toLocaleDateString()}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Clock className="w-4 h-4 text-primary" />
-                    <span>{call.applicants} applicants</span>
-                  </div>
+                  {call.compensation && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <DollarSign className="w-4 h-4 text-primary" />
+                      <span className="truncate">{call.compensation}</span>
+                    </div>
+                  )}
+                  {call.deadline && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Calendar className="w-4 h-4 text-primary" />
+                      <span>{new Date(call.deadline).toLocaleDateString()}</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Description */}
                 <p className="text-sm text-foreground mb-4 line-clamp-2">
-                  {call.description}
+                  {call.description || 'No description provided'}
                 </p>
 
                 {/* Requirements */}
-                <div className="mb-4 p-3 bg-muted/50 rounded-lg">
-                  <p className="text-xs font-medium text-muted-foreground mb-1">Requirements</p>
-                  <p className="text-sm text-foreground line-clamp-1">
-                    {call.requirements}
-                  </p>
-                </div>
+                {call.requirements && (
+                  <div className="mb-4 p-3 bg-muted/50 rounded-lg">
+                    <p className="text-xs font-medium text-muted-foreground mb-1">Requirements</p>
+                    <p className="text-sm text-foreground line-clamp-1">
+                      {call.requirements}
+                    </p>
+                  </div>
+                )}
 
-                {/* Actions */}
+                {/* Actions - Role Aware */}
                 <div className="flex gap-3">
                   <Link href={`/casting-calls/${call.id}`} className="flex-1">
                     <Button variant="outline" className="w-full">
                       View Details
                     </Button>
                   </Link>
-                  <Link href={`/casting-calls/${call.id}/apply`} className="flex-1">
-                    <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-                      Apply Now
-                    </Button>
-                  </Link>
+                  {user?.role === 'talent' ? (
+                    <Link href={`/casting-calls/${call.id}/apply`} className="flex-1">
+                      <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+                        Apply Now
+                      </Button>
+                    </Link>
+                  ) : user?.role === 'caster' ? (
+                    <Link href={`/casting-calls/${call.id}/edit`} className="flex-1">
+                      <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+                        Edit
+                      </Button>
+                    </Link>
+                  ) : null}
                 </div>
               </div>
             </Card>
-          ))}
+              );
+            })
+          )}
         </div>
 
         {/* Load More */}

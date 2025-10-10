@@ -1,7 +1,7 @@
 import { prisma } from '@packages/core-db';
-import { handle } from '../../helpers';
+import { createAdminHandler } from '../../helpers';
 
-export const GET = handle(async () => {
+export const GET = createAdminHandler(async () => {
   const users = await prisma.user.findMany({
     select: {
       id: true,

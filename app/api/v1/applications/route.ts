@@ -6,13 +6,13 @@ import { sendNewApplicationNotification } from '@packages/core-notify/src/notifi
 
 const prisma = new PrismaClient();
 
-// Validation schema
+// Validation schema - all fields except castingCallId are optional for one-click apply
 const CreateApplicationSchema = z.object({
   castingCallId: z.string().min(1, 'Casting call ID is required'),
-  coverLetter: z.string().min(100, 'Cover letter must be at least 100 characters'),
-  availability: z.string().min(1, 'Availability is required'),
-  contactPhone: z.string().min(1, 'Contact phone is required'),
-  headshotUrl: z.string().url('Invalid headshot URL'),
+  coverLetter: z.string().optional(),
+  availability: z.string().optional(),
+  contactPhone: z.string().optional(),
+  headshotUrl: z.string().url('Invalid headshot URL').optional().or(z.literal('')),
   portfolioUrl: z.string().url('Invalid portfolio URL').optional().or(z.literal('')),
 });
 
@@ -47,7 +47,9 @@ export async function POST(request: NextRequest) {
 
     // 3. Parse and validate request body
     const body = await request.json();
+    console.log('[Applications API] Request body:', body);
     const validatedData = CreateApplicationSchema.parse(body);
+    console.log('[Applications API] Validated data:', validatedData);
 
     // 4. Check if casting call exists
     const castingCall = await prisma.castingCall.findUnique({
@@ -76,21 +78,58 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 6. Create application
+    // 6. Get user profile data for one-click apply fallback
+    const userProfile = await prisma.user.findUnique({
+      where: { id: payload.userId },
+      select: {
+        phone: true,
+        avatar: true,
+        bio: true,
+      },
+    });
+
+    // Use profile data as fallback
+    const coverLetter = validatedData.coverLetter || 
+      'I am interested in this opportunity and believe my profile demonstrates my qualifications for this role.';
+    const availability = validatedData.availability || 
+      'Please contact me to discuss availability';
+    const contactPhone = validatedData.contactPhone || 
+      userProfile?.phone || 
+      null;
+    const headshotUrl = validatedData.headshotUrl || 
+      userProfile?.avatar || 
+      null;
+    const portfolioUrl = validatedData.portfolioUrl || 
+      null;
+
+    // 7. Create application
+    console.log('[Applications API] Creating application with data:', {
+      castingCallId: validatedData.castingCallId,
+      talentUserId: payload.userId,
+      status: 'pending',
+      coverLetter,
+      availability,
+      contactPhone,
+      headshotUrl,
+      portfolioUrl,
+    });
+    
     const application = await prisma.application.create({
       data: {
         castingCallId: validatedData.castingCallId,
         talentUserId: payload.userId,
         status: 'pending',
-        coverLetter: validatedData.coverLetter,
-        availability: validatedData.availability,
-        contactPhone: validatedData.contactPhone,
-        headshotUrl: validatedData.headshotUrl,
-        portfolioUrl: validatedData.portfolioUrl || null,
+        coverLetter,
+        availability,
+        contactPhone,
+        headshotUrl,
+        portfolioUrl,
       },
     });
+    
+    console.log('[Applications API] Application created successfully:', application.id);
 
-    // 7. Create status event
+    // 8. Create status event
     await prisma.applicationStatusEvent.create({
       data: {
         applicationId: application.id,
@@ -100,7 +139,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // 8. Send notification to caster (if casting call has an owner)
+    // 9. Send notification to caster (if casting call has an owner)
     try {
       // Get talent user details for notification
       const talentUser = await prisma.user.findUnique({
@@ -123,7 +162,7 @@ export async function POST(request: NextRequest) {
       // Don't fail the application submission if notification fails
     }
 
-    // 9. Return success response
+    // 10. Return success response
     return NextResponse.json(
       {
         success: true,

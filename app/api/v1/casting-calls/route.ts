@@ -136,7 +136,7 @@ export async function GET(req: NextRequest) {
     // For casters, include drafts; for others, only published
     const statusFilter = isCaster 
       ? { in: ['published', 'draft'] } 
-      : 'published';
+      : 'open';
 
     const where: {
       status: string | { in: string[] };

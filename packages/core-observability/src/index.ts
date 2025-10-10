@@ -1,3 +1,6 @@
+// Logger
+export * from './logger';
+
 // OTEL tracing
 export * from './tracing';
 
