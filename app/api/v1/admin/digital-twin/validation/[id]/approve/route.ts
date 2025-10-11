@@ -1,18 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/packages/core-db/src/client';
+import { requireRole } from '@/lib/auth-helpers';
 
 interface PrismaError extends Error {
   code?: string;
 }
 import { validationQueue } from '@/packages/core-queue/src/queues';
 
-// TODO: Add admin authentication middleware
-export async function POST(
+export const POST = async (
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-) {
+) => {
+  // ✅ Add role check at the very start
+  const userOrError = await requireRole(request, ['admin']);
+  if (userOrError instanceof NextResponse) return userOrError;
+
   try {
-    // TODO: Add admin authentication check
     const { id } = await params;
 
     // Approve the casting call
@@ -28,19 +31,6 @@ export async function POST(
       castingCallId: id,
       action: 'approve',
       timestamp: new Date().toISOString(),
-    });
-
-    // Log the approval
-    await prisma.auditEvent.create({
-      data: {
-        eventType: 'CastingCallApproved',
-        targetId: id,
-        metadata: {
-          wasAggregated: castingCall.isAggregated,
-          sourceUrl: castingCall.sourceUrl,
-          queuedForIndexing: true,
-        },
-      },
     });
 
     return NextResponse.json({
@@ -68,4 +58,4 @@ export async function POST(
       { status: 500 }
     );
   }
-}
+};

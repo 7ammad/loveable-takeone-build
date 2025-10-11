@@ -3,10 +3,10 @@
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@packages/core-db';
-import { withAdminAuth } from '@packages/core-security/src/admin-auth';
+import { requireAdmin, logAdminAction, AuditEventType } from '@/lib/auth-helpers';
 
-export const POST = withAdminAuth(
-  async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
+export const POST = requireAdmin()(
+  async (req: NextRequest, { params }: { params: Promise<{ id: string }> }, user, dbUser) => {
     try {
       const { id } = await params;
 
@@ -17,6 +17,19 @@ export const POST = withAdminAuth(
           updatedAt: new Date(),
         },
       });
+
+      // Log admin action
+      await logAdminAction(
+        AuditEventType.ADMIN_SETTINGS_CHANGED,
+        dbUser.id,
+        null,
+        'approve_casting_call',
+        { 
+          castingCallId: id,
+          previousStatus: 'pending_review', 
+          newStatus: 'open' 
+        }
+      );
 
       console.log(`[Admin] Approved casting call: ${id}`);
 

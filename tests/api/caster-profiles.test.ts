@@ -151,8 +151,7 @@ describe('Caster Profile API', () => {
   describe('GET /api/v1/caster-profiles/[id]', () => {
     it('should get a single caster profile', async () => {
       if (!casterProfileId) {
-        expect.skip();
-        return;
+        return; // Skip test if no profile ID
       }
       
       const response = await client.get(`/api/v1/caster-profiles/${casterProfileId}`);
@@ -175,8 +174,7 @@ describe('Caster Profile API', () => {
   describe('PATCH /api/v1/caster-profiles/[id]', () => {
     it('should update a caster profile', async () => {
       if (!casterProfileId || !authToken) {
-        expect.skip();
-        return;
+        return; // Skip test if no profile ID or auth token
       }
       
       const updateData = {
@@ -197,8 +195,7 @@ describe('Caster Profile API', () => {
     
     it('should reject update without auth', async () => {
       if (!casterProfileId) {
-        expect.skip();
-        return;
+        return; // Skip test if no profile ID
       }
       
       const response = await client.patch(`/api/v1/caster-profiles/${casterProfileId}`, {
@@ -229,8 +226,7 @@ describe('Caster Profile API', () => {
   describe('POST /api/v1/caster-profiles/[id]/projects', () => {
     it('should add a project to the profile', async () => {
       if (!casterProfileId || !authToken) {
-        expect.skip();
-        return;
+        return; // Skip test if no profile ID or auth token
       }
       
       const projectData = {
@@ -259,8 +255,7 @@ describe('Caster Profile API', () => {
   describe('POST /api/v1/caster-profiles/[id]/team', () => {
     it('should add a team member to the profile', async () => {
       if (!casterProfileId || !authToken) {
-        expect.skip();
-        return;
+        return; // Skip test if no profile ID or auth token
       }
       
       const memberData = {

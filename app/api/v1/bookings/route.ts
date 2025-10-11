@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAccessToken } from '@packages/core-auth';
 import { prisma } from '@packages/core-db';
 import { scheduleBookingReminders } from '@packages/core-queue';
 import { z } from 'zod';
+import { requireAuth, isErrorResponse } from '@/lib/auth-helpers';
+import { createErrorResponse } from '@/lib/error-handler';
 
 const createBookingSchema = z.object({
   applicationId: z.string(),
@@ -24,24 +25,11 @@ const createBookingSchema = z.object({
  */
 export async function POST(req: NextRequest) {
   try {
-    // 1. Verify authentication
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
+    const userOrError = await requireAuth(req);
+    if (isErrorResponse(userOrError)) {
+      return userOrError;
     }
-
-    const token = authHeader.split(' ')[1];
-    const payload = await verifyAccessToken(token);
-
-    if (!payload || !payload.userId) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
+    const user = userOrError;
 
     // 2. Parse and validate request
     const body = await req.json();
@@ -76,7 +64,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Only the caster who created the casting call can book auditions
-    if (application.castingCall.createdBy !== payload.userId) {
+    if (application.castingCall.createdBy !== user.userId) {
       return NextResponse.json(
         { success: false, error: 'Only the casting call creator can book auditions' },
         { status: 403 }
@@ -100,7 +88,7 @@ export async function POST(req: NextRequest) {
       data: {
         applicationId: validatedData.applicationId,
         talentUserId: application.talentUserId,
-        casterUserId: payload.userId,
+        casterUserId: user.userId,
         castingCallId: application.castingCallId,
         scheduledAt: new Date(validatedData.scheduledAt),
         duration: validatedData.duration,
@@ -158,18 +146,9 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid request data', details: error.issues },
-        { status: 400 }
-      );
-    }
-
-    console.error('[Bookings API] Error:', error);
-    return NextResponse.json(
-      { success: false, error: 'Internal server error' },
-      { status: 500 }
-    );
+    return createErrorResponse(error, {
+      functionName: '[Bookings API] Error creating booking',
+    });
   }
 }
 
@@ -179,24 +158,11 @@ export async function POST(req: NextRequest) {
  */
 export async function GET(req: NextRequest) {
   try {
-    // 1. Verify authentication
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
+    const userOrError = await requireAuth(req);
+    if (isErrorResponse(userOrError)) {
+      return userOrError;
     }
-
-    const token = authHeader.split(' ')[1];
-    const payload = await verifyAccessToken(token);
-
-    if (!payload || !payload.userId) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
+    const user = userOrError;
 
     // 2. Get query parameters
     const url = new URL(req.url);
@@ -210,8 +176,8 @@ export async function GET(req: NextRequest) {
       scheduledAt?: { gte: Date };
     } = {
       OR: [
-        { talentUserId: payload.userId },
-        { casterUserId: payload.userId },
+        { talentUserId: user.userId },
+        { casterUserId: user.userId },
       ],
     };
 
@@ -271,10 +237,8 @@ export async function GET(req: NextRequest) {
       data: bookings,
     });
   } catch (error) {
-    console.error('[Bookings API] Error:', error);
-    return NextResponse.json(
-      { success: false, error: 'Internal server error' },
-      { status: 500 }
-    );
+    return createErrorResponse(error, {
+      functionName: '[Bookings API] Error fetching bookings',
+    });
   }
 }

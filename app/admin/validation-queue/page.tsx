@@ -19,10 +19,7 @@ import {
   Clock,
   AlertCircle,
   ArrowLeft,
-  Search,
-  Filter,
-  CheckSquare,
-  Square
+  Search
 } from 'lucide-react';
 import { apiClient } from '@/lib/api/client';
 import {

@@ -1,17 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/packages/core-db/src/client';
+import { requireRole } from '@/lib/auth-helpers';
 
 interface PrismaError extends Error {
   code?: string;
 }
 
-// TODO: Add admin authentication middleware
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // ✅ Add role check at the very start
+  const userOrError = await requireRole(request, ['admin']);
+  if (userOrError instanceof NextResponse) return userOrError;
+
   try {
-    // TODO: Add admin authentication check
     const { id } = await params;
 
     const source = await prisma.ingestionSource.findUnique({
@@ -48,8 +51,11 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // ✅ Add role check at the very start
+  const userOrError = await requireRole(request, ['admin']);
+  if (userOrError instanceof NextResponse) return userOrError;
+
   try {
-    // TODO: Add admin authentication check
     const { id } = await params;
 
     const { sourceType, sourceIdentifier, sourceName, isActive } = await request.json();
@@ -116,8 +122,11 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // ✅ Add role check at the very start
+  const userOrError = await requireRole(request, ['admin']);
+  if (userOrError instanceof NextResponse) return userOrError;
+
   try {
-    // TODO: Add admin authentication check
     const { id } = await params;
 
     await prisma.ingestionSource.delete({

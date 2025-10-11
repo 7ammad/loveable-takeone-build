@@ -1,41 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAccessToken } from '@packages/core-auth';
 import { getUserNotifications, markAllNotificationsAsRead, getUnreadNotificationCount } from '@packages/core-db/src/notifications';
+import { requireTalent } from '@/lib/auth-helpers';
 
 /**
  * GET /api/v1/notifications
  * Get notifications for the authenticated user
  */
-export async function GET(req: NextRequest) {
+export const GET = requireTalent()(async (req: NextRequest, _context, user) => {
   try {
-    // 1. Verify authentication
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.split(' ')[1];
-    const payload = await verifyAccessToken(token);
-
-    if (!payload || !payload.userId) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
-
-    // 2. Get query params
+    // 1. Get query params
     const url = new URL(req.url);
     const limit = parseInt(url.searchParams.get('limit') || '20');
     const unreadOnly = url.searchParams.get('unreadOnly') === 'true';
 
-    // 3. Fetch notifications
+    // 2. Fetch notifications
     try {
-      const notifications = await getUserNotifications(payload.userId, limit, unreadOnly);
-      const unreadCount = await getUnreadNotificationCount(payload.userId);
+      const notifications = await getUserNotifications(user.userId, limit, unreadOnly);
+      const unreadCount = await getUnreadNotificationCount(user.userId);
 
       return NextResponse.json({
         success: true,
@@ -64,35 +45,16 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 /**
  * PATCH /api/v1/notifications
  * Mark all notifications as read
  */
-export async function PATCH(req: NextRequest) {
+export const PATCH = requireTalent()(async (_req: NextRequest, _context, user) => {
   try {
-    // 1. Verify authentication
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.split(' ')[1];
-    const payload = await verifyAccessToken(token);
-
-    if (!payload || !payload.userId) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
-
-    // 2. Mark all as read
-    await markAllNotificationsAsRead(payload.userId);
+    // 1. Mark all as read
+    await markAllNotificationsAsRead(user.userId);
 
     return NextResponse.json({
       success: true,
@@ -105,5 +67,5 @@ export async function PATCH(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 

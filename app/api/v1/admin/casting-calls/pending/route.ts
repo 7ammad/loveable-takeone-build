@@ -3,9 +3,13 @@
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@packages/core-db';
-import { withAdminAuth } from '@packages/core-security/src/admin-auth';
+import { requireRole } from '@/lib/auth-helpers';
 
-export const GET = withAdminAuth(async (req: NextRequest) => {
+export const GET = async (req: NextRequest) => {
+  // ✅ Add role check at the very start
+  const userOrError = await requireRole(req, ['admin']);
+  if (userOrError instanceof NextResponse) return userOrError;
+
   try {
     // Fetch pending casting calls (aggregated ones awaiting review)
     const pendingCalls = await prisma.castingCall.findMany({
@@ -26,4 +30,4 @@ export const GET = withAdminAuth(async (req: NextRequest) => {
       { status: 500 }
     );
   }
-});
+};

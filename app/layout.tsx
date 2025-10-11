@@ -3,7 +3,8 @@ import { Inter } from 'next/font/google';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import './globals.css';
 import { AuthProvider } from '@/lib/contexts/auth-context';
-import '@/lib/digital-twin/init'; // Initialize Digital Twin on server start
+import { IdleTimerProvider } from '@/components/auth/IdleTimerProvider';
+// Digital Twin is initialized via instrumentation.ts hook
 
 const inter = Inter({
   subsets: ['latin'],
@@ -27,6 +28,7 @@ export default function RootLayout({
         <AuthProvider>
           <ThemeProvider>
             {children}
+            <IdleTimerProvider />
           </ThemeProvider>
         </AuthProvider>
       </body>

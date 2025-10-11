@@ -21,7 +21,7 @@ async function checkLLMFailures() {
     }
 
     // Show first 10 failed jobs with details
-    failedJobs.slice(0, 10).forEach((job, index) => {
+    failedJobs.slice(0, 10).forEach((job: any, index: number) => {
       console.log(`\n${index + 1}. Job ID: ${job.id}`);
       console.log(`   Failed At: ${new Date(job.timestamp).toISOString()}`);
       console.log(`   Attempts: ${job.attemptsMade}/${job.opts.attempts || 3}`);
@@ -44,7 +44,7 @@ async function checkLLMFailures() {
     console.log('─'.repeat(80));
     
     const errorCounts = new Map<string, number>();
-    failedJobs.forEach(job => {
+    failedJobs.forEach((job: any) => {
       const error = job.failedReason || 'Unknown error';
       errorCounts.set(error, (errorCounts.get(error) || 0) + 1);
     });
@@ -61,18 +61,18 @@ async function checkLLMFailures() {
     console.log('\n💡 Common LLM Failure Causes & Fixes:');
     console.log('─'.repeat(80));
     
-    const hasOpenAIErrors = failedJobs.some(job => 
+    const hasOpenAIErrors = failedJobs.some((job: any) => 
       job.failedReason?.includes('OpenAI') || 
       job.failedReason?.includes('API') ||
       job.failedReason?.includes('rate limit')
     );
     
-    const hasValidationErrors = failedJobs.some(job => 
+    const hasValidationErrors = failedJobs.some((job: any) => 
       job.failedReason?.includes('ZodError') ||
       job.failedReason?.includes('validation')
     );
 
-    const hasTimeoutErrors = failedJobs.some(job => 
+    const hasTimeoutErrors = failedJobs.some((job: any) => 
       job.failedReason?.includes('timeout') ||
       job.failedReason?.includes('ECONNRESET')
     );

@@ -4,6 +4,15 @@ import { generateAccessToken, generateRefreshToken } from '@/packages/core-auth/
 import bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import { checkLoginRateLimit } from '@/lib/auth-rate-limit';
+import { setAuthCookies } from '@/lib/cookie-helpers';
+import { createAuditLog, AuditEventType } from '@/lib/auth-helpers';
+import { 
+  checkAccountLocked, 
+  recordFailedLogin, 
+  resetFailedLogins, 
+  applyProgressiveDelay, 
+  getLockoutMessage 
+} from '@/lib/account-lockout';
 
 export async function POST(request: NextRequest) {
   try {
@@ -31,6 +40,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Email and password are required' },
         { status: 400 }
+      );
+    }
+
+    // ✅ Issue #17: Check account lockout status
+    const lockoutStatus = await checkAccountLocked(email.toLowerCase());
+    if (lockoutStatus.isLocked) {
+      return NextResponse.json(
+        { error: getLockoutMessage(lockoutStatus) },
+        { status: 403 }
       );
     }
 
@@ -73,12 +91,36 @@ export async function POST(request: NextRequest) {
     // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
+      // ✅ Issue #17: Record failed login attempt
+      const ipAddress = request.headers.get('x-forwarded-for')?.split(',')[0].trim() || 
+                       request.headers.get('x-real-ip') || 'unknown';
+      
+      const failureStatus = await recordFailedLogin(email.toLowerCase(), ipAddress);
+      
+      // Apply progressive delay (slows down brute force)
+      if (failureStatus.shouldDelay) {
+        await applyProgressiveDelay(failureStatus.delaySeconds);
+      }
+      
+      // Log failed login attempt
+      await createAuditLog({
+        eventType: AuditEventType.LOGIN_FAILED,
+        actorUserId: user.id,
+        ipAddress,
+        userAgent: request.headers.get('user-agent') || 'unknown',
+        success: false,
+        errorMessage: 'Invalid password',
+      });
+
       return NextResponse.json(
-        { error: 'Invalid email or password' },
+        { error: getLockoutMessage(failureStatus) },
         { status: 401 }
       );
     }
 
+    // ✅ Issue #17: Reset failed login attempts on successful login
+    await resetFailedLogins(user.id);
+    
     // Update last login timestamp
     await prisma.user.update({
       where: { id: user.id },
@@ -102,8 +144,17 @@ export async function POST(request: NextRequest) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...userWithoutPassword } = user;
 
-    // Return success response
-    return NextResponse.json({
+    // Log successful login
+    await createAuditLog({
+      eventType: AuditEventType.LOGIN_SUCCESS,
+      actorUserId: user.id,
+      ipAddress: request.headers.get('x-forwarded-for')?.split(',')[0].trim() || request.headers.get('x-real-ip') || 'unknown',
+      userAgent: request.headers.get('user-agent') || 'unknown',
+      success: true,
+    });
+
+    // ✅ Create response WITHOUT tokens in body (XSS protection)
+    const response = NextResponse.json({
       data: {
         user: {
           ...userWithoutPassword,
@@ -112,10 +163,13 @@ export async function POST(request: NextRequest) {
           nafathVerifiedAt: user.nafathVerifiedAt?.toISOString(),
           nafathExpiresAt: user.nafathExpiresAt?.toISOString(),
         },
-        accessToken,
-        refreshToken,
+        // ❌ NO accessToken or refreshToken in response body
+        // Tokens are set as httpOnly cookies for XSS protection
       },
     });
+
+    // ✅ Set httpOnly cookies (only way to access tokens)
+    return setAuthCookies(response, accessToken, refreshToken);
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(

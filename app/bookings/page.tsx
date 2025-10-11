@@ -61,6 +61,7 @@ export default function BookingsPage() {
   useEffect(() => {
     fetchUserRole();
     fetchBookings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTab]);
 
   async function fetchUserRole() {

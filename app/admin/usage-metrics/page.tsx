@@ -17,8 +17,7 @@ import {
   TrendingDown,
   AlertTriangle,
   RefreshCw,
-  Download,
-  Calendar
+  Download
 } from 'lucide-react';
 
 interface ServiceUsage {
@@ -59,6 +58,7 @@ export default function UsageMetricsPage() {
 
   useEffect(() => {
     fetchUsageMetrics();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dateRange]);
 
   const fetchUsageMetrics = async () => {

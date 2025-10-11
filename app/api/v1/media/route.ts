@@ -1,25 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAccessToken } from '@packages/core-auth';
 import { prisma } from '@packages/core-db/src/client';
+import { requireTalent } from '@/lib/auth-helpers';
 
-export async function GET(request: NextRequest) {
+export const GET = requireTalent()(async (request: NextRequest, _context, user) => {
   try {
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const token = authHeader.replace('Bearer ', '');
-    const payload = await verifyAccessToken(token);
-
-    if (!payload || !payload.userId) {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
-    }
-
     // Fetch user's media assets
     const mediaAssets = await prisma.mediaAsset.findMany({
       where: {
-        userId: payload.userId,
+        userId: user.userId,
         status: 'ready', // Only show ready/uploaded media
       },
       orderBy: {
@@ -36,7 +24,9 @@ export async function GET(request: NextRequest) {
     });
 
     // Convert S3 keys to public URLs
-    const baseUrl = process.env.AWS_CLOUDFRONT_URL || `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com`;
+    const baseUrl =
+      process.env.AWS_CLOUDFRONT_URL ||
+      `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com`;
     const mediaWithUrls = mediaAssets.map((asset) => ({
       ...asset,
       url: `${baseUrl}/${asset.s3Key}`,
@@ -50,7 +40,7 @@ export async function GET(request: NextRequest) {
     console.error('[Media API] Error:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to fetch media' },
-      { status: 500 }
+      { status: 500 },
     );
   }
-}
+});

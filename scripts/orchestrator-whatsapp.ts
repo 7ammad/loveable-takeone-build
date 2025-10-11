@@ -91,7 +91,8 @@ class WhatsAppOrchestrator {
           await prisma.auditEvent.create({
             data: {
               eventType: 'WhatsAppOrchestratorError',
-              targetId: source.id,
+              resourceType: 'IngestionSource',
+              resourceId: source.id,
               metadata: {
                 error: (error as Error).message,
                 sourceType: source.sourceType,

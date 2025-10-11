@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkExpiringVerifications } from '@/packages/core-security/src/nafath-gate';
+import { requireRole } from '@/lib/auth-helpers';
 
 export async function GET(request: NextRequest) {
-  try {
-    // TODO: Add admin authentication check
-    // For now, allowing access for development
+  // ✅ Add role check at the very start
+  const userOrError = await requireRole(request, ['admin']);
+  if (userOrError instanceof NextResponse) return userOrError;
 
+  try {
     const { searchParams } = new URL(request.url);
     const daysAhead = parseInt(searchParams.get('daysAhead') || '30');
 

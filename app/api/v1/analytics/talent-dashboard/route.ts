@@ -1,48 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAccessToken } from '@packages/core-auth';
 import { prisma } from '@packages/core-db';
+import { requireTalent } from '@/lib/auth-helpers';
 
 /**
  * GET /api/v1/analytics/talent-dashboard
  * Get dashboard analytics for talent users
  */
-export async function GET(req: NextRequest) {
+export const GET = requireTalent()(async (req: NextRequest, _context, user) => {
   try {
-    // 1. Authenticate user
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
+    const talentId = user.userId;
 
-    const token = authHeader.split(' ')[1];
-    const payload = await verifyAccessToken(token);
-
-    if (!payload || !payload.userId) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
-
-    // 2. Verify user is talent
-    if (payload.role !== 'talent') {
-      return NextResponse.json(
-        { success: false, error: 'Only talent users can view this analytics' },
-        { status: 403 }
-      );
-    }
-
-    // 3. Get query params for date range
+    // 1. Get query params for date range
     const url = new URL(req.url);
-    const daysParam = parseInt(url.searchParams.get('days') || '30');
-    const days = isNaN(daysParam) ? 30 : daysParam; // Default to 30 if invalid
+    const daysParam = parseInt(url.searchParams.get('days') || '30', 10);
+    const days = Number.isNaN(daysParam) ? 30 : daysParam;
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
 
-    // 4. Fetch analytics data
+    // 2. Fetch analytics data
     const [
       totalApplications,
       activeApplications,
@@ -57,13 +32,13 @@ export async function GET(req: NextRequest) {
     ] = await Promise.all([
       // Total applications ever submitted
       prisma.application.count({
-        where: { talentUserId: payload.userId },
+        where: { talentUserId: talentId },
       }),
 
       // Active applications (pending, under_review, shortlisted)
       prisma.application.count({
         where: {
-          talentUserId: payload.userId,
+          talentUserId: talentId,
           status: {
             in: ['pending', 'under_review', 'shortlisted'],
           },
@@ -73,7 +48,7 @@ export async function GET(req: NextRequest) {
       // Pending applications
       prisma.application.count({
         where: {
-          talentUserId: payload.userId,
+          talentUserId: talentId,
           status: 'pending',
         },
       }),
@@ -81,7 +56,7 @@ export async function GET(req: NextRequest) {
       // Under review applications
       prisma.application.count({
         where: {
-          talentUserId: payload.userId,
+          talentUserId: talentId,
           status: 'under_review',
         },
       }),
@@ -89,7 +64,7 @@ export async function GET(req: NextRequest) {
       // Shortlisted applications
       prisma.application.count({
         where: {
-          talentUserId: payload.userId,
+          talentUserId: talentId,
           status: 'shortlisted',
         },
       }),
@@ -97,7 +72,7 @@ export async function GET(req: NextRequest) {
       // Accepted applications
       prisma.application.count({
         where: {
-          talentUserId: payload.userId,
+          talentUserId: talentId,
           status: 'accepted',
         },
       }),
@@ -105,7 +80,7 @@ export async function GET(req: NextRequest) {
       // Rejected applications
       prisma.application.count({
         where: {
-          talentUserId: payload.userId,
+          talentUserId: talentId,
           status: 'rejected',
         },
       }),
@@ -113,7 +88,7 @@ export async function GET(req: NextRequest) {
       // Recent applications (last 10)
       prisma.application.findMany({
         where: {
-          talentUserId: payload.userId,
+          talentUserId: talentId,
         },
         include: {
           castingCall: {
@@ -136,7 +111,7 @@ export async function GET(req: NextRequest) {
           DATE(a."createdAt") as date,
           COUNT(*) as count
         FROM "Application" a
-        WHERE a."talentUserId" = ${payload.userId}
+        WHERE a."talentUserId" = ${talentId}
           AND a."createdAt" >= ${startDate}
         GROUP BY DATE(a."createdAt")
         ORDER BY date ASC
@@ -144,7 +119,7 @@ export async function GET(req: NextRequest) {
 
       // Talent profile for completion percentage
       prisma.talentProfile.findUnique({
-        where: { userId: payload.userId },
+        where: { userId: talentId },
         select: {
           completionPercentage: true,
           verified: true,
@@ -154,26 +129,27 @@ export async function GET(req: NextRequest) {
 
     // Calculate success rate (accepted / total applications that have been reviewed)
     const reviewedApplications = acceptedApplications + rejectedApplications;
-    const successRate = reviewedApplications > 0 
-      ? ((acceptedApplications / reviewedApplications) * 100).toFixed(1)
-      : '0';
+    const successRate =
+      reviewedApplications > 0
+        ? ((acceptedApplications / reviewedApplications) * 100).toFixed(1)
+        : '0';
 
     // Calculate response rate (applications with any status change / total)
     const respondedApplications = totalApplications - pendingApplications;
-    const responseRate = totalApplications > 0
-      ? ((respondedApplications / totalApplications) * 100).toFixed(1)
-      : '0';
+    const responseRate =
+      totalApplications > 0
+        ? ((respondedApplications / totalApplications) * 100).toFixed(1)
+        : '0';
 
     // Format trends data
-    const trends = Array.isArray(applicationTrends) 
+    const trends = Array.isArray(applicationTrends)
       ? applicationTrends.map((trend: { date: string; count: string }) => ({
           date: trend.date,
-          count: parseInt(trend.count),
+          count: parseInt(trend.count, 10),
         }))
       : [];
 
     // Calculate profile views (mock for now - will implement view tracking later)
-    // This would come from a ProfileView table tracking when casters view the profile
     const profileViews = 0; // TODO: Implement profile view tracking
 
     return NextResponse.json({
@@ -194,7 +170,7 @@ export async function GET(req: NextRequest) {
           successRate: `${successRate}%`,
           responseRate: `${responseRate}%`,
         },
-        recentApplications: recentApplications.map(app => ({
+        recentApplications: recentApplications.map((app) => ({
           id: app.id,
           casting_call_id: app.castingCallId,
           title: app.castingCall.title,
@@ -214,8 +190,7 @@ export async function GET(req: NextRequest) {
     console.error('[Talent Analytics API] Error:', error);
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
-      { status: 500 }
+      { status: 500 },
     );
   }
-}
-
+});

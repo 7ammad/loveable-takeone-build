@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAccessToken } from '@packages/core-auth';
 import { 
   getConversationMessages, 
   sendMessage, 
@@ -7,6 +6,7 @@ import {
 } from '@packages/core-db/src/messaging';
 import { prisma } from '@packages/core-db';
 import { z } from 'zod';
+import { requireTalent } from '@/lib/auth-helpers';
 
 const sendMessageSchema = z.object({
   content: z.string().min(1).max(5000),
@@ -16,32 +16,14 @@ const sendMessageSchema = z.object({
  * GET /api/v1/conversations/[id]/messages
  * Get messages for a conversation
  */
-export async function GET(
+export const GET = requireTalent()(async (
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+  { params }: { params: Promise<{ id: string }> },
+  user,
+) => {
   try {
     const { id: conversationId } = await params;
-    // 1. Verify authentication
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.split(' ')[1];
-    const payload = await verifyAccessToken(token);
-
-    if (!payload || !payload.userId) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
-
-    // 2. Verify user is part of conversation
+    // 1. Verify user is part of conversation
     const conversation = await prisma.conversation.findUnique({
       where: { id: conversationId },
     });
@@ -54,8 +36,8 @@ export async function GET(
     }
 
     if (
-      conversation.participant1Id !== payload.userId &&
-      conversation.participant2Id !== payload.userId
+      conversation.participant1Id !== user.userId &&
+      conversation.participant2Id !== user.userId
     ) {
       return NextResponse.json(
         { success: false, error: 'Access denied' },
@@ -74,7 +56,7 @@ export async function GET(
     const messages = await getConversationMessages(conversationId, limit, before);
 
     // 5. Mark messages as read
-    await markMessagesAsRead(conversationId, payload.userId);
+    await markMessagesAsRead(conversationId, user.userId);
 
     return NextResponse.json({
       success: true,
@@ -87,38 +69,20 @@ export async function GET(
       { status: 500 }
     );
   }
-}
+});
 
 /**
  * POST /api/v1/conversations/[id]/messages
  * Send a message in a conversation
  */
-export async function POST(
+export const POST = requireTalent()(async (
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+  { params }: { params: Promise<{ id: string }> },
+  user,
+) => {
   try {
     const { id: conversationId } = await params;
-    // 1. Verify authentication
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.split(' ')[1];
-    const payload = await verifyAccessToken(token);
-
-    if (!payload || !payload.userId) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
-
-    // 2. Verify user is part of conversation
+    // 1. Verify user is part of conversation
     const conversation = await prisma.conversation.findUnique({
       where: { id: conversationId },
     });
@@ -131,8 +95,8 @@ export async function POST(
     }
 
     if (
-      conversation.participant1Id !== payload.userId &&
-      conversation.participant2Id !== payload.userId
+      conversation.participant1Id !== user.userId &&
+      conversation.participant2Id !== user.userId
     ) {
       return NextResponse.json(
         { success: false, error: 'Access denied' },
@@ -146,14 +110,14 @@ export async function POST(
 
     // 4. Determine receiver
     const receiverId =
-      conversation.participant1Id === payload.userId
+      conversation.participant1Id === user.userId
         ? conversation.participant2Id
         : conversation.participant1Id;
 
     // 5. Send message
     const message = await sendMessage(
       conversationId,
-      payload.userId,
+      user.userId,
       receiverId,
       content
     );
@@ -176,5 +140,5 @@ export async function POST(
       { status: 500 }
     );
   }
-}
+});
 

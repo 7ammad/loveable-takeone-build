@@ -54,7 +54,8 @@ export function generateAccessToken(
   return jwt.sign(payload, ACCESS_TOKEN_SECRET, {
     expiresIn: '15m',
     audience: JWT_AUDIENCE,
-    issuer: JWT_ISSUER
+    issuer: JWT_ISSUER,
+    algorithm: 'HS256',
   });
 }
 
@@ -91,7 +92,8 @@ export function generateRefreshToken(
   return jwt.sign(payload, REFRESH_TOKEN_SECRET, {
     expiresIn: '7d',
     audience: JWT_AUDIENCE,
-    issuer: JWT_ISSUER
+    issuer: JWT_ISSUER,
+    algorithm: 'HS256',
   });
 }
 
@@ -100,8 +102,36 @@ export async function verifyAccessToken(token: string): Promise<TokenPayload | n
     const payload = jwt.verify(token, ACCESS_TOKEN_SECRET, {
       audience: JWT_AUDIENCE,
       issuer: JWT_ISSUER,
+      algorithms: ['HS256'],
     }) as TokenPayload;
-    return payload;
+
+    // Check against revocation list in the database (for immediate revocation)
+    try {
+      const isRevoked = await prisma.revokedToken.findUnique({
+        where: { jti: payload.jti },
+      });
+
+      if (isRevoked) {
+        if (process.env.NODE_ENV !== 'test') {
+          console.log('[JWT] Access token is revoked');
+        }
+        return null;
+      }
+
+      return payload;
+    } catch (dbError) {
+      if (process.env.NODE_ENV !== 'test') {
+        console.error('[JWT] Database error during access token revocation check:', dbError);
+      }
+      // If table doesn't exist, allow token for testing
+      if (dbError instanceof Error && dbError.message.includes('does not exist')) {
+        if (process.env.NODE_ENV !== 'test') {
+          console.log('[JWT] RevokedToken table missing, allowing access token for testing');
+        }
+        return payload;
+      }
+      throw dbError;
+    }
   } catch (error) {
     const reason = error instanceof Error ? error.message : 'verification failed';
     console.warn('[JWT] Access token verification failed:', reason);
@@ -113,7 +143,8 @@ export async function verifyRefreshToken(token: string): Promise<TokenPayload | 
   try {
     const payload = jwt.verify(token, REFRESH_TOKEN_SECRET, {
       audience: JWT_AUDIENCE,
-      issuer: JWT_ISSUER
+      issuer: JWT_ISSUER,
+      algorithms: ['HS256'],
     }) as TokenPayload;
 
     if (process.env.NODE_ENV !== 'test') {

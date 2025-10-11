@@ -183,8 +183,8 @@ wa.me/966540544908`
 
       console.log(`✅ Added: ${call.title}`);
       console.log(`   Location: ${call.location}`);
-      console.log(`   Payment: ${call.compensation}`);
-      console.log(`   Contact: ${call.contactInfo}\n`);
+      console.log(`   Payment: ${call.payment}`);
+      console.log(`   Contact: ${call.contact}\n`);
       
       added++;
     }

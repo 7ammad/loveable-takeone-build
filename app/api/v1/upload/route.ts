@@ -1,35 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAccessToken } from '@packages/core-auth';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { existsSync } from 'fs';
+import { requireTalent } from '@/lib/auth-helpers';
 
 /**
  * POST /api/v1/upload
  * Handle file uploads for casting calls, applications, and profiles
  */
-export async function POST(req: NextRequest) {
+export const POST = requireTalent()(async (req: NextRequest) => {
   try {
-    // 1. Authenticate user
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.split(' ')[1];
-    const payload = await verifyAccessToken(token);
-
-    if (!payload || !payload.userId) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
-
-    // 2. Parse form data
+    // 1. Parse form data
     const formData = await req.formData();
     const file = formData.get('file') as File;
     const type = formData.get('type') as string; // 'casting-call', 'application', 'profile'
@@ -105,4 +86,4 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

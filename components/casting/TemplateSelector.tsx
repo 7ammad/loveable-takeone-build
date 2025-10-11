@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Sparkles, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { castingTemplates, getTemplatesByCategory, getAllCategories, type CastingTemplate } from '@/lib/casting-templates';
+import { castingTemplates, getAllCategories, type CastingTemplate } from '@/lib/casting-templates';
 
 interface TemplateSelectorProps {
   onSelectTemplate: (template: CastingTemplate | null) => void;

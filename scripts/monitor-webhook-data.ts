@@ -7,10 +7,7 @@ import 'dotenv/config';
 import axios from 'axios';
 import { WhapiService } from '../lib/digital-twin/services/whapi-service';
 
-const WHAPI_URL = process.env.WHAPI_CLOUD_URL!;
-const WHAPI_TOKEN = process.env.WHAPI_CLOUD_TOKEN!;
-
-const whapiService = new WhapiService(WHAPI_URL, WHAPI_TOKEN);
+const whapiService = new WhapiService();
 
 async function monitorAllGroups() {
   console.log('📱 WhatsApp Group Monitor - Real-time Data Collection\n');

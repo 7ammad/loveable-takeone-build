@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAccessToken } from '@packages/core-auth';
 import { getUserConversations, getOrCreateConversation } from '@packages/core-db/src/messaging';
 import { prisma } from '@packages/core-db';
 import { z } from 'zod';
+import { requireTalent } from '@/lib/auth-helpers';
 
 const createConversationSchema = z.object({
   otherUserId: z.string(),
@@ -12,35 +12,16 @@ const createConversationSchema = z.object({
  * GET /api/v1/conversations
  * Get all conversations for the authenticated user
  */
-export async function GET(req: NextRequest) {
+export const GET = requireTalent()(async (req: NextRequest, _context, user) => {
   try {
-    // 1. Verify authentication
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.split(' ')[1];
-    const payload = await verifyAccessToken(token);
-
-    if (!payload || !payload.userId) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
-
-    // 2. Get conversations
-    const conversations = await getUserConversations(payload.userId);
+    // 1. Get conversations
+    const conversations = await getUserConversations(user.userId);
 
     // 3. Enrich with user details
     const enrichedConversations = await Promise.all(
       conversations.map(async (conv) => {
         const otherUserId =
-          conv.participant1Id === payload.userId
+          conv.participant1Id === user.userId
             ? conv.participant2Id
             : conv.participant1Id;
 
@@ -71,34 +52,15 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 /**
  * POST /api/v1/conversations
  * Create or get a conversation with another user
  */
-export async function POST(req: NextRequest) {
+export const POST = requireTalent()(async (req: NextRequest, _context, user) => {
   try {
-    // 1. Verify authentication
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.split(' ')[1];
-    const payload = await verifyAccessToken(token);
-
-    if (!payload || !payload.userId) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
-
-    // 2. Parse and validate request
+    // 1. Parse and validate request
     const body = await req.json();
     const { otherUserId } = createConversationSchema.parse(body);
 
@@ -116,7 +78,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 4. Get or create conversation
-    const conversation = await getOrCreateConversation(payload.userId, otherUserId);
+    const conversation = await getOrCreateConversation(user.userId, otherUserId);
 
     return NextResponse.json({
       success: true,
@@ -140,5 +102,5 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 

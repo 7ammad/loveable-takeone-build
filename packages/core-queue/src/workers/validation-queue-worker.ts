@@ -37,7 +37,8 @@ export function createValidationQueueWorker() {
           await prisma.auditEvent.create({
             data: {
               eventType: 'CastingCallIndexed',
-              targetId: castingCallId,
+              resourceType: 'CastingCall',
+              resourceId: castingCallId,
               metadata: {
                 indexedIn: 'algolia',
                 title: castingCall.title,
@@ -60,7 +61,8 @@ export function createValidationQueueWorker() {
         await prisma.auditEvent.create({
           data: {
             eventType: 'ValidationQueueError',
-            targetId: castingCallId,
+            resourceType: 'CastingCall',
+            resourceId: castingCallId,
             metadata: {
               error: (error as Error).message,
               action,

@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Instagram, Globe, CheckCircle, XCircle, Plus, Edit, Trash2, AlertCircle } from 'lucide-react';
+import { Instagram, Globe, CheckCircle, XCircle, Plus, Trash2, AlertCircle } from 'lucide-react';
 import { apiClient } from '@/lib/api/client';
 import {
   AlertDialog,

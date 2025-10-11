@@ -4,9 +4,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { withAdminAuth } from '@packages/core-security/src/admin-auth';
 import { prisma } from '@packages/core-db';
-import { scrapedRolesQueue, validationQueue } from '@packages/core-queue';
+import { requireRole } from '@/lib/auth-helpers';
 
 // Exchange rates (update periodically)
 const USD_TO_SAR = 3.75;
@@ -21,41 +20,41 @@ const SERVICE_PRICING = {
     unit: 'tokens',
     limit: 2000000, // 2M tokens/month (soft limit)
   },
-  
+
   // Infrastructure
   upstash_redis: {
     name: 'Upstash Redis',
     category: 'Infrastructure' as const,
-    costPerUnit: 0.2 * USD_TO_SAR / 100000, // SAR per request (PAYG)
+    costPerUnit: (0.2 * USD_TO_SAR) / 100000, // SAR per request (PAYG)
     unit: 'requests',
     limit: 1000000, // 1M requests/month
   },
-  
+
   vercel_bandwidth: {
     name: 'Vercel Bandwidth',
     category: 'Infrastructure' as const,
-    costPerUnit: 40 * USD_TO_SAR / 100, // SAR per GB
+    costPerUnit: (40 * USD_TO_SAR) / 100, // SAR per GB
     unit: 'GB',
     limit: 100, // 100GB/month
   },
-  
+
   vercel_functions: {
     name: 'Vercel Functions',
     category: 'Infrastructure' as const,
-    costPerUnit: 0.18 * USD_TO_SAR / 1000, // SAR per 1K invocations
+    costPerUnit: (0.18 * USD_TO_SAR) / 1000, // SAR per 1K invocations
     unit: 'invocations',
     limit: 1000000, // 1M/month
   },
-  
+
   // Communication
   whapi_cloud: {
     name: 'Whapi.Cloud WhatsApp',
     category: 'Communication' as const,
-    costPerUnit: 49 * USD_TO_SAR / 10000, // SAR per API call (starter plan)
+    costPerUnit: (49 * USD_TO_SAR) / 10000, // SAR per API call (starter plan)
     unit: 'calls',
     limit: 10000, // 10K calls/month
   },
-  
+
   // Storage
   supabase_storage: {
     name: 'Supabase Storage',
@@ -64,7 +63,7 @@ const SERVICE_PRICING = {
     unit: 'GB',
     limit: 100, // 100GB
   },
-  
+
   supabase_database: {
     name: 'Supabase Database',
     category: 'Storage' as const,
@@ -72,7 +71,7 @@ const SERVICE_PRICING = {
     unit: 'GB',
     limit: 8, // 8GB
   },
-  
+
   // Payment Processing
   moyasar: {
     name: 'Moyasar Payments',
@@ -81,15 +80,17 @@ const SERVICE_PRICING = {
     unit: 'SAR processed',
     limit: 10000, // 10K SAR/month
   },
-};
+} as const;
+
+type UsageRange = 'today' | 'week' | 'month';
 
 /**
  * Calculate current usage for each service
  */
-async function calculateUsage(range: 'today' | 'week' | 'month') {
+async function calculateUsage(range: UsageRange) {
   const now = new Date();
   const startDate = new Date();
-  
+
   switch (range) {
     case 'today':
       startDate.setHours(0, 0, 0, 0);
@@ -101,21 +102,23 @@ async function calculateUsage(range: 'today' | 'week' | 'month') {
       startDate.setDate(1);
       startDate.setHours(0, 0, 0, 0);
       break;
+    default:
+      break;
   }
 
   // Get LLM usage (estimate from processed messages)
   const processedMessages = await prisma.processedMessage.count({
     where: {
-      processedAt: { gte: startDate }
-    }
+      processedAt: { gte: startDate },
+    },
   });
-  
+
   // Get casting calls created (processed by LLM)
   const castingCallsCreated = await prisma.castingCall.count({
     where: {
       createdAt: { gte: startDate },
-      isAggregated: true
-    }
+      isAggregated: true,
+    },
   });
 
   // Estimate tokens used (avg 500 tokens per message)
@@ -145,7 +148,7 @@ async function calculateUsage(range: 'today' | 'week' | 'month') {
     supabase_storage: supabaseStorage,
     supabase_database: supabaseDatabase,
     moyasar: moyasarProcessed,
-  };
+  } as const;
 }
 
 /**
@@ -157,10 +160,14 @@ function getStatus(percentUsed: number): 'healthy' | 'warning' | 'critical' {
   return 'healthy';
 }
 
-export const GET = withAdminAuth(async (req: NextRequest) => {
+export const GET = async (req: NextRequest) => {
+  // ✅ Add role check at the very start
+  const userOrError = await requireRole(req, ['admin']);
+  if (userOrError instanceof NextResponse) return userOrError;
+
   try {
     const url = new URL(req.url);
-    const range = (url.searchParams.get('range') || 'month') as 'today' | 'week' | 'month';
+    const range = (url.searchParams.get('range') || 'month') as UsageRange;
 
     // Calculate current usage
     const usage = await calculateUsage(range);
@@ -188,19 +195,24 @@ export const GET = withAdminAuth(async (req: NextRequest) => {
 
     // Calculate summary
     const totalCost = services.reduce((sum, s) => sum + s.totalCost, 0);
-    
+
     // Get last month's cost (mock - implement actual tracking)
     const lastMonthCost = totalCost * 0.85; // Mock: 15% increase
     const percentChange = ((totalCost - lastMonthCost) / lastMonthCost) * 100;
 
     // Project end-of-month cost
-    const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+    const daysInMonth = new Date(
+      new Date().getFullYear(),
+      new Date().getMonth() + 1,
+      0,
+    ).getDate();
     const currentDay = new Date().getDate();
     const projectedMonthlyCost = (totalCost / currentDay) * daysInMonth;
 
     // Cost breakdown by category
     const breakdown = services.reduce((acc, s) => {
-      acc[s.category.toLowerCase()] = (acc[s.category.toLowerCase()] || 0) + s.totalCost;
+      acc[s.category.toLowerCase()] =
+        (acc[s.category.toLowerCase()] || 0) + s.totalCost;
       return acc;
     }, {} as Record<string, number>);
 
@@ -221,13 +233,11 @@ export const GET = withAdminAuth(async (req: NextRequest) => {
       range,
       generatedAt: new Date().toISOString(),
     });
-
   } catch (error) {
     console.error('[Admin] Error fetching usage metrics:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to fetch usage metrics' },
-      { status: 500 }
+      { status: 500 },
     );
   }
-});
-
+};

@@ -33,6 +33,13 @@ model TalentProfile {
   completionPercentage Int       @default(0)
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
+
+  // ✅ Relations with foreign keys
+  user                 User      @relation("TalentProfile", fields: [userId], references: [id], onDelete: Cascade)
+  guardian             User?     @relation("GuardianRelation", fields: [guardianUserId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([guardianUserId])
 }
 
 model CasterProfile {
@@ -184,14 +191,25 @@ model Outbox {
 }
 
 model AuditEvent {
-  id          String   @id @default(cuid())
-  eventType   String
-  actorUserId String?
-  targetId    String?
-  ipAddress   String?
-  userAgent   String?
-  metadata    Json?
-  createdAt   DateTime @default(now())
+  id           String   @id @default(cuid())
+  eventType    String
+  actorUserId  String?
+  resourceType String?
+  resourceId   String?
+  ipAddress    String?
+  userAgent    String?
+  metadata     Json?
+  success      Boolean  @default(true)
+  errorMessage String?
+  timestamp    DateTime @default(now())
+  createdAt    DateTime @default(now())
+
+  // ✅ Relations with foreign keys
+  actor        User?    @relation("AuditActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([actorUserId, timestamp])
+  @@index([eventType, timestamp])
+  @@index([resourceType, resourceId])
 }
 
 model RevokedToken {
@@ -215,6 +233,11 @@ model MediaAsset {
   transcodeData   Json?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  // ✅ Relations with foreign keys
+  user            User     @relation("MediaAssets", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Plan {
@@ -273,6 +296,22 @@ model User {
   nafathTransactionId String?
   nafathData          Json?
   nafathExpiresAt     DateTime?
+  
+  // ✅ Issue #17: Account Lockout Protection
+  failedLoginAttempts Int?               @default(0)
+  lastFailedLoginAt   DateTime?
+  accountLockedUntil  DateTime?
+  
+  // ✅ Issue #27: Email Verification
+  emailVerificationToken   String?
+  emailVerificationExpires DateTime?
+  
+  // ✅ Issue #28: Two-Factor Authentication
+  twoFactorEnabled    Boolean            @default(false)
+  twoFactorSecret     String?
+  backupCodes         String[]           @default([])
+  
+  // ✅ Existing relations
   applications        Application[]      @relation("TalentApplications")
   casterBookings      AuditionBooking[]  @relation("CasterBookings")
   talentBookings      AuditionBooking[]  @relation("TalentBookings")
@@ -284,6 +323,18 @@ model User {
   searchHistory       SearchHistory[]
   casterShortlists    TalentShortlist[]  @relation("CasterShortlists")
   talentShortlists    TalentShortlist[]  @relation("TalentShortlists")
+
+  // ✅ New foreign key relations (Issue #5)
+  talentProfile       TalentProfile?     @relation("TalentProfile")
+  guardiansFor        TalentProfile[]    @relation("GuardianRelation")
+  auditEvents         AuditEvent[]       @relation("AuditActor")
+  mediaAssets         MediaAsset[]       @relation("MediaAssets")
+  receipts            Receipt[]          @relation("Receipts")
+  conversations1      Conversation[]     @relation("Participant1")
+  conversations2      Conversation[]     @relation("Participant2")
+  sentMessages        Message[]          @relation("SentMessages")
+  receivedMessages    Message[]          @relation("ReceivedMessages")
+  notifications       Notification[]     @relation("Notifications")
 }
 
 model CastingCall {
@@ -313,21 +364,27 @@ model CastingCall {
 }
 
 model IngestionSource {
-  id               String    @id @default(cuid())
-  sourceType       String
-  sourceIdentifier String
-  sourceName       String
-  lastProcessedAt  DateTime?
-  isActive         Boolean   @default(true)
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  id                String             @id @default(cuid())
+  sourceType        String
+  sourceIdentifier  String
+  sourceName        String
+  lastProcessedAt   DateTime?
+  isActive          Boolean            @default(true)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  // ✅ Relations
+  processedMessages ProcessedMessage[]
 }
 
 model ProcessedMessage {
-  id                String   @id @default(cuid())
-  whatsappMessageId String   @unique
+  id                String          @id @default(cuid())
+  whatsappMessageId String          @unique
   sourceId          String
-  processedAt       DateTime @default(now())
+  processedAt       DateTime        @default(now())
+
+  // ✅ Relations with foreign keys
+  source            IngestionSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
 
   @@index([whatsappMessageId])
   @@index([sourceId])
@@ -338,13 +395,21 @@ model Receipt {
   id                String   @id @default(cuid())
   userId            String
   subscriptionId    String?
-  amount            Int
+  amount            Int      // Total amount in halalas (including VAT)
+  amountBeforeVAT   Int?     // Amount before VAT in halalas
+  vatAmount         Int?     // VAT amount in halalas
+  vatRate           Float?   // VAT rate (e.g., 0.15 for 15%)
   currency          String
   provider          String   @default("moyasar")
   providerPaymentId String   @unique
   status            String
   raw               Json
   createdAt         DateTime @default(now())
+
+  // ✅ Relations with foreign keys (RESTRICT to prevent deletion with receipts)
+  user              User     @relation("Receipts", fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId])
 }
 
 model SavedSearch {
@@ -389,6 +454,10 @@ model Conversation {
   updatedAt      DateTime  @updatedAt
   messages       Message[]
 
+  // ✅ Relations with foreign keys
+  participant1   User      @relation("Participant1", fields: [participant1Id], references: [id], onDelete: Cascade)
+  participant2   User      @relation("Participant2", fields: [participant2Id], references: [id], onDelete: Cascade)
+
   @@unique([participant1Id, participant2Id])
   @@index([participant1Id])
   @@index([participant2Id])
@@ -403,6 +472,10 @@ model Message {
   readAt         DateTime?
   createdAt      DateTime     @default(now())
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  // ✅ Relations with foreign keys
+  sender         User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver       User         @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
 
   @@index([conversationId])
   @@index([senderId])
@@ -420,6 +493,9 @@ model Notification {
   readAt    DateTime?
   metadata  Json?
   createdAt DateTime  @default(now())
+
+  // ✅ Relations with foreign keys
+  user      User      @relation("Notifications", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, isRead])
   @@index([createdAt])

@@ -1,17 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/packages/core-db/src/client';
+import { requireRole } from '@/lib/auth-helpers';
 
 interface PrismaError extends Error {
   code?: string;
 }
 
-// TODO: Add admin authentication middleware
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // ✅ Add role check at the very start
+  const userOrError = await requireRole(request, ['admin']);
+  if (userOrError instanceof NextResponse) return userOrError;
+
   try {
-    // TODO: Add admin authentication check
     const { id } = await params;
 
     const updateData = await request.json();
@@ -32,7 +35,8 @@ export async function POST(
     await prisma.auditEvent.create({
       data: {
         eventType: 'CastingCallEditedAndApproved',
-        targetId: id,
+        resourceType: 'CastingCall',
+        resourceId: id,
         metadata: {
           changes: updateData,
           wasAggregated: castingCall.isAggregated,

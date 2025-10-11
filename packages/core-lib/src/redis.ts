@@ -10,6 +10,18 @@ export const redis = REDIS_URL ? new Redis(REDIS_URL, {
   maxRetriesPerRequest: null, // Important for BullMQ
 }) : null;
 
+// Add error event handler to prevent unhandled errors
+if (redis) {
+  redis.on('error', (err) => {
+    console.error('Redis connection error:', err.message);
+    // Don't throw - allow application to continue without Redis
+  });
+  
+  redis.on('connect', () => {
+    console.log('✅ Redis connected successfully');
+  });
+}
+
 /**
  * Stores a response for a given idempotency key.
  * @param key - The idempotency key.

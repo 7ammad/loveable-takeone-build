@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { verifyAccessToken } from '@packages/core-auth';
+import { requireOwnership, isErrorResponse } from '@/lib/auth-helpers';
 import { getAllCasterTypes, getAllCategories } from '@/lib/constants/caster-taxonomy';
 
 const prisma = new PrismaClient();
@@ -96,45 +96,25 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Verify authentication
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-    
-    const token = authHeader.substring(7);
-    const decoded = await verifyAccessToken(token);
-    
-    if (!decoded || !decoded.userId) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
-    
     const { id } = await params;
-    
-    // Verify ownership
+
+    // 1. Get the existing profile to find the owner's user ID
     const existingProfile = await prisma.casterProfile.findUnique({
       where: { id },
-      select: { userId: true }
+      select: { userId: true },
     });
-    
+
     if (!existingProfile) {
       return NextResponse.json(
         { success: false, error: 'Caster profile not found' },
         { status: 404 }
       );
     }
-    
-    if (existingProfile.userId !== decoded.userId) {
-      return NextResponse.json(
-        { success: false, error: 'You can only update your own profile' },
-        { status: 403 }
-      );
+
+    // 2. Verify ownership using the helper
+    const userOrError = await requireOwnership(request, existingProfile.userId);
+    if (isErrorResponse(userOrError)) {
+      return userOrError;
     }
     
     // Parse request body
@@ -218,34 +198,15 @@ export async function PATCH(
 // DELETE /api/v1/caster-profiles/[id] - Delete profile
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id:string }> }
 ) {
   try {
-    // Verify authentication
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-    
-    const token = authHeader.substring(7);
-    const decoded = await verifyAccessToken(token);
-    
-    if (!decoded || !decoded.userId) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
-    
     const { id } = await params;
-    
-    // Verify ownership
+
+    // 1. Get the existing profile to find the owner's user ID
     const existingProfile = await prisma.casterProfile.findUnique({
       where: { id },
-      select: { userId: true }
+      select: { userId: true },
     });
     
     if (!existingProfile) {
@@ -254,12 +215,11 @@ export async function DELETE(
         { status: 404 }
       );
     }
-    
-    if (existingProfile.userId !== decoded.userId) {
-      return NextResponse.json(
-        { success: false, error: 'You can only delete your own profile' },
-        { status: 403 }
-      );
+
+    // 2. Verify ownership using the helper
+    const userOrError = await requireOwnership(request, existingProfile.userId);
+    if (isErrorResponse(userOrError)) {
+      return userOrError;
     }
     
     // Delete profile (cascade will handle related records)

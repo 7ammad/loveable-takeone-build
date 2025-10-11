@@ -3,6 +3,8 @@ import { prisma } from '@/packages/core-db/src/client';
 import { verifyRefreshToken, generateAccessToken, generateRefreshToken } from '@/packages/core-auth/src/jwt';
 import { randomBytes } from 'crypto';
 import { checkAuthRateLimit } from '@/lib/auth-rate-limit';
+import { getRefreshToken, setAuthCookies } from '@/lib/cookie-helpers';
+import { createAuditLog, AuditEventType } from '@/lib/auth-helpers';
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,7 +13,7 @@ export async function POST(request: NextRequest) {
     if (!rateLimitResult.success) {
       return NextResponse.json(
         { error: `Too many token refresh attempts. Please try again after ${new Date(rateLimitResult.reset).toLocaleTimeString()}` },
-        { 
+        {
           status: 429,
           headers: {
             'X-RateLimit-Limit': rateLimitResult.limit.toString(),
@@ -21,9 +23,11 @@ export async function POST(request: NextRequest) {
         }
       );
     }
-    
-    const body = await request.json();
-    const { refreshToken } = body;
+
+    const body = await request.json().catch(() => ({}));
+
+    // Get refresh token from cookie or request body
+    const refreshToken = getRefreshToken(request, body.refreshToken);
 
     // Validation
     if (!refreshToken) {
@@ -95,13 +99,26 @@ export async function POST(request: NextRequest) {
       nafathExpiresAt: user.nafathExpiresAt || undefined,
     });
 
-    // Return new tokens
-    return NextResponse.json({
+    // Log token refresh
+    await createAuditLog({
+      eventType: AuditEventType.TOKEN_REFRESH,
+      actorUserId: user.id,
+      ipAddress: request.headers.get('x-forwarded-for')?.split(',')[0].trim() || request.headers.get('x-real-ip') || 'unknown',
+      userAgent: request.headers.get('user-agent') || 'unknown',
+      success: true,
+    });
+
+    // ✅ Create response WITHOUT tokens in body (XSS protection)
+    const response = NextResponse.json({
       data: {
-        accessToken: newAccessToken,
-        refreshToken: newRefreshToken,
+        // ❌ NO accessToken or refreshToken in response body
+        // Tokens are set as httpOnly cookies for XSS protection
+        message: 'Tokens refreshed successfully'
       },
     });
+
+    // ✅ Set new tokens as httpOnly cookies (only way to access tokens)
+    return setAuthCookies(response, newAccessToken, newRefreshToken);
   } catch (error) {
     console.error('Token refresh error:', error);
     return NextResponse.json(

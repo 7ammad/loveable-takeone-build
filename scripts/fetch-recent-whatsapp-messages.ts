@@ -92,16 +92,16 @@ async function fetchRecentLongMessages() {
     
     const alreadyProcessed = await prisma.processedMessage.findMany({
       where: {
-        messageIdentifier: {
+        whatsappMessageId: {
           in: messageIds
         }
       },
       select: {
-        messageIdentifier: true
+        whatsappMessageId: true
       }
     });
 
-    const processedSet = new Set(alreadyProcessed.map(p => p.messageIdentifier));
+    const processedSet = new Set(alreadyProcessed.map(p => p.whatsappMessageId));
     const unprocessed = recentMessages.filter(m => 
       !processedSet.has(`whatsapp://group/${m.groupId}/message/${m.messageId}`)
     );

@@ -4,6 +4,8 @@ import { generateAccessToken, generateRefreshToken } from '@/packages/core-auth/
 import bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import { checkAuthRateLimit } from '@/lib/auth-rate-limit';
+import { setAuthCookies } from '@/lib/cookie-helpers';
+import { validatePassword, getPasswordFeedback } from '@/lib/password-validation';
 
 export async function POST(request: NextRequest) {
   try {
@@ -43,10 +45,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Password validation
-    if (password.length < 8) {
+    // ✅ Enhanced password validation (Issue #8)
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
       return NextResponse.json(
-        { error: 'Password must be at least 8 characters long' },
+        { 
+          error: 'Password does not meet security requirements',
+          details: passwordValidation.errors,
+          feedback: getPasswordFeedback(passwordValidation),
+        },
         { status: 400 }
       );
     }
@@ -131,8 +138,8 @@ export async function POST(request: NextRequest) {
       nafathExpiresAt: user.nafathExpiresAt || undefined,
     });
 
-    // Return success response
-    return NextResponse.json({
+    // ✅ Create response WITHOUT tokens in body (XSS protection)
+    const response = NextResponse.json({
       data: {
         user: {
           ...user,
@@ -141,10 +148,13 @@ export async function POST(request: NextRequest) {
           nafathVerifiedAt: user.nafathVerifiedAt?.toISOString(),
           nafathExpiresAt: user.nafathExpiresAt?.toISOString(),
         },
-        accessToken,
-        refreshToken,
+        // ❌ NO accessToken or refreshToken in response body
+        // Tokens are set as httpOnly cookies for XSS protection
       },
     }, { status: 201 });
+
+    // ✅ Set httpOnly cookies (only way to access tokens)
+    return setAuthCookies(response, accessToken, refreshToken);
   } catch (error) {
     console.error('Registration error:', error);
     return NextResponse.json(

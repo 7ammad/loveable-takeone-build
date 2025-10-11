@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/packages/core-db/src/client';
+import { requireRole } from '@/lib/auth-helpers';
 
-// TODO: Add admin authentication middleware
-export async function GET() {
+export const GET = async (request: NextRequest) => {
+  // ✅ Add role check at the very start
+  const userOrError = await requireRole(request, ['admin']);
+  if (userOrError instanceof NextResponse) return userOrError;
+  const user = userOrError;
+
   try {
-    // TODO: Add admin authentication check
-
     const sources = await prisma.ingestionSource.findMany({
       orderBy: { createdAt: 'desc' },
     });
@@ -27,12 +30,15 @@ export async function GET() {
       { status: 500 }
     );
   }
-}
+};
 
-export async function POST(request: NextRequest) {
+export const POST = async (request: NextRequest) => {
+  // ✅ Add role check at the very start
+  const userOrError = await requireRole(request, ['admin']);
+  if (userOrError instanceof NextResponse) return userOrError;
+  const user = userOrError;
+
   try {
-    // TODO: Add admin authentication check
-
     const { sourceType, sourceIdentifier, sourceName, isActive = true } = await request.json();
 
     // Validation
@@ -90,4 +96,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+};

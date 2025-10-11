@@ -76,7 +76,8 @@ class WebOrchestrator {
           await prisma.auditEvent.create({
             data: {
               eventType: 'WebOrchestratorError',
-              targetId: source.id,
+              resourceType: 'IngestionSource',
+              resourceId: source.id,
               metadata: {
                 error: (error as Error).message,
                 sourceType: source.sourceType,

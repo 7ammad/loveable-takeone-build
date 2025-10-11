@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAccessToken } from '@packages/core-auth';
 import { prisma } from '@packages/core-db';
 import { z } from 'zod';
+import { requireCaster } from '@/lib/auth-helpers';
+import { createErrorResponse } from '@/lib/error-handler';
 
 const shortlistSchema = z.object({
   talentUserId: z.string().min(1, 'Talent user ID is required'),
@@ -13,40 +14,11 @@ const shortlistSchema = z.object({
  * POST /api/v1/talent/shortlist
  * Add talent to shortlist (casters only)
  */
-export async function POST(req: NextRequest) {
+export const POST = requireCaster()(async (req: NextRequest, _context, user) => {
   try {
-    // 1. Authenticate user
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.split(' ')[1];
-    const payload = await verifyAccessToken(token);
-
-    if (!payload || !payload.userId) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
-
-    // 2. Verify user is caster
-    if (payload.role !== 'caster') {
-      return NextResponse.json(
-        { success: false, error: 'Only casters can shortlist talent' },
-        { status: 403 }
-      );
-    }
-
-    // 3. Parse and validate request body
     const body = await req.json();
     const validatedData = shortlistSchema.parse(body);
 
-    // 4. Check if talent user exists
     const talentUser = await prisma.user.findUnique({
       where: { id: validatedData.talentUserId },
       select: { id: true, role: true },
@@ -55,15 +27,14 @@ export async function POST(req: NextRequest) {
     if (!talentUser || talentUser.role !== 'talent') {
       return NextResponse.json(
         { success: false, error: 'Talent not found' },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
-    // 5. Check if already shortlisted
     const existingShortlist = await prisma.talentShortlist.findUnique({
       where: {
         casterUserId_talentUserId: {
-          casterUserId: payload.userId,
+          casterUserId: user.userId,
           talentUserId: validatedData.talentUserId,
         },
       },
@@ -72,14 +43,13 @@ export async function POST(req: NextRequest) {
     if (existingShortlist) {
       return NextResponse.json(
         { success: false, error: 'Talent already in shortlist' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    // 6. Add to shortlist
     const shortlist = await prisma.talentShortlist.create({
       data: {
-        casterUserId: payload.userId,
+        casterUserId: user.userId,
         talentUserId: validatedData.talentUserId,
         notes: validatedData.notes || null,
         tags: validatedData.tags || [],
@@ -97,79 +67,43 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return NextResponse.json({
-      success: true,
-      data: shortlist,
-    }, { status: 201 });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid request data', details: error.issues },
-        { status: 400 }
-      );
-    }
-
-    console.error('[Talent Shortlist API] Error:', error);
     return NextResponse.json(
-      { success: false, error: 'Internal server error' },
-      { status: 500 }
+      {
+        success: true,
+        data: shortlist,
+      },
+      { status: 201 },
     );
+  } catch (error) {
+    return createErrorResponse(error, {
+      functionName: '[Talent Shortlist API] Error adding talent',
+    });
   }
-}
+});
 
 /**
  * GET /api/v1/talent/shortlist
  * Get caster's shortlisted talent
  */
-export async function GET(req: NextRequest) {
+export const GET = requireCaster()(async (req: NextRequest, _context, user) => {
   try {
-    // 1. Authenticate user
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.split(' ')[1];
-    const payload = await verifyAccessToken(token);
-
-    if (!payload || !payload.userId) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
-
-    // 2. Verify user is caster
-    if (payload.role !== 'caster') {
-      return NextResponse.json(
-        { success: false, error: 'Only casters can view shortlist' },
-        { status: 403 }
-      );
-    }
-
-    // 3. Get query params
     const url = new URL(req.url);
-    const page = parseInt(url.searchParams.get('page') || '1');
-    const limit = parseInt(url.searchParams.get('limit') || '20');
+    const page = parseInt(url.searchParams.get('page') || '1', 10);
+    const limit = parseInt(url.searchParams.get('limit') || '20', 10);
     const tag = url.searchParams.get('tag');
     const skip = (page - 1) * limit;
 
-    // 4. Build where clause
     const where: {
       casterUserId: string;
       tags?: { has: string };
     } = {
-      casterUserId: payload.userId,
+      casterUserId: user.userId,
     };
 
     if (tag) {
       where.tags = { has: tag };
     }
 
-    // 5. Fetch shortlisted talent
     const [shortlists, total] = await Promise.all([
       prisma.talentShortlist.findMany({
         where,
@@ -205,10 +139,8 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('[Talent Shortlist API] Error:', error);
-    return NextResponse.json(
-      { success: false, error: 'Internal server error' },
-      { status: 500 }
-    );
+    return createErrorResponse(error, {
+      functionName: '[Talent Shortlist API] Error fetching shortlist',
+    });
   }
-}
+});

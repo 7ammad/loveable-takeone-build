@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAccessToken } from '@packages/core-auth';
+import { requireCasterDirect, isErrorResponse } from '@/lib/auth-helpers';
 import { prisma } from '@packages/core-db';
 
 /**
@@ -11,36 +11,33 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // 1. Verify authentication
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
+    // 1. Verify user is a caster or admin
+    const userOrError = await requireCasterDirect(req);
+    if (isErrorResponse(userOrError)) {
+      return userOrError;
     }
-
-    const token = authHeader.split(' ')[1];
-    const payload = await verifyAccessToken(token);
-
-    if (!payload || !payload.userId) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
+    const user = userOrError;
 
     const { id } = await params;
 
-    // 2. Verify casting call exists and user owns it (for casters)
+    // 2. Verify casting call exists and user owns it (or is admin)
     const castingCall = await prisma.castingCall.findUnique({
       where: { id },
+      select: { createdBy: true },
     });
 
     if (!castingCall) {
       return NextResponse.json(
         { success: false, error: 'Casting call not found' },
         { status: 404 }
+      );
+    }
+    
+    // Ownership check
+    if (user.role !== 'admin' && castingCall.createdBy !== user.userId) {
+      return NextResponse.json(
+        { success: false, error: 'Access denied' },
+        { status: 403 }
       );
     }
 

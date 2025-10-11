@@ -49,7 +49,7 @@ async function checkQueueStatus() {
     if (scrapedRolesFailed.length > 0) {
       console.log(`\n❌ Failed Scraped Roles Jobs (${scrapedRolesFailed.length}):`);
       console.log('─'.repeat(80));
-      scrapedRolesFailed.slice(0, 5).forEach((job, index) => {
+      scrapedRolesFailed.slice(0, 5).forEach((job: any, index: number) => {
         console.log(`\n${index + 1}. Job ID: ${job.id}`);
         console.log(`   Data: ${JSON.stringify(job.data, null, 2)}`);
         console.log(`   Error: ${job.failedReason}`);
@@ -60,7 +60,7 @@ async function checkQueueStatus() {
     if (validationFailed.length > 0) {
       console.log(`\n❌ Failed Validation Jobs (${validationFailed.length}):`);
       console.log('─'.repeat(80));
-      validationFailed.slice(0, 5).forEach((job, index) => {
+      validationFailed.slice(0, 5).forEach((job: any, index: number) => {
         console.log(`\n${index + 1}. Job ID: ${job.id}`);
         console.log(`   Data: ${JSON.stringify(job.data, null, 2)}`);
         console.log(`   Error: ${job.failedReason}`);
@@ -71,7 +71,7 @@ async function checkQueueStatus() {
     if (dlqJobs.length > 0) {
       console.log(`\n💀 Dead Letter Queue Jobs (${dlqJobs.length}):`);
       console.log('─'.repeat(80));
-      dlqJobs.slice(0, 5).forEach((job, index) => {
+      dlqJobs.slice(0, 5).forEach((job: any, index: number) => {
         console.log(`\n${index + 1}. Job ID: ${job.id}`);
         console.log(`   Data: ${JSON.stringify(job.data, null, 2)}`);
         console.log(`   Error: ${job.failedReason}`);

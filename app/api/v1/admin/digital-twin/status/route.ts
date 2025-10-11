@@ -3,12 +3,16 @@
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@packages/core-db';
-import { verifyAccessToken } from '@packages/core-auth';
 import { getDigitalTwinService } from '@/lib/digital-twin/background-service';
 import { scrapedRolesQueue, validationQueue, dlq } from '@packages/core-queue';
-import { withAdminAuth } from '@packages/core-security/src/admin-auth';
+import { requireRole } from '@/lib/auth-helpers';
 
-export const GET = withAdminAuth(async (request) => {
+export const GET = async (request: NextRequest) => {
+  // ✅ Add role check at the very start
+  const userOrError = await requireRole(request, ['admin']);
+  if (userOrError instanceof NextResponse) return userOrError;
+  const user = userOrError;
+
   try {
     const service = getDigitalTwinService();
 
@@ -54,7 +58,7 @@ export const GET = withAdminAuth(async (request) => {
     });
 
     // Queue metrics
-    let queues: any = {};
+    let queues: Record<string, unknown>;
     try {
       const [scrapeCounts, validationCounts, dlqCounts] = await Promise.all([
         scrapedRolesQueue.getJobCounts(),
@@ -66,7 +70,7 @@ export const GET = withAdminAuth(async (request) => {
         validation: validationCounts,
         dlq: dlqCounts,
       };
-    } catch (e) {
+    } catch (error) {
       queues = { error: 'Queue metrics unavailable' };
     }
 
@@ -85,8 +89,7 @@ export const GET = withAdminAuth(async (request) => {
     console.error('[Admin] Error fetching Digital Twin status:', error);
     return NextResponse.json(
       { error: 'Failed to fetch status' },
-      { status: 500 }
+      { status: 500 },
     );
   }
-});
-
+};

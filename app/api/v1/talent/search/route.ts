@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAccessToken } from '@packages/core-auth';
 import { prisma } from '@packages/core-db';
 import { z } from 'zod';
+import { requireCaster } from '@/lib/auth-helpers';
 
 const searchSchema = z.object({
   query: z.string().optional(),
@@ -24,25 +24,9 @@ const searchSchema = z.object({
  * GET /api/v1/talent/search
  * Advanced talent search with filters
  */
-export async function GET(req: NextRequest) {
+export const GET = requireCaster()(async (req: NextRequest) => {
   try {
-    // 1. Authenticate user (optional for talent search)
-    const authHeader = req.headers.get('authorization');
-    let isAuthenticated = false;
-    let userId = null;
-
-    if (authHeader?.startsWith('Bearer ')) {
-      try {
-        const token = authHeader.split(' ')[1];
-        const payload = await verifyAccessToken(token);
-        isAuthenticated = true;
-        userId = payload?.userId;
-      } catch (error) {
-        // Token invalid, continue as unauthenticated
-      }
-    }
-
-    // 2. Parse and validate query parameters
+    // 1. Parse and validate query parameters
     const url = new URL(req.url);
     const params = {
       query: url.searchParams.get('query') || undefined,
@@ -63,7 +47,7 @@ export async function GET(req: NextRequest) {
 
     const validatedParams = searchSchema.parse(params);
 
-    // 3. Build where clause
+    // 2. Build where clause
     const where: any = {
       role: 'talent',
       isActive: true,
@@ -167,7 +151,7 @@ export async function GET(req: NextRequest) {
       };
     }
 
-    // 4. Build orderBy clause
+    // 3. Build orderBy clause
     let orderBy: any = {};
     switch (validatedParams.sortBy) {
       case 'name':
@@ -185,7 +169,7 @@ export async function GET(req: NextRequest) {
         break;
     }
 
-    // 5. Execute search
+    // 4. Execute search
     const skip = (validatedParams.page - 1) * validatedParams.limit;
 
     const [talent, total] = await Promise.all([
@@ -239,4 +223,4 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

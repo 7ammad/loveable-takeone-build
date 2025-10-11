@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { verifyAccessToken } from '@packages/core-auth';
 import { z } from 'zod';
 import crypto from 'crypto';
+import { requireTalent } from '@/lib/auth-helpers';
+import { createErrorResponse } from '@/lib/error-handler';
 
 // Initialize S3 client
 const s3Client = new S3Client({
@@ -43,28 +44,9 @@ function sanitizeFilename(filename: string): string {
   return basename.replace(/[^a-zA-Z0-9._-]/g, '_');
 }
 
-export async function POST(request: NextRequest) {
+export const POST = requireTalent()(async (request: NextRequest, _context, user) => {
   try {
-    // 1. Authenticate user
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.replace('Bearer ', '');
-    const payload = await verifyAccessToken(token);
-
-    if (!payload || !payload.userId) {
-      return NextResponse.json(
-        { error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
-
-    // 2. Parse and validate request body
+    // 1. Parse and validate request body
     const body = await request.json();
     const validatedData = PresignRequestSchema.parse(body);
 
@@ -90,7 +72,7 @@ export async function POST(request: NextRequest) {
     const sanitized = sanitizeFilename(validatedData.filename);
     const uuid = crypto.randomUUID();
     const fileExtension = sanitized.split('.').pop();
-    const s3Key = `uploads/${payload.userId}/${uuid}.${fileExtension}`;
+    const s3Key = `uploads/${user.userId}/${uuid}.${fileExtension}`;
 
     // 5. Generate presigned URL with strict content-type enforcement
     const command = new PutObjectCommand({
@@ -120,34 +102,9 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Presign URL generation error:', error);
-
-    // Handle Zod validation errors
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        {
-          error: 'Validation failed',
-          details: error.issues.map((err) => ({
-            field: err.path.join('.'),
-            message: err.message,
-          })),
-        },
-        { status: 400 }
-      );
-    }
-
-    // Handle AWS S3 errors
-    if (error instanceof Error) {
-      return NextResponse.json(
-        { error: `Upload service error: ${error.message}` },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return createErrorResponse(error, {
+      functionName: '[Presign API] Error generating presigned URL',
+    });
   }
-}
+});
 

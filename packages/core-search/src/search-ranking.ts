@@ -185,7 +185,7 @@ export class SearchRankingEngine {
     const words = searchTerm.split(/\s+/);
     
     let matchScore = 0;
-    let totalWords = words.length;
+    const totalWords = words.length;
 
     for (const word of words) {
       if (searchableText.includes(word)) {

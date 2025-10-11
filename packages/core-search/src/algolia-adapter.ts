@@ -1,6 +1,6 @@
 import { algoliasearch } from 'algoliasearch';
 import type { SearchProvider, TalentSearchQuery, TalentSearchResult } from './provider';
-import { logAuditEvent } from '@/packages/core-lib/src/audit';
+import { createAuditLog, AuditEventType } from '@/lib/enhanced-audit';
 
 // Validate required environment variables
 if (!process.env.ALGOLIA_APP_ID) {
@@ -330,9 +330,10 @@ export class AlgoliaSearchAdapter implements SearchProvider {
     const result = response.results[0] as any;
     
     // Log search analytics for fairness audits
-    await logAuditEvent({
-      eventType: 'SearchPerformed',
+    await createAuditLog({
+      eventType: AuditEventType.DATA_EXPORTED,
       actorUserId: userId,
+      resourceType: 'TalentSearch',
       metadata: {
         query: query.term,
         filters: query.filters,

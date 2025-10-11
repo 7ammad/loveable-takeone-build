@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyAccessToken } from '@packages/core-auth';
 import { prisma } from '@packages/core-db';
 import { z } from 'zod';
+import { validateQueryParams, formatValidationErrors, paginationSchema } from '@/lib/validation-schemas';
 
 const createCastingCallSchema = z.object({
   title: z.string().min(1).max(200), // Required field in DB
@@ -126,16 +127,34 @@ export async function GET(req: NextRequest) {
       }
     }
 
+    // ✅ Validate query parameters (Issue #9)
     const url = new URL(req.url);
-    const page = parseInt(url.searchParams.get('page') || '1');
-    const limit = parseInt(url.searchParams.get('limit') || '20');
-    const location = url.searchParams.get('location');
-    const myCallsOnly = url.searchParams.get('myCallsOnly') === 'true'; // New parameter
+    const queryValidation = validateQueryParams(
+      url.searchParams,
+      paginationSchema.extend({
+        location: z.string().max(255).optional(),
+        myCallsOnly: z.enum(['true', 'false']).optional(),
+        status: z.enum(['open', 'published', 'draft', 'pending_review', 'cancelled', 'expired']).optional(),
+      })
+    );
+
+    if (!queryValidation.success) {
+      return NextResponse.json(
+        { success: false, ...formatValidationErrors(queryValidation.errors) },
+        { status: 400 }
+      );
+    }
+
+    const { page = 1, limit = 20, location, myCallsOnly, status } = queryValidation.data;
     const skip = (page - 1) * limit;
 
     // For casters, include drafts; for others, only published
-    const statusFilter = isCaster 
-      ? { in: ['published', 'draft'] } 
+    const statusFilter = myCallsOnly === 'true' && isCaster
+      ? { in: ['published', 'draft', 'pending_review'] }
+      : status
+      ? status
+      : isCaster
+      ? { in: ['published', 'draft'] }
       : 'open';
 
     const where: {

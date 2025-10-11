@@ -1,17 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/packages/core-db/src/client';
+import { requireRole } from '@/lib/auth-helpers';
 
-// TODO: Add admin authentication middleware
-export async function GET(request: NextRequest) {
+export const GET = async (request: NextRequest) => {
+  // ✅ Add role check at the very start
+  const userOrError = await requireRole(request, ['admin']);
+  if (userOrError instanceof NextResponse) return userOrError;
+  const user = userOrError;
+
   try {
-    // TODO: Add admin authentication check
-
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '50');
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const limit = parseInt(searchParams.get('limit') || '50', 10);
     const offset = (page - 1) * limit;
 
-    // Get pending validation items
     const [pendingItems, totalCount] = await Promise.all([
       prisma.castingCall.findMany({
         where: {
@@ -42,7 +44,6 @@ export async function GET(request: NextRequest) {
         },
       },
     });
-
   } catch (error) {
     console.error('Failed to fetch validation queue:', error);
 
@@ -50,9 +51,9 @@ export async function GET(request: NextRequest) {
       {
         success: false,
         error: 'Failed to fetch validation queue',
-        details: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+        details: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
-}
+};

@@ -1,47 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAccessToken } from '@packages/core-auth';
 import { prisma } from '@packages/core-db';
+import { requireCaster } from '@/lib/auth-helpers';
 
 /**
  * GET /api/v1/analytics/dashboard
  * Get dashboard analytics for casters
  */
-export async function GET(req: NextRequest) {
+export const GET = requireCaster()(async (req: NextRequest, _context, user) => {
   try {
-    // 1. Authenticate user
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
+    const casterId = user.userId;
 
-    const token = authHeader.split(' ')[1];
-    const payload = await verifyAccessToken(token);
-
-    if (!payload || !payload.userId) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
-
-    // 2. Verify user is caster
-    if (payload.role !== 'caster') {
-      return NextResponse.json(
-        { success: false, error: 'Only casters can view analytics' },
-        { status: 403 }
-      );
-    }
-
-    // 3. Get query params for date range
+    // 1. Get query params for date range
     const url = new URL(req.url);
-    const days = parseInt(url.searchParams.get('days') || '30');
+    const days = parseInt(url.searchParams.get('days') || '30', 10);
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
 
-    // 4. Fetch analytics data
+    // 2. Fetch analytics data
     const [
       totalCastingCalls,
       activeCastingCalls,
@@ -57,13 +32,13 @@ export async function GET(req: NextRequest) {
     ] = await Promise.all([
       // Total casting calls created by this caster
       prisma.castingCall.count({
-        where: { createdBy: payload.userId },
+        where: { createdBy: casterId },
       }),
 
       // Active casting calls (published with deadline in future)
       prisma.castingCall.count({
         where: {
-          createdBy: payload.userId,
+          createdBy: casterId,
           status: 'published',
           deadline: { gte: new Date() },
         },
@@ -73,13 +48,13 @@ export async function GET(req: NextRequest) {
       prisma.application.count({
         where: {
           castingCall: {
-            createdBy: payload.userId,
+            createdBy: casterId,
           },
         },
       }),
       prisma.application.count({
         where: {
-          castingCall: { createdBy: payload.userId },
+          castingCall: { createdBy: casterId },
           createdAt: { gte: startDate },
         },
       }),
@@ -87,7 +62,7 @@ export async function GET(req: NextRequest) {
       // Shortlisted applications
       prisma.application.count({
         where: {
-          castingCall: { createdBy: payload.userId },
+          castingCall: { createdBy: casterId },
           status: 'shortlisted',
         },
       }),
@@ -95,7 +70,7 @@ export async function GET(req: NextRequest) {
       // Accepted applications
       prisma.application.count({
         where: {
-          castingCall: { createdBy: payload.userId },
+          castingCall: { createdBy: casterId },
           status: 'accepted',
         },
       }),
@@ -103,7 +78,7 @@ export async function GET(req: NextRequest) {
       // Rejected applications
       prisma.application.count({
         where: {
-          castingCall: { createdBy: payload.userId },
+          castingCall: { createdBy: casterId },
           status: 'rejected',
         },
       }),
@@ -111,7 +86,7 @@ export async function GET(req: NextRequest) {
       // Pending applications
       prisma.application.count({
         where: {
-          castingCall: { createdBy: payload.userId },
+          castingCall: { createdBy: casterId },
           status: 'pending',
         },
       }),
@@ -119,7 +94,7 @@ export async function GET(req: NextRequest) {
       // Recent applications (last 10)
       prisma.application.findMany({
         where: {
-          castingCall: { createdBy: payload.userId },
+          castingCall: { createdBy: casterId },
         },
         include: {
           castingCall: {
@@ -133,7 +108,7 @@ export async function GET(req: NextRequest) {
       // Popular project types - fetch all and group manually
       prisma.castingCall.findMany({
         where: {
-          createdBy: payload.userId,
+          createdBy: casterId,
           projectType: { not: null },
         },
         select: {
@@ -148,7 +123,7 @@ export async function GET(req: NextRequest) {
           COUNT(*) as count
         FROM "Application" a
         JOIN "CastingCall" cc ON a."castingCallId" = cc.id
-        WHERE cc."createdBy" = ${payload.userId}
+        WHERE cc."createdBy" = ${casterId}
           AND a."createdAt" >= ${startDate}
         GROUP BY DATE(a."createdAt")
         ORDER BY date ASC
@@ -156,30 +131,35 @@ export async function GET(req: NextRequest) {
     ]);
 
     // Calculate conversion rates
-    const conversionRate = totalApplications > 0 
-      ? ((acceptedCount / totalApplications) * 100).toFixed(1)
-      : '0';
+    const conversionRate =
+      totalApplications > 0
+        ? ((acceptedCount / totalApplications) * 100).toFixed(1)
+        : '0';
 
-    const shortlistRate = totalApplications > 0
-      ? ((shortlistedCount / totalApplications) * 100).toFixed(1)
-      : '0';
+    const shortlistRate =
+      totalApplications > 0
+        ? ((shortlistedCount / totalApplications) * 100).toFixed(1)
+        : '0';
 
     // Format trends data
-    const trends = Array.isArray(applicationTrends) 
+    const trends = Array.isArray(applicationTrends)
       ? applicationTrends.map((trend: { date: string; count: string }) => ({
           date: trend.date,
-          count: parseInt(trend.count),
+          count: parseInt(trend.count, 10),
         }))
       : [];
 
     // Group project types manually
     const projectTypeMap = new Map<string, number>();
-    popularProjectTypes.forEach(call => {
+    popularProjectTypes.forEach((call) => {
       if (call.projectType) {
-        projectTypeMap.set(call.projectType, (projectTypeMap.get(call.projectType) || 0) + 1);
+        projectTypeMap.set(
+          call.projectType,
+          (projectTypeMap.get(call.projectType) || 0) + 1,
+        );
       }
     });
-    
+
     const projectTypesArray = Array.from(projectTypeMap.entries())
       .map(([type, count]) => ({ type, count }))
       .sort((a, b) => b.count - a.count)
@@ -211,7 +191,7 @@ export async function GET(req: NextRequest) {
     console.error('[Analytics API] Error:', error);
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
-      { status: 500 }
+      { status: 500 },
     );
   }
-}
+});

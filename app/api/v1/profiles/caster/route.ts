@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAccessToken } from '@packages/core-auth';
 import { prisma } from '@packages/core-db';
 import { z } from 'zod';
+import { requireCaster } from '@/lib/auth-helpers';
 
 const casterProfileSchema = z.object({
   companyNameEn: z.string().min(1).optional(),
@@ -22,55 +22,25 @@ const casterProfileSchema = z.object({
  * POST /api/v1/profiles/caster
  * Create a caster profile for the authenticated user
  */
-export async function POST(req: NextRequest) {
+export const POST = requireCaster()(async (req: NextRequest, _context, user) => {
   try {
-    // 1. Verify authentication
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.split(' ')[1];
-    const payload = await verifyAccessToken(token);
-
-    if (!payload || !payload.userId) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
-
-    // 2. Verify user role
-    if (payload.role !== 'caster') {
-      return NextResponse.json(
-        { success: false, error: 'Only caster users can create caster profiles' },
-        { status: 403 }
-      );
-    }
-
-    // 3. Parse and validate request body
     const body = await req.json();
     const validatedData = casterProfileSchema.parse(body);
 
-    // 4. Check if profile already exists
     const existingProfile = await prisma.casterProfile.findUnique({
-      where: { userId: payload.userId },
+      where: { userId: user.userId },
     });
 
     if (existingProfile) {
       return NextResponse.json(
         { success: false, error: 'Caster profile already exists' },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
-    // 5. Create caster profile
     const profile = await prisma.casterProfile.create({
       data: {
-        userId: payload.userId,
+        userId: user.userId,
         companyNameEn: validatedData.companyNameEn,
         companyNameAr: validatedData.companyNameAr,
         companyType: validatedData.companyType,
@@ -83,82 +53,55 @@ export async function POST(req: NextRequest) {
         companySize: validatedData.companySize,
         specializations: validatedData.specializations,
         commercialRegistration: validatedData.commercialRegistration,
-        verified: false, // Default to unverified
+        verified: false,
       },
     });
 
-    return NextResponse.json({
-      success: true,
-      data: profile,
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        success: true,
+        data: profile,
+      },
+      { status: 201 },
+    );
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { success: false, error: 'Invalid request data', details: error.issues },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     console.error('[Caster Profile API] Error:', error);
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
-      { status: 500 }
+      { status: 500 },
     );
   }
-}
+});
 
 /**
  * PATCH /api/v1/profiles/caster
  * Update the authenticated user's caster profile
  */
-export async function PATCH(req: NextRequest) {
+export const PATCH = requireCaster()(async (req: NextRequest, _context, user) => {
   try {
-    // 1. Verify authentication
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.split(' ')[1];
-    const payload = await verifyAccessToken(token);
-
-    if (!payload || !payload.userId) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
-
-    // 2. Verify user role
-    if (payload.role !== 'caster') {
-      return NextResponse.json(
-        { success: false, error: 'Only caster users can update caster profiles' },
-        { status: 403 }
-      );
-    }
-
-    // 3. Parse and validate request body
     const body = await req.json();
     const validatedData = casterProfileSchema.parse(body);
 
-    // 4. Check if profile exists
     const existingProfile = await prisma.casterProfile.findUnique({
-      where: { userId: payload.userId },
+      where: { userId: user.userId },
     });
 
     if (!existingProfile) {
       return NextResponse.json(
         { success: false, error: 'Caster profile not found' },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
-    // 5. Update caster profile
     const updatedProfile = await prisma.casterProfile.update({
-      where: { userId: payload.userId },
+      where: { userId: user.userId },
       data: {
         companyNameEn: validatedData.companyNameEn,
         companyNameAr: validatedData.companyNameAr,
@@ -184,14 +127,14 @@ export async function PATCH(req: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { success: false, error: 'Invalid request data', details: error.issues },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     console.error('[Caster Profile API] Error:', error);
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
-      { status: 500 }
+      { status: 500 },
     );
   }
-}
+});

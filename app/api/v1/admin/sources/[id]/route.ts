@@ -3,51 +3,58 @@
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@packages/core-db';
-import { withAdminAuth } from '@packages/core-security/src/admin-auth';
+import { requireRole } from '@/lib/auth-helpers';
 
-export const PATCH = withAdminAuth(
-  async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
-    try {
-      const { id } = await params;
-      const updates = await req.json();
+type Params = { id: string };
 
-      const updatedSource = await prisma.ingestionSource.update({
-        where: { id },
-        data: updates,
-      });
+export const PATCH = async (
+  req: NextRequest,
+  { params }: { params: Promise<Params> }
+) => {
+  // ✅ Add role check at the very start
+  const userOrError = await requireRole(req, ['admin']);
+  if (userOrError instanceof NextResponse) return userOrError;
 
-      console.log(`[Admin] Updated source: ${id}`);
+  try {
+    const { id } = await params;
+    const updates = await req.json();
 
-      return NextResponse.json({ data: updatedSource });
-    } catch (error) {
-      console.error('[Admin] Error updating source:', error);
-      return NextResponse.json(
-        { error: 'Failed to update source' },
-        { status: 500 }
-      );
-    }
+    const updatedSource = await prisma.ingestionSource.update({
+      where: { id },
+      data: updates,
+    });
+
+    return NextResponse.json({ data: updatedSource });
+  } catch (error) {
+    console.error('[Admin] Error updating source:', error);
+    return NextResponse.json(
+      { error: 'Failed to update source' },
+      { status: 500 },
+    );
   }
-);
+};
 
-export const DELETE = withAdminAuth(
-  async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
-    try {
-      const { id } = await params;
+export const DELETE = async (
+  req: NextRequest,
+  { params }: { params: Promise<Params> }
+) => {
+  // ✅ Add role check at the very start
+  const userOrError = await requireRole(req, ['admin']);
+  if (userOrError instanceof NextResponse) return userOrError;
 
-      await prisma.ingestionSource.delete({
-        where: { id },
-      });
+  try {
+    const { id } = await params;
 
-      console.log(`[Admin] Deleted source: ${id}`);
+    await prisma.ingestionSource.delete({
+      where: { id },
+    });
 
-      return NextResponse.json({ success: true });
-    } catch (error) {
-      console.error('[Admin] Error deleting source:', error);
-      return NextResponse.json(
-        { error: 'Failed to delete source' },
-        { status: 500 }
-      );
-    }
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('[Admin] Error deleting source:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete source' },
+      { status: 500 },
+    );
   }
-);
-
+};
