@@ -73,8 +73,9 @@ export default function ValidationQueuePage() {
         '/api/v1/admin/casting-calls/pending'
       );
       setPendingCalls(data.data);
-    } catch (err: any) {
-      if (err.response?.status === 403) {
+    } catch (err: unknown) {
+      const error = err as { response?: { status?: number } };
+      if (error.response?.status === 403) {
         setError('Admin access required');
       } else {
         setError('Failed to fetch pending casting calls');
@@ -136,9 +137,10 @@ export default function ValidationQueuePage() {
     try {
       await apiClient.patch(`/api/v1/admin/casting-calls/${id}/edit`, editedCall);
       await handleApprove(id);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { error?: string } } };
       console.error('Failed to save changes:', err);
-      setError(err.response?.data?.error || 'Failed to save and approve. Please try again.');
+      setError(error.response?.data?.error || 'Failed to save and approve. Please try again.');
     } finally {
       setActionLoading(false);
     }
@@ -175,7 +177,7 @@ export default function ValidationQueuePage() {
       
       setSelectedCalls(new Set());
       await fetchPendingCalls();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Bulk approve failed:', err);
       setError('Failed to approve some calls. Please try again.');
     } finally {
@@ -195,7 +197,7 @@ export default function ValidationQueuePage() {
       
       setSelectedCalls(new Set());
       await fetchPendingCalls();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Bulk reject failed:', err);
       setError('Failed to reject some calls. Please try again.');
     } finally {

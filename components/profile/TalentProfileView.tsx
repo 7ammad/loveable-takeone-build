@@ -88,7 +88,7 @@ export default function TalentProfileView() {
     setIsEditing(false);
   };
 
-  const updateField = (field: keyof TalentProfile, value: any) => {
+  const updateField = (field: keyof TalentProfile, value: string | number | boolean | string[] | null | undefined) => {
     setEditedProfile(prev => ({ ...prev, [field]: value }));
   };
 

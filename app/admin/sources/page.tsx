@@ -52,9 +52,10 @@ export default function SourcesManagement() {
       const { data } = await apiClient.get<{ data: Source[] }>('/api/v1/admin/sources');
       setSources(data.data);
       setError(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { error?: string } } };
       console.error('Failed to fetch sources:', err);
-      setError(err.response?.data?.error || 'Failed to fetch sources.');
+      setError(error.response?.data?.error || 'Failed to fetch sources.');
     } finally {
       setLoading(false);
     }
@@ -71,9 +72,10 @@ export default function SourcesManagement() {
         isActive: !currentStatus,
       });
       fetchSources();
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { error?: string } } };
       console.error('Failed to toggle source:', err);
-      setError(err.response?.data?.error || 'Failed to toggle source status.');
+      setError(error.response?.data?.error || 'Failed to toggle source status.');
     } finally {
       setActionLoading(false);
     }
@@ -87,9 +89,10 @@ export default function SourcesManagement() {
       setNewSource({ sourceType: 'INSTAGRAM', sourceIdentifier: '', sourceName: '' });
       setShowAddForm(false);
       fetchSources();
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { error?: string } } };
       console.error('Failed to add source:', err);
-      setError(err.response?.data?.error || 'Failed to add source.');
+      setError(error.response?.data?.error || 'Failed to add source.');
     } finally {
       setActionLoading(false);
     }
@@ -101,9 +104,10 @@ export default function SourcesManagement() {
       await apiClient.delete(`/api/v1/admin/sources/${id}`);
       fetchSources();
       setDeletingSourceId(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { error?: string } } };
       console.error('Failed to delete source:', err);
-      setError(err.response?.data?.error || 'Failed to delete source.');
+      setError(error.response?.data?.error || 'Failed to delete source.');
     } finally {
       setActionLoading(false);
     }

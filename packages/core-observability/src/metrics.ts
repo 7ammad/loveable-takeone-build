@@ -87,7 +87,7 @@ export const metrics = new MetricsCollector();
 export class AlertManager {
   private alerts: Array<{
     name: string;
-    condition: (metrics: Record<string, any>) => boolean;
+    condition: (metrics: Record<string, { count: number; sum: number; avg: number }>) => boolean;
     message: string;
     lastTriggered?: number;
   }> = [];
@@ -140,7 +140,7 @@ export class AlertManager {
 
   addAlert(alert: {
     name: string;
-    condition: (metrics: Record<string, any>) => boolean;
+    condition: (metrics: Record<string, { count: number; sum: number; avg: number }>) => boolean;
     message: string;
   }) {
     this.alerts.push(alert);
@@ -179,8 +179,11 @@ export const alertManager = new AlertManager();
 /**
  * Middleware to collect API metrics
  */
-export function withMetrics(handler: Function, routeName: string) {
-  return async (...args: any[]) => {
+export function withMetrics<T extends unknown[]>(
+  handler: (...args: T) => Promise<unknown>,
+  routeName: string
+) {
+  return async (...args: T): Promise<unknown> => {
     const startTime = Date.now();
 
     try {

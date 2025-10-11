@@ -52,7 +52,7 @@ export default function TalentProfile() {
             </CardHeader>
             <CardContent className="space-y-3">
               <p className="text-sm text-muted-foreground">
-                You haven\'t created a profile yet. Create your talent profile so casters can discover you.
+                You haven&apos;t created a profile yet. Create your talent profile so casters can discover you.
               </p>
               <Link href="/profile/edit">
                 <Button className="w-full">

@@ -152,6 +152,7 @@ function TalentSearchContent({
     }
 
     fetchTalent();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filteredTalent = talent.filter(profile => {

@@ -55,10 +55,6 @@ export async function recordFailedLogin(
 
   // Check if account is currently locked
   if (user.accountLockedUntil && user.accountLockedUntil > now) {
-    const remainingSeconds = Math.ceil(
-      (user.accountLockedUntil.getTime() - now.getTime()) / 1000
-    );
-    
     return {
       isLocked: true,
       remainingAttempts: 0,

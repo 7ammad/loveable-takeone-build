@@ -142,7 +142,7 @@ export async function PATCH(
     }
     
     // Build update data
-    const updateData: any = {};
+    const updateData: Record<string, unknown> = {};
     const allowedFields = [
       'companyNameEn', 'companyNameAr', 'companyType', 'companyCategory',
       'companyDescription', 'businessPhone', 'businessEmail', 'website',
@@ -159,10 +159,10 @@ export async function PATCH(
     }
     
     // Parse integers
-    if (updateData.establishedYear) {
+    if (updateData.establishedYear && typeof updateData.establishedYear === 'string') {
       updateData.establishedYear = parseInt(updateData.establishedYear);
     }
-    if (updateData.teamSize) {
+    if (updateData.teamSize && typeof updateData.teamSize === 'string') {
       updateData.teamSize = parseInt(updateData.teamSize);
     }
     

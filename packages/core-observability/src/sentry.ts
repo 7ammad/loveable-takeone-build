@@ -1,16 +1,41 @@
 // Optional Sentry import - gracefully fail if not installed
-let Sentry: any;
+interface SentryType {
+  init: (options: Record<string, unknown>) => void;
+  setUser: (user: Record<string, unknown>) => void;
+  captureException: (error: Error) => void;
+  captureMessage: (message: string, level?: string) => void;
+  withScope: (callback: (scope: SentryScope) => void) => void;
+  addBreadcrumb: (breadcrumb: Record<string, unknown>) => void;
+  startTransaction: (options: Record<string, unknown>) => SentryTransaction;
+  Integrations?: {
+    Console: new (options: { levels: string[] }) => unknown;
+    Http: new () => unknown;
+  };
+}
+
+interface SentryScope {
+  setTag: (key: string, value: unknown) => void;
+  setContext: (key: string, value: unknown) => void;
+  setLevel: (level: string) => void;
+}
+
+interface SentryTransaction {
+  end: () => void;
+}
+
+let Sentry: SentryType;
 
 try {
-  Sentry = require('@sentry/nextjs');
-} catch (error) {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  Sentry = require('@sentry/nextjs') as SentryType;
+} catch {
   console.warn('Sentry package not installed, error monitoring disabled');
   Sentry = {
     init: () => {},
     setUser: () => {},
     captureException: () => {},
     captureMessage: () => {},
-    withScope: (fn: Function) => fn({ setTag: () => {}, setContext: () => {}, setLevel: () => {} }),
+    withScope: (callback: (scope: SentryScope) => void) => callback({ setTag: () => {}, setContext: () => {}, setLevel: () => {} }),
     addBreadcrumb: () => {},
     startTransaction: () => ({ end: () => {} }),
   };
@@ -33,29 +58,31 @@ export function initSentry() {
     debug: process.env.NODE_ENV !== 'production',
 
     // Capture console logs as breadcrumbs
-    integrations: [
+    integrations: Sentry.Integrations ? [
       new Sentry.Integrations.Console({
         levels: ['warn', 'error'],
       }),
       new Sentry.Integrations.Http(),
-    ],
+    ] : [],
 
     // Performance monitoring
     enableTracing: true,
 
     // Filter out health check errors
-    beforeSend(event: any) {
+    beforeSend(event: Record<string, unknown>) {
       // Don't send events for health check endpoints
-      if (event.request?.url?.includes('/health')) {
+      const request = event.request as { url?: string } | undefined;
+      if (request?.url?.includes('/health')) {
         return null;
       }
       return event;
     },
 
     // Custom error filtering
-    beforeSendTransaction(event: any) {
+    beforeSendTransaction(event: Record<string, unknown>) {
       // Filter out transactions for static assets
-      if (event.request?.url?.match(/\.(css|js|png|jpg|jpeg|gif|ico|svg)$/)) {
+      const request = event.request as { url?: string } | undefined;
+      if (request?.url?.match(/\.(css|js|png|jpg|jpeg|gif|ico|svg)$/)) {
         return null;
       }
       return event;
@@ -68,9 +95,9 @@ export function initSentry() {
 /**
  * Capture an exception with context
  */
-export function captureException(error: Error, context?: Record<string, any>) {
+export function captureException(error: Error, context?: Record<string, unknown>) {
   if (context) {
-    Sentry.withScope((scope: any) => {
+    Sentry.withScope((scope: SentryScope) => {
       Object.keys(context).forEach((key) => {
         scope.setTag(key, context[key]);
       });
@@ -84,9 +111,9 @@ export function captureException(error: Error, context?: Record<string, any>) {
 /**
  * Capture a message with level and context
  */
-export function captureMessage(message: string, level: 'fatal' | 'error' | 'warning' | 'log' | 'info' | 'debug' = 'info', context?: Record<string, any>) {
+export function captureMessage(message: string, level: 'fatal' | 'error' | 'warning' | 'log' | 'info' | 'debug' = 'info', context?: Record<string, unknown>) {
   if (context) {
-    Sentry.withScope((scope: any) => {
+    Sentry.withScope((scope: SentryScope) => {
       Object.keys(context).forEach((key) => {
         scope.setTag(key, context[key]);
       });

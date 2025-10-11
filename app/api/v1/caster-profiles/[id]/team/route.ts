@@ -7,7 +7,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { verifyAccessToken } from '@packages/core-auth';
-import { TEAM_PERMISSIONS } from '@/lib/constants/caster-taxonomy';
 import { validateTeamMember } from '@/lib/validation/caster-profile-validation';
 
 const prisma = new PrismaClient();
@@ -23,7 +22,10 @@ export async function GET(
     
     const isActive = searchParams.get('active');
     
-    const where: any = { casterProfileId: id };
+    const where: {
+      casterProfileId: string;
+      isActive?: boolean;
+    } = { casterProfileId: id };
     if (isActive === 'true') where.isActive = true;
     
     const teamMembers = await prisma.casterTeamMember.findMany({

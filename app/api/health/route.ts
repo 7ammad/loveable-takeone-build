@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { performHealthCheck, livenessCheck, readinessCheck } from '@/lib/health-check';
+import { performHealthCheck } from '@/lib/health-check';
 
 /**
  * GET /api/health

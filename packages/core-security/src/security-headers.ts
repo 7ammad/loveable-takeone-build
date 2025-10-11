@@ -4,7 +4,7 @@ import type { NextRequest } from 'next/server';
 /**
  * Security headers middleware for CSP, HSTS, and other security headers
  */
-export function addSecurityHeaders(response: NextResponse): NextResponse {
+export function addSecurityHeaders(response: NextResponse | Response): Response {
   // Content Security Policy
   response.headers.set(
     'Content-Security-Policy',
@@ -50,8 +50,10 @@ export function addSecurityHeaders(response: NextResponse): NextResponse {
 /**
  * Apply security headers to API responses
  */
-export function withSecurityHeaders(handler: Function) {
-  return async (request: NextRequest, ...args: any[]) => {
+export function withSecurityHeaders(
+  handler: (request: NextRequest, ...args: unknown[]) => Promise<Response>
+) {
+  return async (request: NextRequest, ...args: unknown[]): Promise<Response> => {
     const response = await handler(request, ...args);
     return addSecurityHeaders(response);
   };

@@ -263,7 +263,7 @@ export function startWorkers() {
       logger.error(`✗ Scraped role job ${jobId} failed`, { jobId, error: err.message });
     });
 
-    validationWorker.on('completed', (job, result: any) => {
+    validationWorker.on('completed', (job, result: Record<string, unknown>) => {
       logger.info(`✓ Validation job ${job.id} completed: ${result.status}`, { 
         jobId: job.id, 
         status: result.status 

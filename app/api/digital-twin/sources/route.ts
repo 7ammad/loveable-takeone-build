@@ -19,7 +19,7 @@ const SourceSchema = z.object({
 const BulkSourcesSchema = z.array(SourceSchema);
 
 // GET - List all sources
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const sources = await prisma.ingestionSource.findMany({
       orderBy: [

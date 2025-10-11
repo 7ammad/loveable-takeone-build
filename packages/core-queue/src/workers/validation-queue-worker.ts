@@ -5,8 +5,7 @@
 
 import { Worker } from 'bullmq';
 import { prisma } from '@/packages/core-db/src/client';
-// TODO: Import Algolia service from core-search
-// import { algoliaService } from '../../core-search/src/algolia-service';
+import { indexCastingCall } from '@/packages/core-search/src/casting-call-indexer';
 
 export function createValidationQueueWorker() {
   const worker = new Worker(
@@ -27,11 +26,44 @@ export function createValidationQueueWorker() {
         }
 
         if (action === 'approve' && castingCall.status === 'active') {
-          // Index in Algolia for search
+          // Index in Algolia for search with retry
           console.log(`🔍 Indexing casting call ${castingCallId} in Algolia`);
 
-          // TODO: Implement Algolia indexing
-          // await algoliaService.indexCastingCall(castingCall);
+          let attempts = 0;
+          const maxAttempts = 3;
+          let lastError;
+
+          while (attempts < maxAttempts) {
+            try {
+              await indexCastingCall({
+                id: castingCall.id,
+                title: castingCall.title,
+                description: (castingCall as any).description ?? null,
+                company: (castingCall as any).company ?? null,
+                location: (castingCall as any).location ?? null,
+                skills: (castingCall as any).skills ?? [],
+                status: castingCall.status,
+                createdAt: castingCall.createdAt,
+                updatedAt: castingCall.updatedAt,
+                isAggregated: (castingCall as any).isAggregated ?? null,
+                deadline: (castingCall as any).deadline ?? null,
+              });
+              break; // Success, exit retry loop
+            } catch (e) {
+              lastError = e;
+              attempts++;
+              if (attempts < maxAttempts) {
+                const backoffMs = Math.pow(2, attempts) * 1000;
+                console.warn(`Algolia indexing attempt ${attempts} failed, retrying in ${backoffMs}ms...`);
+                await new Promise(resolve => setTimeout(resolve, backoffMs));
+              }
+            }
+          }
+
+          if (attempts === maxAttempts && lastError) {
+            console.error('Failed indexing to Algolia after retries:', (lastError as Error).message);
+            throw lastError;
+          }
 
           // Log successful indexing
           await prisma.auditEvent.create({
@@ -75,12 +107,12 @@ export function createValidationQueueWorker() {
     },
     {
       // Redis connection will be handled by the queue system
-    connection: process.env.REDIS_URL ? {
-      url: process.env.REDIS_URL,
-    } : {
-      host: 'localhost',
-      port: 6379,
-    },
+      connection: process.env.REDIS_URL ? {
+        url: process.env.REDIS_URL,
+      } : {
+        host: 'localhost',
+        port: 6379,
+      },
     }
   );
 

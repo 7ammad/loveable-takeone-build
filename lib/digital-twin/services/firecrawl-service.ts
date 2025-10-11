@@ -10,7 +10,7 @@ interface ScrapedContent {
   markdown: string;
   title?: string;
   description?: string;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
 }
 
 export class FireCrawlService {

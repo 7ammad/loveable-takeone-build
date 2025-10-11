@@ -4,11 +4,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@packages/core-db';
 import { requireAdmin, logAdminAction, AuditEventType } from '@/lib/auth-helpers';
+import { TokenPayload } from '@packages/core-auth';
 
 export const POST = requireAdmin()(
-  async (req: NextRequest, { params }: { params: Promise<{ id: string }> }, user, dbUser) => {
+  async (req: NextRequest, { params }: { params: Promise<{ id: string }> }, user: TokenPayload) => {
     try {
       const { id } = await params;
+
+      if (!user) {
+        return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      }
+      
+      const adminUser = await prisma.user.findUnique({
+        where: { id: user.userId },
+      });
+
+      if (!adminUser) {
+        return NextResponse.json({ error: 'Admin user not found in database' }, { status: 403 });
+      }
 
       const updatedCall = await prisma.castingCall.update({
         where: { id },
@@ -21,7 +34,7 @@ export const POST = requireAdmin()(
       // Log admin action
       await logAdminAction(
         AuditEventType.ADMIN_SETTINGS_CHANGED,
-        dbUser.id,
+        adminUser.id,
         null,
         'approve_casting_call',
         { 

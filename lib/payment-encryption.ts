@@ -10,7 +10,8 @@ import crypto from 'crypto';
 const ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 16; // 16 bytes for GCM
 const AUTH_TAG_LENGTH = 16; // 16 bytes auth tag
-const SALT_LENGTH = 32; // 32 bytes salt for key derivation
+// Salt length constant for future use
+// const SALT_LENGTH = 32; // 32 bytes salt for key derivation
 
 /**
  * Get encryption key from environment or generate one
@@ -107,7 +108,7 @@ export function decryptReceiptData(encryptedData: string): string {
  * @param rawData - Raw payment provider response
  * @returns Sanitized data safe for storage
  */
-export function sanitizePaymentData(rawData: any): any {
+export function sanitizePaymentData(rawData: Record<string, unknown>): Record<string, unknown> {
   const sanitized = { ...rawData };
   
   // Remove sensitive fields
@@ -133,12 +134,18 @@ export function sanitizePaymentData(rawData: any): any {
   }
   
   // Mask card numbers if present (keep last 4 digits)
-  if (sanitized.card?.number) {
-    sanitized.card.number = maskCardNumber(sanitized.card.number);
+  if (sanitized.card && typeof sanitized.card === 'object' && sanitized.card !== null) {
+    const card = sanitized.card as Record<string, unknown>;
+    if (typeof card.number === 'string') {
+      card.number = maskCardNumber(card.number);
+    }
   }
-  
-  if (sanitized.source?.number) {
-    sanitized.source.number = maskCardNumber(sanitized.source.number);
+
+  if (sanitized.source && typeof sanitized.source === 'object' && sanitized.source !== null) {
+    const source = sanitized.source as Record<string, unknown>;
+    if (typeof source.number === 'string') {
+      source.number = maskCardNumber(source.number);
+    }
   }
   
   return sanitized;
@@ -175,7 +182,7 @@ export function generateEncryptionKey(): string {
  * @param rawData - Raw payment provider response
  * @returns Object ready to store in Receipt model
  */
-export function prepareReceiptForStorage(rawData: any) {
+export function prepareReceiptForStorage(rawData: Record<string, unknown>) {
   const sanitized = sanitizePaymentData(rawData);
   const encrypted = encryptReceiptData(JSON.stringify(sanitized));
   
@@ -191,14 +198,14 @@ export function prepareReceiptForStorage(rawData: any) {
  * @param encryptedRaw - Encrypted raw field from Receipt model
  * @returns Decrypted and parsed payment data
  */
-export function retrieveReceiptData(encryptedRaw: any): any {
+export function retrieveReceiptData(encryptedRaw: string | Record<string, unknown>): Record<string, unknown> {
   if (typeof encryptedRaw === 'string') {
     try {
       const decrypted = decryptReceiptData(encryptedRaw);
-      return JSON.parse(decrypted);
-    } catch (error) {
+      return JSON.parse(decrypted) as Record<string, unknown>;
+    } catch {
       console.warn('[Payment Encryption] Failed to decrypt, returning raw data');
-      return encryptedRaw;
+      return { raw: encryptedRaw };
     }
   }
   

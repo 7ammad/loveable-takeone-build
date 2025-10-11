@@ -14,6 +14,7 @@ import {
   Check,
   Inbox
 } from 'lucide-react';
+import Image from 'next/image';
 import { EmptyState } from '@/components/ui/empty-state';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -195,13 +196,14 @@ export default function MessagesPage() {
                 >
                   {/* Avatar */}
                   <div className="relative flex-shrink-0">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-blue-500 flex items-center justify-center text-white font-bold">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-blue-500 flex items-center justify-center text-white font-bold overflow-hidden">
                       {conversation.otherUser.avatar ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
+                        <Image
                           src={conversation.otherUser.avatar}
                           alt={conversation.otherUser.name}
-                          className="w-full h-full rounded-full object-cover"
+                          width={48}
+                          height={48}
+                          className="object-cover"
                         />
                       ) : (
                         getInitials(conversation.otherUser.name)

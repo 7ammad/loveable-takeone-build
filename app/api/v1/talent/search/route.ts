@@ -48,7 +48,12 @@ export const GET = requireCaster()(async (req: NextRequest) => {
     const validatedParams = searchSchema.parse(params);
 
     // 2. Build where clause
-    const where: any = {
+    const where: {
+      role: string;
+      isActive: boolean;
+      OR?: Array<Record<string, unknown>>;
+      TalentProfile?: Record<string, unknown>;
+    } = {
       role: 'talent',
       isActive: true,
     };
@@ -65,7 +70,7 @@ export const GET = requireCaster()(async (req: NextRequest) => {
     // Age filters (calculate from dateOfBirth)
     if (validatedParams.ageMin || validatedParams.ageMax) {
       const now = new Date();
-      const ageFilters: any = {};
+      const ageFilters: { gte?: Date; lte?: Date } = {};
       
       if (validatedParams.ageMin) {
         const maxBirthDate = new Date(now.getFullYear() - validatedParams.ageMin, now.getMonth(), now.getDate());
@@ -152,7 +157,7 @@ export const GET = requireCaster()(async (req: NextRequest) => {
     }
 
     // 3. Build orderBy clause
-    let orderBy: any = {};
+    let orderBy: Record<string, unknown> = {};
     switch (validatedParams.sortBy) {
       case 'name':
         orderBy = { name: validatedParams.sortOrder };

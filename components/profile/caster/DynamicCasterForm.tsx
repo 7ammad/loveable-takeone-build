@@ -16,8 +16,8 @@ interface DynamicFormField {
 
 interface DynamicCasterFormProps {
   companyType: string;
-  formData: Record<string, any>;
-  onChange: (field: string, value: any) => void;
+  formData: Record<string, string | number | boolean | string[] | null>;
+  onChange: (field: string, value: string | number | boolean | string[] | null) => void;
 }
 
 // Field configurations for each company type
@@ -531,14 +531,14 @@ export default function DynamicCasterForm({ companyType, formData, onChange }: D
   }
 
   const handleMultiSelectAdd = (fieldName: string, value: string) => {
-    const currentValues = formData[fieldName] || [];
+    const currentValues = Array.isArray(formData[fieldName]) ? formData[fieldName] as string[] : [];
     if (!currentValues.includes(value)) {
       onChange(fieldName, [...currentValues, value]);
     }
   };
 
   const handleMultiSelectRemove = (fieldName: string, value: string) => {
-    const currentValues = formData[fieldName] || [];
+    const currentValues = Array.isArray(formData[fieldName]) ? formData[fieldName] as string[] : [];
     onChange(fieldName, currentValues.filter((v: string) => v !== value));
   };
 
@@ -562,7 +562,7 @@ export default function DynamicCasterForm({ companyType, formData, onChange }: D
             {field.type === 'text' && (
               <Input
                 id={field.name}
-                value={formData[field.name] || ''}
+                value={String(formData[field.name] || '')}
                 onChange={(e) => onChange(field.name, e.target.value)}
                 placeholder={field.placeholder}
                 className="mt-2"
@@ -573,7 +573,7 @@ export default function DynamicCasterForm({ companyType, formData, onChange }: D
               <Input
                 id={field.name}
                 type="number"
-                value={formData[field.name] || ''}
+                value={String(formData[field.name] || '')}
                 onChange={(e) => onChange(field.name, e.target.value)}
                 placeholder={field.placeholder}
                 className="mt-2"
@@ -583,7 +583,7 @@ export default function DynamicCasterForm({ companyType, formData, onChange }: D
             {field.type === 'select' && (
               <select
                 id={field.name}
-                value={formData[field.name] || ''}
+                value={String(formData[field.name] || '')}
                 onChange={(e) => onChange(field.name, e.target.value)}
                 className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm mt-2"
               >
@@ -613,16 +613,16 @@ export default function DynamicCasterForm({ companyType, formData, onChange }: D
                     <option
                       key={option.value}
                       value={option.value}
-                      disabled={(formData[field.name] || []).includes(option.value)}
+                      disabled={Array.isArray(formData[field.name]) && (formData[field.name] as string[]).includes(option.value)}
                     >
                       {option.label}
                     </option>
                   ))}
                 </select>
 
-                {formData[field.name] && formData[field.name].length > 0 && (
+                {Array.isArray(formData[field.name]) && formData[field.name] && (formData[field.name] as string[]).length > 0 && (
                   <div className="flex flex-wrap gap-2">
-                    {formData[field.name].map((value: string) => {
+                    {(formData[field.name] as string[]).map((value: string) => {
                       const option = field.options?.find((o) => o.value === value);
                       return (
                         <Badge key={value} variant="secondary" className="pr-1">

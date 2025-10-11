@@ -167,6 +167,10 @@ model Application {
   talentUser    User                     @relation("TalentApplications", fields: [talentUserId], references: [id])
   events        ApplicationStatusEvent[]
   booking       AuditionBooking?
+
+  @@index([castingCallId, status])
+  @@index([talentUserId, createdAt])
+  @@index([status, createdAt])
 }
 
 model ApplicationStatusEvent {
@@ -361,6 +365,12 @@ model CastingCall {
   applications     Application[]
   bookings         AuditionBooking[]
   creator          User?             @relation(fields: [createdBy], references: [id])
+
+  @@index([status, createdAt])
+  @@index([location, status])
+  @@index([deadline, status])
+  @@index([isAggregated, status])
+  @@index([createdBy, status])
 }
 
 model IngestionSource {

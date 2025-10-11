@@ -13,6 +13,13 @@ export const GET = requireTalent()(async (_req: NextRequest, _context, user, dbU
     let profile: unknown = null;
 
     try {
+      if (!dbUser) {
+        return NextResponse.json(
+          { success: false, error: 'User not found in database' },
+          { status: 403 },
+        );
+      }
+
       if (dbUser.role === 'talent') {
         profile = await getTalentProfileById(user.userId);
       } else if (dbUser.role === 'caster') {

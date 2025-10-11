@@ -56,7 +56,7 @@ export default function ManageCastingCallsPage() {
           success: boolean; 
           data: {
             castingCalls: CastingCall[];
-            pagination: any;
+            pagination: Record<string, unknown>;
           }
         }>('/api/v1/casting-calls?myCallsOnly=true');
         

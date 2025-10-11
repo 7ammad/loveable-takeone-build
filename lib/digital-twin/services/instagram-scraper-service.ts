@@ -77,11 +77,11 @@ export class InstagramScraperService {
         return [];
       }
 
-      return posts.map((post: any) => ({
+      return posts.map((post: { shortCode?: string; shortcode?: string; url?: string; displayUrl?: string; caption?: string; timestamp?: number; likesCount?: number; commentsCount?: number; type?: string }) => ({
         shortcode: post.shortCode || post.shortcode || '',
         url: post.url || `https://www.instagram.com/p/${post.shortCode || post.shortcode}/`,
         caption: post.caption || '',
-        timestamp: new Date(post.timestamp || post.timestampUnix * 1000 || Date.now()),
+        timestamp: new Date(post.timestamp || Date.now()),
         mediaType: (post.type || 'image') as 'image' | 'video' | 'carousel',
       })).filter(post => post.shortcode); // Filter out invalid posts
 

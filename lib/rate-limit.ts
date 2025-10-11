@@ -125,9 +125,9 @@ export function rateLimit(config: RateLimitConfig) {
  */
 export function withRateLimit(
   config: RateLimitConfig,
-  handler: (request: NextRequest, context?: any) => Promise<NextResponse>
+  handler: (request: NextRequest, context?: Record<string, unknown>) => Promise<NextResponse>
 ) {
-  return async (request: NextRequest, context?: any): Promise<NextResponse> => {
+  return async (request: NextRequest, context?: Record<string, unknown>): Promise<NextResponse> => {
     // Check rate limit
     const rateLimitResponse = await rateLimit(config)(request);
     if (rateLimitResponse) {

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -94,6 +95,7 @@ export function AdvancedTalentSearch() {
 
   useEffect(() => {
     performSearch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
   const performSearch = async () => {
@@ -117,7 +119,7 @@ export function AdvancedTalentSearch() {
       params.append('page', currentPage.toString());
       params.append('limit', '20');
 
-      const response = await apiClient.get<{ success: boolean; data: { talent: any[]; pagination: { total: number } } }>(`/api/v1/talent/search?${params.toString()}`);
+      const response = await apiClient.get<{ success: boolean; data: { talent: TalentProfile[]; pagination: { total: number } } }>(`/api/v1/talent/search?${params.toString()}`);
       const data = response.data.data;
       
       setTalent(data.talent);
@@ -134,7 +136,7 @@ export function AdvancedTalentSearch() {
     performSearch();
   };
 
-  const handleFilterChange = (key: keyof SearchFilters, value: any) => {
+  const handleFilterChange = (key: keyof SearchFilters, value: string | string[] | number | number[] | boolean | undefined) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
@@ -397,11 +399,13 @@ export function AdvancedTalentSearch() {
                 <CardHeader className="pb-4">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center space-x-3">
-                      <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center">
+                      <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center overflow-hidden">
                         {user.avatar ? (
-                          <img
+                          <Image
                             src={user.avatar}
                             alt={user.name}
+                            width={48}
+                            height={48}
                             className="h-12 w-12 rounded-full object-cover"
                           />
                         ) : (

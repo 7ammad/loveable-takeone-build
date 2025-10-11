@@ -25,9 +25,10 @@ export const GET = requireTalent()(async (req: NextRequest, _context, user) => {
           unreadCount,
         },
       });
-    } catch (dbError: any) {
+    } catch (dbError: unknown) {
       // Handle case where Notification table doesn't exist yet
-      if (dbError?.code === 'P2021') {
+      const error = dbError as { code?: string };
+      if (error?.code === 'P2021') {
         return NextResponse.json({
           success: true,
           data: {

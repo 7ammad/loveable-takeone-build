@@ -21,7 +21,7 @@ export interface HealthStatus {
   status: 'up' | 'down' | 'degraded';
   responseTime?: number;
   message?: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 
 /**

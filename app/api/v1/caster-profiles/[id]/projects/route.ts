@@ -23,7 +23,11 @@ export async function GET(
     const featured = searchParams.get('featured');
     const projectType = searchParams.get('type');
     
-    const where: any = { casterProfileId: id };
+    const where: {
+      casterProfileId: string;
+      featured?: boolean;
+      projectType?: string;
+    } = { casterProfileId: id };
     if (featured === 'true') where.featured = true;
     if (projectType) where.projectType = projectType;
     

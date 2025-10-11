@@ -62,8 +62,9 @@ export default function AdminDashboard() {
         '/api/v1/admin/digital-twin/status'
       );
       setStatus(data.data);
-    } catch (err: any) {
-      if (err.response?.status === 403) {
+    } catch (err: unknown) {
+      const error = err as { response?: { status?: number } };
+      if (error.response?.status === 403) {
         setError('Admin access required');
       } else {
         setError('Failed to fetch status');

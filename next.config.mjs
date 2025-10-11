@@ -14,6 +14,12 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: '*.amazonaws.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
   // Enable server actions with 10MB body size limit for file uploads
@@ -21,6 +27,13 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '10mb',
     },
+    optimizePackageImports: ['lucide-react', 'date-fns', 'recharts'],
+  },
+  // Optimize builds
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn'],
+    } : false,
   },
   // Security headers
   async headers() {
@@ -80,4 +93,3 @@ const nextConfig = {
 };
 
 export default nextConfig;
-

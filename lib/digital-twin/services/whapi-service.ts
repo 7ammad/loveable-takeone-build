@@ -168,7 +168,7 @@ export class WhapiService {
   /**
    * Centralized error handling
    */
-  private handleError(context: string, error: any): void {
+  private handleError(context: string, error: unknown): void {
     if (axios.isAxiosError(error)) {
       const status = error.response?.status;
       const data = error.response?.data;
@@ -204,7 +204,7 @@ export class WhapiService {
         });
       }
     } else {
-      logger.error(context, { error: error.message || String(error) });
+      logger.error(context, { error: error instanceof Error ? error.message : String(error) });
     }
   }
 }

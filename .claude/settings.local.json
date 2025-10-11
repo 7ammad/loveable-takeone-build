@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx prisma migrate dev:*)"
+      "Bash(npx prisma migrate dev:*)",
+      "Bash(Test-Path \"C:\\dev\\builds\\enter-tech\\.next\")",
+      "Bash(rm:*)",
+      "Bash(pnpm run build)"
     ],
     "deny": [],
     "ask": []

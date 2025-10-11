@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { DashboardNav } from '@/components/DashboardNav';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -199,12 +200,14 @@ export default function ShortlistPage() {
               <CardHeader className="pb-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-3">
-                    <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center">
+                    <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center overflow-hidden">
                       {item.talent.avatar ? (
-                        <img
+                        <Image
                           src={item.talent.avatar}
                           alt={item.talent.name}
-                          className="h-12 w-12 rounded-full object-cover"
+                          width={48}
+                          height={48}
+                          className="object-cover"
                         />
                       ) : (
                         <User className="h-6 w-6 text-primary" />

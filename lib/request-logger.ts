@@ -21,12 +21,12 @@ export interface RequestLogData {
 /**
  * Sanitize sensitive data from logs
  */
-function sanitize(data: any): any {
+function sanitize(data: unknown): unknown {
   if (typeof data !== 'object' || data === null) {
     return data;
   }
 
-  const sanitized: any[] | Record<string, any> = Array.isArray(data) ? [] : {};
+  const sanitized: unknown[] | Record<string, unknown> = Array.isArray(data) ? [] : {};
   const sensitiveKeys = ['password', 'token', 'secret', 'apiKey', 'authorization', 'cookie'];
 
   for (const [key, value] of Object.entries(data)) {

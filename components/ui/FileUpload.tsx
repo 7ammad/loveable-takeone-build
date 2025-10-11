@@ -125,11 +125,11 @@ export function FileUpload({ onUpload, type, accept, maxSize, className }: FileU
         </Button>
       ) : (
         <div className="flex items-center space-x-3 p-3 border rounded-lg bg-muted/50">
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0" aria-label="File icon">
             {uploadedFile.match(/\.(jpg|jpeg|png|gif)$/i) ? (
-              <Image className="h-8 w-8 text-blue-500" />
+              <Image className="h-8 w-8 text-blue-500" aria-hidden="true" />
             ) : (
-              <File className="h-8 w-8 text-gray-500" />
+              <File className="h-8 w-8 text-gray-500" aria-hidden="true" />
             )}
           </div>
           <div className="flex-1 min-w-0">

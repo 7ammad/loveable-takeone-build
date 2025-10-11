@@ -23,7 +23,7 @@ export type AppError =
 export interface ErrorResponse {
   error: string;
   message?: string;
-  details?: any;
+  details?: Record<string, unknown> | unknown[] | string;
   code?: string;
 }
 
@@ -226,9 +226,9 @@ export function createErrorResponse(
  * Wrap async route handler with error handling
  */
 export function withErrorHandler(
-  handler: (request: Request, context?: any) => Promise<NextResponse>
+  handler: (request: Request, context?: Record<string, unknown>) => Promise<NextResponse>
 ) {
-  return async (request: Request, context?: any): Promise<NextResponse> => {
+  return async (request: Request, context?: Record<string, unknown>): Promise<NextResponse> => {
     try {
       return await handler(request, context);
     } catch (error) {

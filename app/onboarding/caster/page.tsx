@@ -39,7 +39,7 @@ interface FormData {
 }
 
 interface CustomFields {
-  [key: string]: any;
+  [key: string]: string | number | boolean | string[] | null;
 }
 
 export default function CasterOnboardingPage() {
@@ -77,7 +77,7 @@ export default function CasterOnboardingPage() {
     setError('');
   };
 
-  const updateCustomField = (field: string, value: any) => {
+  const updateCustomField = (field: string, value: string | number | boolean | string[] | null) => {
     setCustomFields(prev => ({ ...prev, [field]: value }));
     setError('');
   };
@@ -120,7 +120,7 @@ export default function CasterOnboardingPage() {
       const profileId = profilesResponse.data.profiles[0].id;
 
       // Prepare data
-      const payload: any = {
+      const payload: Record<string, string | number | Record<string, string | number | boolean | string[] | null>> = {
         companyNameEn: formData.companyNameEn,
         companyType: formData.companyType,
         companyCategory: formData.companyCategory,
@@ -151,9 +151,10 @@ export default function CasterOnboardingPage() {
       setTimeout(() => {
         router.push('/dashboard');
       }, 2000);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { error?: string } } };
       console.error('Onboarding error:', err);
-      setError(err.response?.data?.error || 'Failed to save profile. Please try again.');
+      setError(error.response?.data?.error || 'Failed to save profile. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -345,7 +346,7 @@ export default function CasterOnboardingPage() {
                       const selectedType = e.target.value;
                       updateFormData('companyType', selectedType);
                       // Find and set category
-                      const category = Object.entries(CASTER_TAXONOMY).find(([_, cat]) =>
+                      const category = Object.entries(CASTER_TAXONOMY).find(([, cat]) =>
                         Object.keys(cat.types).includes(selectedType)
                       );
                       if (category) {

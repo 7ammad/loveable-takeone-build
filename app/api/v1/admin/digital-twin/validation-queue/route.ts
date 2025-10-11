@@ -6,7 +6,7 @@ export const GET = async (request: NextRequest) => {
   // ✅ Add role check at the very start
   const userOrError = await requireRole(request, ['admin']);
   if (userOrError instanceof NextResponse) return userOrError;
-  const user = userOrError;
+  // User authorization verified, proceed with operation
 
   try {
     const { searchParams } = new URL(request.url);

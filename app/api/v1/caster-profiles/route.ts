@@ -7,7 +7,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { verifyAccessToken } from '@packages/core-auth';
-import { CASTER_TAXONOMY, getAllCasterTypes, getAllCategories } from '@/lib/constants/caster-taxonomy';
 import { validateCasterProfile } from '@/lib/validation/caster-profile-validation';
 
 const prisma = new PrismaClient();
@@ -35,7 +34,18 @@ export async function GET(request: NextRequest) {
     const sortOrder = searchParams.get('sortOrder') || 'desc';
     
     // Build where clause
-    const where: any = {};
+    const where: {
+      companyCategory?: string;
+      companyType?: string;
+      city?: string;
+      verified?: boolean;
+      companySize?: string;
+      OR?: Array<{
+        companyNameEn?: { contains: string; mode: 'insensitive' };
+        companyNameAr?: { contains: string; mode: 'insensitive' };
+        companyDescription?: { contains: string; mode: 'insensitive' };
+      }>;
+    } = {};
     
     if (category) where.companyCategory = category;
     if (type) where.companyType = type;

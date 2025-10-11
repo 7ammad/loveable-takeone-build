@@ -9,7 +9,7 @@ import { getDigitalTwinService } from '@/lib/digital-twin/background-service';
 import { verifyAccessToken } from '@packages/core-auth';
 
 // GET - Status
-export async function GET(request: NextRequest) {
+export async function GET() {
   const service = getDigitalTwinService();
 
   if (!service) {

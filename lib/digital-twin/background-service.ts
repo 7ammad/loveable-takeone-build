@@ -133,29 +133,28 @@ export function initializeDigitalTwin() {
   // Skip during Next.js production build phase
   const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build';
   if (isBuildPhase) {
-    if (!(globalThis as any).__DT_BUILD_NOTICE_SHOWN) {
+    if (!(globalThis as Record<string, unknown>).__DT_BUILD_NOTICE_SHOWN) {
       logger.info('ℹ️  Digital Twin initialization skipped during build');
-      (globalThis as any).__DT_BUILD_NOTICE_SHOWN = true;
+      (globalThis as Record<string, unknown>).__DT_BUILD_NOTICE_SHOWN = true;
     }
     return null;
   }
 
   // Global single-init guard across module contexts
-  if ((globalThis as any).__DT_INITIALIZED) {
+  if ((globalThis as Record<string, unknown>).__DT_INITIALIZED) {
     return digitalTwinService;
   }
 
   if (!digitalTwinService) {
     digitalTwinService = new DigitalTwinService();
-    
+
     // Only start if we're in production or explicitly enabled
     const isEnabled = process.env.DIGITAL_TWIN_ENABLED !== 'false';
-    const isDev = process.env.NODE_ENV === 'development';
-    
+
     if (isEnabled) {
       digitalTwinService.start();
-      (globalThis as any).__DT_INITIALIZED = true;
-      
+      (globalThis as Record<string, unknown>).__DT_INITIALIZED = true;
+
       // Graceful shutdown
       process.on('SIGTERM', async () => {
         await digitalTwinService?.stop();

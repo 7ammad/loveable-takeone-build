@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAccessToken } from '@packages/core-auth';
+import { verifyAccessToken, type TokenPayload } from '@packages/core-auth';
 
 // Re-export from enhanced-audit for convenience
 export { 
@@ -57,7 +57,7 @@ export async function requireAuth(request: NextRequest) {
 export async function requireRole(
   request: NextRequest,
   allowedRoles: string[]
-): Promise<any | NextResponse> {
+): Promise<TokenPayload | NextResponse> {
   const user = await getCurrentUser(request);
 
   if (!user) {
@@ -97,7 +97,7 @@ export async function requireRole(
 export async function requireOwnership(
   request: NextRequest,
   resourceUserId: string
-): Promise<any | NextResponse> {
+): Promise<TokenPayload | NextResponse> {
   const user = await getCurrentUser(request);
 
   if (!user) {
@@ -160,8 +160,8 @@ export async function requireCasterDirect(request: NextRequest) {
  * Higher-Order Function wrapper for requireAdmin (backward compatibility)
  */
 export function requireAdmin() {
-  return function(handler: (req: NextRequest, context: any, user: any, dbUser?: any) => Promise<Response>) {
-    return async function(req: NextRequest, context: any) {
+  return function<T extends Record<string, unknown>>(handler: (req: NextRequest, context: T, user: TokenPayload, dbUser?: TokenPayload) => Promise<Response>) {
+    return async function(req: NextRequest, context: T) {
       const userOrResponse = await requireRole(req, ['admin']);
       if (isErrorResponse(userOrResponse)) {
         return userOrResponse;
@@ -176,8 +176,8 @@ export function requireAdmin() {
  * Higher-Order Function wrapper for requireTalent (backward compatibility)
  */
 export function requireTalent() {
-  return function(handler: (req: NextRequest, context: any, user: any, dbUser?: any) => Promise<Response>) {
-    return async function(req: NextRequest, context: any) {
+  return function<T extends Record<string, unknown>>(handler: (req: NextRequest, context: T, user: TokenPayload, dbUser?: TokenPayload) => Promise<Response>) {
+    return async function(req: NextRequest, context: T) {
       const userOrResponse = await requireRole(req, ['talent', 'admin']);
       if (isErrorResponse(userOrResponse)) {
         return userOrResponse;
@@ -191,8 +191,8 @@ export function requireTalent() {
  * Higher-Order Function wrapper for requireCaster (backward compatibility)
  */
 export function requireCaster() {
-  return function(handler: (req: NextRequest, context: any, user: any, dbUser?: any) => Promise<Response>) {
-    return async function(req: NextRequest, context: any) {
+  return function<T extends Record<string, unknown>>(handler: (req: NextRequest, context: T, user: TokenPayload, dbUser?: TokenPayload) => Promise<Response>) {
+    return async function(req: NextRequest, context: T) {
       const userOrResponse = await requireRole(req, ['caster', 'admin']);
       if (isErrorResponse(userOrResponse)) {
         return userOrResponse;
@@ -205,6 +205,6 @@ export function requireCaster() {
 /**
  * Type guard helper
  */
-export function isErrorResponse(value: any): value is NextResponse {
+export function isErrorResponse(value: unknown): value is NextResponse {
   return value instanceof NextResponse;
 }

@@ -233,7 +233,7 @@ export async function queryAuditLogs(filters: {
   const limit = Math.min(filters.limit || 50, 100);
   const skip = (page - 1) * limit;
 
-  const where: any = {};
+  const where: Record<string, unknown> = {};
 
   if (filters.eventType) {
     where.eventType = filters.eventType;
@@ -248,13 +248,14 @@ export async function queryAuditLogs(filters: {
   }
 
   if (filters.startDate || filters.endDate) {
-    where.timestamp = {};
+    const timestamp: { gte?: Date; lte?: Date } = {};
     if (filters.startDate) {
-      where.timestamp.gte = filters.startDate;
+      timestamp.gte = filters.startDate;
     }
     if (filters.endDate) {
-      where.timestamp.lte = filters.endDate;
+      timestamp.lte = filters.endDate;
     }
+    where.timestamp = timestamp;
   }
 
   const [logs, total] = await Promise.all([
@@ -315,7 +316,7 @@ export async function getAuditStatistics(userId?: string, days: number = 7) {
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - days);
 
-  const where: any = {
+  const where: Record<string, unknown> = {
     timestamp: { gte: startDate },
   };
 

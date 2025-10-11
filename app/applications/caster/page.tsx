@@ -76,7 +76,7 @@ export default function CasterApplicationsPage() {
           success: boolean; 
           data: {
             castingCalls: Array<{ id: string; title: string }>;
-            pagination: any;
+            pagination: Record<string, unknown>;
           }
         }>('/api/v1/casting-calls');
         

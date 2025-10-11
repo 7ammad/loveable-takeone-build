@@ -1,5 +1,6 @@
 import { CastingCall, CastingCallSchema } from '@packages/core-contracts';
 import { llmLearningService } from './llm-learning-service';
+import { llmCache } from '@/lib/llm-cache';
 
 // LLM Client with Anthropic (primary) and OpenAI (fallback)
 class LlmClient {
@@ -145,12 +146,39 @@ const llmClient = new LlmClient();
 
 export class LlmCastingCallExtractionService {
   async extractCastingCallFromText(text: string): Promise<{ success: boolean; data?: CastingCall; error?: string }> {
+    // Pre-filter: Basic heuristic check before calling LLM
+    const preFilterResult = this.preFilterContent(text);
+    if (!preFilterResult.pass) {
+      console.log(`      ⏭️  Pre-filter rejected: ${preFilterResult.reason}`);
+      return { success: false, error: `Pre-filter rejected: ${preFilterResult.reason}` };
+    }
+
     // Get learned patterns to enhance the prompt
     const learnedPatterns = await llmLearningService.getLearnedPatterns();
     const prompt = this.createPrompt(text, learnedPatterns);
 
     try {
+      // Check cache first
+      const cachedResponse = await llmCache.get(prompt, 'casting-extraction');
+      if (cachedResponse) {
+        console.log(`      ✅ Using cached LLM response`);
+        
+        // Check if LLM rejected it as not a casting call
+        if (cachedResponse.isCastingCall === false) {
+          const reason = cachedResponse.reason || 'Not a legitimate casting call';
+          return { success: false, error: `Not a casting call: ${reason}` };
+        }
+        
+        const validationResult = CastingCallSchema.safeParse(cachedResponse);
+        if (validationResult.success) {
+          return { success: true, data: validationResult.data };
+        }
+      }
+
       const extractedJson = await llmClient.generateJson(prompt, CastingCallSchema._def);
+      
+      // Cache the response (7 days TTL)
+      await llmCache.set(prompt, 'casting-extraction', extractedJson, 7 * 24 * 60 * 60);
       
       // Check if LLM rejected it as not a casting call
       if (extractedJson.isCastingCall === false) {
@@ -188,6 +216,89 @@ export class LlmCastingCallExtractionService {
       console.error('Failed to extract casting call data using LLM:', error);
       return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
     }
+  }
+
+  private preFilterContent(text: string): { pass: boolean; reason?: string } {
+    const textLower = text.toLowerCase();
+    const textAr = text;
+
+    // Strong rejection patterns (IMMEDIATE SKIP)
+    const rejectPatterns = [
+      /ورش[ةه]/i, // workshop
+      /دور[ةه]/i, // course
+      /تدريب/i, // training
+      /كورس/i, // course
+      /عرض.*فيلم/i, // film screening
+      /افتتاح/i, // opening
+      /مهرجان/i, // festival
+      /كواليس/i, // behind the scenes
+      /سعدنا باختيار/i, // happy to select (past tense)
+      /اخترنا/i, // we chose (past)
+      /الآن في صالات/i, // now in theaters
+      /بينزل/i, // coming out
+      /مبروك/i, // congratulations
+      /تهانينا/i, // congratulations
+      /جائزة/i, // award
+      /وظائف/i, // jobs (general)
+      /وظيفة/i, // job (general)
+    ];
+
+    for (const pattern of rejectPatterns) {
+      if (pattern.test(textAr)) {
+        return { pass: false, reason: `Contains rejection keyword: ${pattern.source}` };
+      }
+    }
+
+    // Positive signals (AT LEAST ONE must be present)
+    const talentKeywords = [
+      /احتاج|نحتاج|نبحث/i, // need/looking for
+      /مطلوب/i, // required
+      /كاست[ني]نج/i, // casting
+      /اختيار/i, // selection
+      /التيست/i, // test
+      /بنات|رجال|شباب|فتيات/i, // girls/boys/young people
+      /اكسترا/i, // extras
+      /مودل/i, // model
+      /ممثل/i, // actor
+    ];
+
+    const projectKeywords = [
+      /تصوير/i, // filming
+      /فيلم/i, // film
+      /مسلسل/i, // series
+      /إعلان/i, // commercial
+      /فيديو/i, // video
+      /استوديو/i, // studio
+      /براند/i, // brand
+    ];
+
+    const contactKeywords = [
+      /للتواصل/i, // for contact
+      /واتساب/i, // WhatsApp
+      /ارسل|راسل/i, // send/message
+      /\+966/i, // Saudi phone
+      /رقم/i, // number
+    ];
+
+    const compensationKeywords = [
+      /أجر|مبلغ|ريال|مدفوع/i, // payment
+      /سعر/i, // price
+      /\d{3,}/i, // 3+ digits (payment amounts)
+    ];
+
+    const hasTalent = talentKeywords.some(k => k.test(textAr));
+    const hasProject = projectKeywords.some(k => k.test(textAr));
+    const hasContact = contactKeywords.some(k => k.test(textAr));
+    const hasCompensation = compensationKeywords.some(k => k.test(textAr));
+
+    // Pass if: (talent OR project) AND (contact OR compensation)
+    const positiveSignals = (hasTalent || hasProject) && (hasContact || hasCompensation);
+
+    if (!positiveSignals) {
+      return { pass: false, reason: 'Missing key talent/project + contact/compensation indicators' };
+    }
+
+    return { pass: true };
   }
 
   private createPrompt(text: string, learnedPatterns?: any): string {

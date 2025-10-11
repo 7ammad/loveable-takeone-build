@@ -72,7 +72,7 @@ export default function HirerDashboard() {
               deadline?: string | null;
               applications?: Array<{ status: string }>;
             }>;
-            pagination: any;
+            pagination: Record<string, unknown>;
           }
         }>('/api/v1/casting-calls?myCallsOnly=true');
         

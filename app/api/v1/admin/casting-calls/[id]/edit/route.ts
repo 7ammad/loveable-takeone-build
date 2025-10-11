@@ -12,14 +12,8 @@ export const PATCH = withAdminAuth(
       const updates = await req.json();
 
       // Remove fields that shouldn't be edited
-      const {
-        id: _,
-        createdAt,
-        updatedAt,
-        userId,
-        isAggregated,
-        ...editableFields
-      } = updates;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { id: _updateId, createdAt, updatedAt, userId, isAggregated, ...editableFields } = updates;
 
       const updatedCall = await prisma.castingCall.update({
         where: { id },

@@ -87,7 +87,7 @@ export class WhatsAppOrchestrator {
   /**
    * Process a single WhatsApp group
    */
-  private async processGroup(source: any): Promise<{ queued: number }> {
+  private async processGroup(source: { id: string; sourceIdentifier: string; sourceName: string }): Promise<{ queued: number }> {
     const groupId = source.sourceIdentifier;
     const groupLogger = logger.child({ groupId, sourceName: source.sourceName });
 

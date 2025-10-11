@@ -122,7 +122,7 @@ export async function GET(req: NextRequest) {
         const token = authHeader.split(' ')[1];
         const payload = await verifyAccessToken(token);
         isCaster = payload?.role === 'caster';
-      } catch (error) {
+      } catch {
         // Token invalid, continue as non-caster
       }
     }
@@ -177,7 +177,7 @@ export async function GET(req: NextRequest) {
         if (payload?.userId) {
           where.createdBy = payload.userId;
         }
-      } catch (error) {
+      } catch {
         // Token invalid, ignore filter
       }
     }

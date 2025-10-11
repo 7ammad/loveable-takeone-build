@@ -134,7 +134,7 @@ export function validateEstablishedYear(year: number): ValidationResult {
  */
 export function validateTypeSpecificFields(
   companyType: string,
-  typeSpecificFields: any
+  typeSpecificFields: Record<string, unknown>
 ): ValidationResult {
   const errors: string[] = [];
   
@@ -150,7 +150,7 @@ export function validateTypeSpecificFields(
   switch (category) {
     case 'production_companies':
       // Production companies should have production scale info
-      if (typeSpecificFields?.productionScale) {
+      if (typeSpecificFields?.productionScale && typeof typeSpecificFields.productionScale === 'string') {
         const validScales = ['independent', 'small', 'medium', 'large'];
         if (!validScales.includes(typeSpecificFields.productionScale)) {
           errors.push('Invalid production scale');
@@ -210,7 +210,7 @@ export function validateTypeSpecificFields(
 /**
  * Validate complete caster profile
  */
-export function validateCasterProfile(profileData: any): ValidationResult {
+export function validateCasterProfile(profileData: Record<string, unknown>): ValidationResult {
   const errors: string[] = [];
   
   // Required fields
@@ -222,43 +222,44 @@ export function validateCasterProfile(profileData: any): ValidationResult {
   }
   
   // Validate phone number
-  if (profileData.businessPhone) {
+  if (profileData.businessPhone && typeof profileData.businessPhone === 'string') {
     const phoneValidation = validatePhoneNumber(profileData.businessPhone);
     errors.push(...phoneValidation.errors);
   }
-  
+
   // Validate email
-  if (profileData.businessEmail) {
+  if (profileData.businessEmail && typeof profileData.businessEmail === 'string') {
     const emailValidation = validateEmail(profileData.businessEmail);
     errors.push(...emailValidation.errors);
   }
-  
+
   // Validate website if provided
-  if (profileData.website) {
+  if (profileData.website && typeof profileData.website === 'string') {
     const websiteValidation = validateWebsite(profileData.website);
     errors.push(...websiteValidation.errors);
   }
-  
+
   // Validate commercial registration if provided
-  if (profileData.commercialRegistration) {
+  if (profileData.commercialRegistration && typeof profileData.commercialRegistration === 'string') {
     const crValidation = validateCommercialRegistration(profileData.commercialRegistration);
     errors.push(...crValidation.errors);
   }
-  
+
   // Validate established year if provided
-  if (profileData.establishedYear) {
+  if (profileData.establishedYear && typeof profileData.establishedYear === 'number') {
     const yearValidation = validateEstablishedYear(profileData.establishedYear);
     errors.push(...yearValidation.errors);
   }
-  
+
   // Validate type-specific fields
-  if (profileData.companyType && profileData.typeSpecificFields) {
-    const typeValidation = validateTypeSpecificFields(profileData.companyType, profileData.typeSpecificFields);
+  if (profileData.companyType && typeof profileData.companyType === 'string' &&
+      profileData.typeSpecificFields && typeof profileData.typeSpecificFields === 'object' && profileData.typeSpecificFields !== null) {
+    const typeValidation = validateTypeSpecificFields(profileData.companyType, profileData.typeSpecificFields as Record<string, unknown>);
     errors.push(...typeValidation.errors);
   }
-  
+
   // Validate team size
-  if (profileData.teamSize !== undefined && profileData.teamSize < 0) {
+  if (profileData.teamSize !== undefined && typeof profileData.teamSize === 'number' && profileData.teamSize < 0) {
     errors.push('Team size cannot be negative');
   }
   
@@ -271,7 +272,7 @@ export function validateCasterProfile(profileData: any): ValidationResult {
 /**
  * Validate project data
  */
-export function validateProject(projectData: any): ValidationResult {
+export function validateProject(projectData: Record<string, unknown>): ValidationResult {
   const errors: string[] = [];
   
   // Required fields
@@ -282,14 +283,14 @@ export function validateProject(projectData: any): ValidationResult {
   // Validate project year
   if (projectData.projectYear) {
     const currentYear = new Date().getFullYear();
-    const year = parseInt(projectData.projectYear);
+    const year = typeof projectData.projectYear === 'number' ? projectData.projectYear : parseInt(String(projectData.projectYear));
     if (year < 1950 || year > currentYear + 5) {
       errors.push(`Project year must be between 1950 and ${currentYear + 5}`);
     }
   }
-  
+
   // Validate project URL if provided
-  if (projectData.projectUrl) {
+  if (projectData.projectUrl && typeof projectData.projectUrl === 'string') {
     const urlValidation = validateWebsite(projectData.projectUrl);
     errors.push(...urlValidation.errors);
   }
@@ -303,7 +304,7 @@ export function validateProject(projectData: any): ValidationResult {
 /**
  * Validate team member data
  */
-export function validateTeamMember(memberData: any): ValidationResult {
+export function validateTeamMember(memberData: Record<string, unknown>): ValidationResult {
   const errors: string[] = [];
   
   // Required fields
@@ -311,7 +312,7 @@ export function validateTeamMember(memberData: any): ValidationResult {
   if (!memberData.role) errors.push('Team member role is required');
   
   // Validate email if provided
-  if (memberData.email) {
+  if (memberData.email && typeof memberData.email === 'string') {
     const emailValidation = validateEmail(memberData.email);
     errors.push(...emailValidation.errors);
   }

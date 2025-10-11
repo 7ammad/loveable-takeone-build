@@ -77,19 +77,20 @@ export default function ApplyPage() {
       } else {
         throw new Error(response.data.error || 'Failed to submit application');
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { error?: string; details?: Array<{ message: string }> } }; message?: string };
       console.error('[Apply] Application submission error:', err);
       
       // Better error handling
       let errorMessage = 'Failed to submit application. Please try again.';
       
-      if (err.response?.data?.error) {
-        errorMessage = err.response.data.error;
-      } else if (err.response?.data?.details) {
-        const details = err.response.data.details.map((d: any) => d.message).join(', ');
+      if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.response?.data?.details) {
+        const details = error.response.data.details.map((d) => d.message).join(', ');
         errorMessage = `Validation error: ${details}`;
-      } else if (err.message) {
-        errorMessage = err.message;
+      } else if (error.message) {
+        errorMessage = error.message;
       }
       
       setError(errorMessage);
@@ -153,7 +154,7 @@ export default function ApplyPage() {
             <>
               {/* Casting Call Summary */}
               <Card className="p-6 mb-6">
-                <h2 className="text-xl font-bold text-foreground mb-4">You're applying for:</h2>
+                <h2 className="text-xl font-bold text-foreground mb-4">You&apos;re applying for:</h2>
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
                     <Briefcase className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />

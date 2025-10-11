@@ -3,12 +3,6 @@
  * Track application performance and health
  */
 
-interface MetricData {
-  name: string;
-  value: number;
-  tags?: Record<string, string>;
-  timestamp?: Date;
-}
 
 class MetricsCollector {
   private metrics: Map<string, number[]> = new Map();
@@ -70,7 +64,7 @@ class MetricsCollector {
    * Get all metrics
    */
   getAllMetrics() {
-    const result: Record<string, any> = {};
+    const result: Record<string, { current: number; count: number }> = {};
     
     for (const [key, values] of this.metrics.entries()) {
       result[key] = {
